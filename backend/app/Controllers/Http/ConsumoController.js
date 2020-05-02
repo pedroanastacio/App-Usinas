@@ -1,6 +1,6 @@
 'use strict'
 
-
+const Consumo = use('App/Models/Consumo')
 
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
@@ -44,6 +44,11 @@ class ConsumoController {
    * @param {Response} ctx.response
    */
   async store ({ request, response }) {
+    const data = request.only(['setor_id', 'data', 'litros', 'user_id'])
+
+    const consumo = await Consumo.create(data)
+
+    return consumo
   }
 
   /**

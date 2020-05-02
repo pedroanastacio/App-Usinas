@@ -8,6 +8,15 @@ class Setor extends Model {
         return 'setores'
     }
 
+    static boot () {
+        super.boot()
+    
+        this.addTrait('@provider:Lucid/Slugify', {
+          fields: { slug: 'nome' },
+          strategy: 'dbIncrement',
+        })
+      }
+
     consumo () {
         return this.hasMany('App/Models/Consumo')
     }

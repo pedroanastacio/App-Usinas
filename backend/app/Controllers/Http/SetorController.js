@@ -64,6 +64,9 @@ class SetorController {
    * @param {View} ctx.view
    */
   async show ({ params, request, response, view }) {
+    const setor = await Setor.findOrFail(params.id)
+
+    return setor
   }
 
   /**
@@ -87,6 +90,15 @@ class SetorController {
    * @param {Response} ctx.response
    */
   async update ({ params, request, response }) {
+    const setor = await Setor.findOrFail(params.id)
+
+    const data = request.only(['nome'])
+
+    setor.merge(data)
+
+    await setor.save()
+
+    return setor
   }
 
   /**

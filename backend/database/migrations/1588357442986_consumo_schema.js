@@ -5,7 +5,7 @@ const Schema = use('Schema')
 
 class ConsumoSchema extends Schema {
   up () {
-    this.create('consumo', (table) => {
+    this.create('consumos', (table) => {
       table.bigIncrements()
       table
         .integer('setor_id')
@@ -14,7 +14,7 @@ class ConsumoSchema extends Schema {
         .inTable('setores')
         .onUpdate('CASCADE')
       table.datetime('data').notNullable()
-      table.decimal('litros', 9, 3).notNullable() 
+      table.decimal('litros', 9, 2).notNullable() 
       table
       .integer('user_id')
       .unsigned()
