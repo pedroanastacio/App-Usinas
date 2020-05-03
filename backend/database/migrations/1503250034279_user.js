@@ -13,6 +13,7 @@ class UserSchema extends Schema {
       table.string('sobrenome', 150).notNullable()
       table.boolean('isAdmin').defaultTo(false)
       table.boolean('isSupplier').defaultTo(false)
+      table.boolean('isActive').defaultTo(true)
       table.timestamps()
     })
   }

@@ -9,6 +9,7 @@ class SetorSchema extends Schema {
       table.increments()
       table.string('nome', 150).unique().notNullable()
       table.string('slug')
+      table.boolean('isActive').defaultTo(true)
       table.timestamps()
     })
   }

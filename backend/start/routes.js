@@ -19,13 +19,15 @@ const Route = use('Route')
 Route.post('/authenticate', 'AuthController.authenticate')
 Route.post('/logout', 'AuthController.logout').middleware(["auth"])
 
-Route.post('/users', 'UserController.store').middleware(["auth"])
-Route.get('/users', 'UserController.index').middleware(["auth"])
-Route.delete('/users/:id', 'UserController.destroy').middleware(["auth"])
-Route.put('/users/:id', 'UserController.update').middleware(["auth"])
-Route.get('/users/:id', 'UserController.show').middleware(["auth"])
+Route.post('/users', 'UserController.store').middleware(["isAdmin"])
+Route.get('/users', 'UserController.index').middleware(["isAdmin"])
+Route.put('/users/:id', 'UserController.update').middleware(["isAdmin"])
+Route.get('/users/:id', 'UserController.show').middleware(["isAdmin"])
 
+Route.post('/setores', 'SetorController.store').middleware(["isAdmin"])
+Route.get('/setores', 'SetorController.index').middleware(["isAdmin"])
+Route.put('/setores/:id', 'SetorController.update').middleware(["isAdmin"])
+Route.get('/setores/:id', 'SetorController.show').middleware(["isAdmin"])
 
-Route.resource('setores', 'SetorController').apiOnly().middleware(["auth"])
-
-Route.resource('consumo', 'ConsumoController').apiOnly().middleware(["auth"])
+Route.post('/consumo', 'ConsumoController.store').middleware(["isSupplier"])
+Route.get('/consumo', 'ConsumoController.index').middleware(["auth"])

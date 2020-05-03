@@ -47,7 +47,7 @@ class SetorController {
    * @param {Response} ctx.response
    */
   async store ({ request }) {
-    const data = request.only(['nome'])
+    const data = request.only(['nome', 'isActive'])
 
     const setor = await Setor.create(data)
 
@@ -63,7 +63,7 @@ class SetorController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async show ({ params, request, response, view }) {
+  async show ({ params, request }) {
     const setor = await Setor.findOrFail(params.id)
 
     return setor
@@ -89,10 +89,10 @@ class SetorController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update ({ params, request, response }) {
+  async update ({ params, request }) {
     const setor = await Setor.findOrFail(params.id)
 
-    const data = request.only(['nome'])
+    const data = request.only(['nome', 'isActive' ])
 
     setor.merge(data)
 
@@ -109,11 +109,7 @@ class SetorController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async destroy ({ params, request, response }) {
-    const setor = await Setor.findOrFail(params.id)
-
-    await setor.delete()
-  }
+  
 }
 
 module.exports = SetorController
