@@ -3,7 +3,7 @@
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
 
-class IsSupplier {
+class IsAuthAndActive {
   /**
    * @param {object} ctx
    * @param {Request} ctx.request
@@ -11,12 +11,12 @@ class IsSupplier {
    */
   async handle ({ response, auth }, next) {
     const user = auth.current.user
-
-    if(!user.isSupplier)
-      return response.status(403).json({ Error: 'Usuário precisa ser um fornecedor!'})
+        
+    if(!user.isActive)
+      return response.status(403).json({ Error: 'Usuário desativado!'})
 
     await next()
   }
 }
 
-module.exports = IsSupplier
+module.exports = IsAuthAndActive

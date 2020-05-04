@@ -38,6 +38,8 @@ const namedMiddleware = {
   auth: 'Adonis/Middleware/Auth',
   isAdmin: 'App/Middleware/AccessControl',
   isSupplier: 'App/Middleware/IsSupplier',
+  isActive: 'App/Middleware/IsActive',
+  isAuthAndActive: 'App/Middleware/IsAuthAndActive',
   guest: 'Adonis/Middleware/AllowGuestOnly'
 }
 

@@ -10,7 +10,7 @@ class AccessControl {
    * @param {Function} next
    */
   async handle ({ response, auth }, next) {
-    const user = await auth.getUser()
+    const user = auth.current.user
 
     if(!user.isAdmin)
       return response.status(403).json({ Error: 'Usuário precisa ser um administrador!'})
