@@ -16,7 +16,7 @@
 /** @type {typeof import('@adonisjs/framework/src/Route/Manager')} */
 const Route = use('Route')
 
-Route.post('/authenticate', 'AuthController.authenticate').middleware(["isActive"])
+Route.post('/authenticate', 'AuthController.authenticate').middleware(["isActive"]).validator('AuthValidator')
 
 Route.post('/users', 'UserController.store').middleware(["auth", "isAuthAndActive","isAdmin"])
 Route.get('/users', 'UserController.index').middleware(["auth", "isAuthAndActive","isAdmin"])

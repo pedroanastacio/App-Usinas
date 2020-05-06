@@ -1,12 +1,14 @@
 <template>
   <v-app>
-    <v-btn @click="listarSetores()">Listar Setores</v-btn>
+    <v-content>
+      
+      <router-view/>
+    </v-content>
   </v-app>
 </template>
 
 <script>
 import api from '../src/services/api'
-
 
 export default {
   name: 'App',
