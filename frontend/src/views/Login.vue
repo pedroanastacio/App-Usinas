@@ -18,7 +18,7 @@
                         <v-card-title class="primary justify-center white--text">
                             App Usinas
                         </v-card-title>
-                        <v-card-text class="px-8 py-4 pt-8">
+                        <v-card-text class="px-8 pl-5 py-4 pt-8">
                             
                                 <v-text-field
                                     outlined
@@ -29,6 +29,7 @@
                                     type="text"
                                     prepend-icon="mdi-account"
                                     :error-messages="usernameErrors"
+                                    @input="loginFailed ? loginFailed = false : null"
                                 />
                                 
                                 <v-text-field
@@ -41,6 +42,7 @@
                                     :error-messages="passwordErrors"
                                     required
                                     outlined
+                                    @input="loginFailed ? loginFailed = false : null"
                                 />                  
                            
                         </v-card-text>
@@ -51,6 +53,9 @@
                         </v-card-actions>
                     </v-card>
                 </v-form>    
+                <v-alert type="error" v-show="loginFailed" class="mt-4">
+                    {{error}}
+                </v-alert>
             </v-col>
         </v-row>
     </v-container>    
@@ -58,7 +63,8 @@
 
 <script>
     import { required, minLength, maxLength } from 'vuelidate/lib/validators'
-    
+    import api from '../services/api'
+    import { login } from "../services/AuthStorage";
 
     export default {
         data: () => ({
@@ -67,7 +73,8 @@
                 password: '',
             },
             show: false,
-                    
+            error: '',
+            loginFailed: false        
         }),
 
         validations: {
@@ -105,13 +112,25 @@
         },
 
         methods: {
-            login(){
+            async login(){
                 this.$v.$touch()
                 
-                if(this.$v.$invalid)
-                    return console.log('error')
-                else
-                    return console.log(this.user.username)
+                if(this.$v.$invalid) {
+                    return 
+                }    
+                else {
+                    try {
+                        const response = await api.post('authenticate', this.user)
+                        this.loginFailed = false
+                        login(response.data.token)
+
+                    }
+                    catch(err) {
+                        this.error = err.response.data.error
+                        this.loginFailed = true
+                    }
+                }
+                    
            }                        
     }  
     

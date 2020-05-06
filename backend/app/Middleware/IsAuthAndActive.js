@@ -13,7 +13,7 @@ class IsAuthAndActive {
     const user = auth.current.user
         
     if(!user.isActive)
-      return response.status(403).json({ Error: 'Usuário desativado!'})
+      return response.status(401).json({ Error: 'Usuário desativado'})
 
     await next()
   }

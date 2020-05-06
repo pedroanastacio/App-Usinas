@@ -13,7 +13,7 @@ class AccessControl {
     const user = auth.current.user
 
     if(!user.isAdmin)
-      return response.status(403).json({ Error: 'Usuário precisa ser um administrador!'})
+      return response.status(403).json({ Error: 'Usuário precisa ser um administrador'})
  
     await next()
   }

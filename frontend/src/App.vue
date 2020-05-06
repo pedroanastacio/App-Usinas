@@ -20,8 +20,7 @@ export default {
   data: () => ({
     //
   }),
-
-  
+ 
   methods: {
     listarSetores(){
       api.get('setores')
