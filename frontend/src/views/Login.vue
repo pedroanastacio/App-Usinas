@@ -63,7 +63,7 @@
 
 <script>
     import { required, minLength, maxLength } from 'vuelidate/lib/validators'
-    import api from '../services/api'
+    import Auth from '../services/Auth'
     import { login } from "../services/AuthStorage";
 
     export default {
@@ -120,7 +120,7 @@
                 }    
                 else {
                     try {
-                        const response = await api.post('authenticate', this.user)
+                        const response = await Auth.authenticate(this.user)
                         this.loginFailed = false
                         login(response.data.token)
 

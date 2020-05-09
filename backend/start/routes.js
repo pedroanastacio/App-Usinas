@@ -30,3 +30,4 @@ Route.get('/setores/:id', 'SetorController.show').middleware(["auth", "isAuthAnd
 
 Route.post('/consumo', 'ConsumoController.store').middleware(["auth", "isAuthAndActive", "isSupplier"])
 Route.get('/consumo', 'ConsumoController.index').middleware(["auth", "isAuthAndActive"])
+Route.post('/insert', 'ConsumoController.insert')

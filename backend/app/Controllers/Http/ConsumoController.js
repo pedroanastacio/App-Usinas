@@ -1,6 +1,8 @@
 'use strict'
 
 const Consumo = use('App/Models/Consumo')
+const Helpers = use('Helpers')
+const csvtojson = require("csvtojson");
 
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
@@ -44,13 +46,43 @@ class ConsumoController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store ({ request, response }) {
-    const data = request.only(['setor_id', 'data', 'litros', 'user_id'])
+  async store ({ request, response, auth }) {
+    const user_id = auth.current.user.id
+    
+    const uploadedFile = request.file('file', {
+      extnames: ['csv']
+    })
+      
+    const fileName = `${Date.now()}_${uploadedFile.clientName}`
+    const dir = "uploads/"
 
-    const consumo = await Consumo.create(data)
+    await uploadedFile.move(Helpers.tmpPath(dir), {
+      name: fileName,
+      overwrite: true
+    })
+  
+    if (!uploadedFile.moved()) {
+      return uploadedFile.error()
+    }
 
-    return consumo
+    const jsonArray = await csvtojson().fromFile('tmp/' + dir + fileName);
+
+    jsonArray.forEach(row => {
+      row.user_id = user_id
+    })
+    
+    try{ 
+      console.log(jsonArray)
+      await Consumo.createMany(jsonArray)
+      return response.status(200).json({ status: 'Importação concluída com sucesso'})
+    }
+    catch(e){
+      console.log(e)
+      return response.status(500).json({ status: 'Importação falhou'})
+    }
   }
+
+
 
   /**
    * Display a single consumo.
