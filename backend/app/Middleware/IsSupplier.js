@@ -13,7 +13,7 @@ class IsSupplier {
     const user = auth.current.user
 
     if(!user.isSupplier)
-      return response.status(403).json({ Error: 'Usuário precisa ser um fornecedor!'})
+      return response.status(403).json({ message: 'Você precisa ser um fornecedor'})
 
     await next()
   }

@@ -19,17 +19,17 @@ class IsActive {
     const user = await User.findByOrFail('username', username)
 
     if(!user.isActive)
-      return response.status(401).json({ error: 'Usuário desativado'})
+      return response.status(401).json({ message: 'Usuário desativado'})
 
     await next()
     }
     catch(err){
       if(err.code == 'E_MISSING_DATABASE_ROW')
-        return response.status(401).json({ error: 'Usuário não existe'})
+        return response.status(401).json({ message: 'Usuário não existe'})
       else if(err.code == 'E_PASSWORD_MISMATCH')
-        return response.status(401).json({ error: 'Senha incorreta'})
+        return response.status(401).json({ message: 'Senha incorreta'})
       else{
-        return response.status(500).json({ error: 'Ocorreu um erro interno'})
+        return response.status(500).json({ message: 'Ocorreu um erro interno'})
       }
        
     }

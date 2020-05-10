@@ -67,18 +67,22 @@ class ConsumoController {
 
     const jsonArray = await csvtojson().fromFile('tmp/' + dir + fileName);
 
+    if(!jsonArray[0].setor_id && !jsonArray[0].data && !jsonArray[0].litros){
+      return response.status(400).json({ message: 'Não foi possível importar arquivo. Conteúdo inválido'})
+    }
+
     jsonArray.forEach(row => {
       row.user_id = user_id
     })
-    
+
     try{ 
-      console.log(jsonArray)
+     // console.log(jsonArray)
       await Consumo.createMany(jsonArray)
-      return response.status(200).json({ status: 'Importação concluída com sucesso'})
+      return response.status(200).json({ message: 'Importação concluída com sucesso'})
     }
     catch(e){
       console.log(e)
-      return response.status(500).json({ status: 'Importação falhou'})
+      return response.status(500).json({ message: 'Importação falhou'})
     }
   }
 

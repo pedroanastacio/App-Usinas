@@ -30,9 +30,12 @@ export default {
             formData.append('file', this.file)
             try{
                 const response = await Consumo.store(formData) 
-                console.log(response.data.status)
+                if(response.data.message == 'Invalid file extension png. Only csv is allowed')
+                    console.log('Extensão do arquivo é invalida. Apenas CSV é aceito')
+                else
+                    console.log(response.data.message)    
             }catch(err){
-                console.log(err.response.data.status)
+                console.log(err.response.data.message)
             }
           
         }

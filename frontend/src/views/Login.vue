@@ -4,6 +4,9 @@
         fluid
         
     >
+        <v-alert type="error" v-show="loginFailed" class="mt-0" fluid>
+            {{error}}
+        </v-alert>
         <v-row 
         align="center"
         justify="center"
@@ -53,9 +56,7 @@
                         </v-card-actions>
                     </v-card>
                 </v-form>    
-                <v-alert type="error" v-show="loginFailed" class="mt-4">
-                    {{error}}
-                </v-alert>
+               
             </v-col>
         </v-row>
     </v-container>    
@@ -126,7 +127,8 @@
 
                     }
                     catch(err) {
-                        this.error = err.response.data.error
+                        console.log(err)
+                        this.error = err.response.data.message
                         this.loginFailed = true
                     }
                 }
@@ -138,7 +140,20 @@
 </script>
 
 <style>
+.v-alert{
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    border-radius: 0px !important;
+    display: flex;
+    align-content: center;
+    justify-content: center;
+}
 
-
+.v-container{
+   overflow: hidden; 
+}
 
 </style>
