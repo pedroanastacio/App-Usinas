@@ -1,43 +1,93 @@
 <template>
+    <div>
+    <DrawerToolbar :routeName="routeName"/>
     <v-container>
         <div class="col-sm-9">
-            <v-file-input placeholder="Selecionar arquivo" @change="loadCSV" accept=".csv"/>
-            <v-btn @click="uploadFile" class="primary">Importar
+            <v-file-input
+                label="Selecione um arquivo"
+                placeholder="Arquivo"
+                @change="loadCSV"
+                accept=".csv"
+                outlined/>
+            <v-btn @click="uploadFile" class="primary" :loading="importing">Importar
                <v-icon right>mdi-arrow-up-bold-circle</v-icon>
             </v-btn>
         </div>
 
-         
+        <v-alert type="error" v-show="importFailed" class="alert" fluid>
+            {{message}}
+        </v-alert> 
+        <v-alert type="success" v-show="importSuccess" class="alert" fluid>
+            {{message}}
+        </v-alert>
     </v-container>
+    </div>
 </template>
 
 <script>
 import Consumo from '../services/Consumo'
+import DrawerToolbar from '../components/DrawerToolbar'
 
 export default {
+    components:{
+        DrawerToolbar
+    },
+
     data: () => ({
-        file: ''
+        file: '',
+        routeName: 'Importar Dados',
+        importFailed: '',
+        importSuccess: '',
+        message: '',
+        importing: false,
     }),
 
     methods: {
         loadCSV(file) {
             this.file = file
-            
+            console.log(this.file)
+            this.importFailed = ''
+            this.importSuccess = ''
         }, 
         
         async uploadFile(){
-            let formData = new FormData()
-            formData.append('file', this.file)
-            try{
-                const response = await Consumo.store(formData) 
-                if(response.data.message == 'Invalid file extension png. Only csv is allowed')
-                    console.log('Extensão do arquivo é invalida. Apenas CSV é aceito')
-                else
-                    console.log(response.data.message)    
-            }catch(err){
-                console.log(err.response.data.message)
+            if(this.file == '' ||  typeof this.file === 'undefined'){
+                this.message = 'É obrigatório selecionar um arquivo para importar'
+                this.importSuccess = false
+                this.importFailed = true
             }
-          
+            else if(this.file.name.indexOf(".csv") == -1){
+                this.importFailed = true
+                this.message = 'Extensão do arquivo é inválida. Apenas CSV é aceito'
+            }
+            else{
+                this.importing = true
+                let formData = new FormData()
+                formData.append('file', this.file)
+                try{
+                    const response = await Consumo.store(formData) 
+                    this.importing = false
+                    if(response.data.type == "extname"){
+                        this.importSuccess = false
+                        this.importFailed = true
+                        this.message = 'Extensão do arquivo é inválida. Apenas CSV é aceito'
+                        console.log('Extensão do arquivo é invalida. Apenas CSV é aceito')
+                    }
+                    else{
+                        console.log(response.data.message)   
+                        this.importFailed = false
+                        this.importSuccess = true
+                        this.message = response.data.message
+                    }
+                }catch(err){
+                    this.importing = false
+                    this.importSuccess = false
+                    this.importFailed = true
+                    this.message = err.response.data.message
+                    console.log(err.response.data)
+                }
+            
+            }
         }
     }
 
@@ -45,5 +95,11 @@ export default {
 </script>
 
 <style>
-
+.alert{
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    margin-right: 3px;
+    
+}
 </style>

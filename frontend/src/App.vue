@@ -7,7 +7,6 @@
 </template>
 
 <script>
-import api from '../src/services/api'
 
 export default {
   name: 'App',
@@ -21,17 +20,7 @@ export default {
   }),
  
   methods: {
-    listarSetores(){
-      api.get('setores')
-        .then((response) => {
-           response.data.forEach(element => {
-             console.log(element.nome)
-           });
-        })
-        .catch((err) => {
-          console.log(err)
-        })
-    }
+   
   }
   
 };

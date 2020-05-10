@@ -124,7 +124,7 @@
                         const response = await Auth.authenticate(this.user)
                         this.loginFailed = false
                         login(response.data.token)
-
+                        this.$router.replace("Import")
                     }
                     catch(err) {
                         console.log(err)

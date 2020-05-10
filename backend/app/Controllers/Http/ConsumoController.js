@@ -52,6 +52,9 @@ class ConsumoController {
     const uploadedFile = request.file('file', {
       extnames: ['csv']
     })
+    
+    if(uploadedFile == null)
+      return response.status(400).json({ message: 'É obrigatório selecionar um arquivo para importar' })
       
     const fileName = `${Date.now()}_${uploadedFile.clientName}`
     const dir = "uploads/"
