@@ -9,8 +9,8 @@
                 @change="loadCSV"
                 accept=".csv"
                 outlined/>
-            <v-btn @click="uploadFile" class="primary" :loading="importing">Importar
-               <v-icon right>mdi-arrow-up-bold-circle</v-icon>
+            <v-btn @click="uploadFile" class="success" :loading="importing">Importar
+               <v-icon right>mdi-file-upload</v-icon>
             </v-btn>
         </div>
 
@@ -35,7 +35,7 @@ export default {
 
     data: () => ({
         file: '',
-        routeName: 'Importar Dados',
+        routeName: 'Importar dados',
         importFailed: '',
         importSuccess: '',
         message: '',
@@ -66,15 +66,20 @@ export default {
                 formData.append('file', this.file)
                 try{
                     const response = await Consumo.store(formData) 
+                    console.log(response)
                     this.importing = false
                     if(response.data.type == "extname"){
                         this.importSuccess = false
                         this.importFailed = true
                         this.message = 'Extensão do arquivo é inválida. Apenas CSV é aceito'
-                        console.log('Extensão do arquivo é invalida. Apenas CSV é aceito')
+                        
+                    }
+                    else if(response.data.description == "invalid id"){
+                        this.importSuccess = false
+                        this.importFailed = true
+                        this.message = response.data.message
                     }
                     else{
-                        console.log(response.data.message)   
                         this.importFailed = false
                         this.importSuccess = true
                         this.message = response.data.message
@@ -84,7 +89,7 @@ export default {
                     this.importSuccess = false
                     this.importFailed = true
                     this.message = err.response.data.message
-                    console.log(err.response.data)
+                    console.log(err)
                 }
             
             }

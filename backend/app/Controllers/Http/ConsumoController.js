@@ -1,6 +1,7 @@
 'use strict'
 
 const Consumo = use('App/Models/Consumo')
+const Database = use('Database')
 const Helpers = use('Helpers')
 const csvtojson = require("csvtojson");
 
@@ -74,12 +75,24 @@ class ConsumoController {
       return response.status(400).json({ message: 'Não foi possível importar arquivo. Conteúdo inválido'})
     }
 
+    let setoresId = []
     jsonArray.forEach(row => {
+      setoresId.push(parseInt(row.setor_id))
       row.user_id = user_id
     })
-
+    
+    
     try{ 
-     // console.log(jsonArray)
+      const setoresDB = await Database.select('id').from('setores')
+      let newSetoresDB = []
+      setoresDB.forEach(setor => {
+        newSetoresDB.push(setor.id)
+      })
+      const csvValid = newSetoresDB.some(id => setoresId.indexOf(id) > 0)
+
+      if(!csvValid)
+        return response.status(400).json({ message: 'Não foi possível importar arquivo. Conteúdo inválido', description: 'invalid id'})
+     
       await Consumo.createMany(jsonArray)
       return response.status(200).json({ message: 'Importação concluída com sucesso'})
     }

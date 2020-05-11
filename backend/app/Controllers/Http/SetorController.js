@@ -101,6 +101,8 @@ class SetorController {
     return setor
   }
 
+
+  
   /**
    * Delete a setor with id.
    * DELETE setors/:id

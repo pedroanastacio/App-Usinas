@@ -9,6 +9,10 @@ const router = new Router({
     base: process.env.BASE_URL,
     routes: [
         {
+            path: '/',
+            redirect: '/login'
+        },
+        {
             path: "/login",
             name: 'Login',
             component: () => import('./views/Login.vue')
@@ -16,6 +20,10 @@ const router = new Router({
             path: "/import",
             name: 'Import',
             component: () => import('./views/Import.vue')
+        },{
+            path: "/users",
+            name: 'Users',
+            component: () => import('./views/Users.vue')
         }
     ]
 })
