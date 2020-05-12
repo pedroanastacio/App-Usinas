@@ -1,6 +1,6 @@
 <template>
     <div> 
-        <DrawerToolbar :routeName="routeName"/>
+        <DrawerToolbar :routeName="$route.name"/>
             <v-row 
             align="center"
             justify="center"
@@ -10,7 +10,7 @@
                 sm="14"
                 md="9"               
                 >
-                    <v-card class="elevation-1">
+                    <v-card class="elevation-4">
                        
                         <v-data-table                           
                             :headers="headers"                           
@@ -53,11 +53,11 @@
                                 </v-layout>                       
                             </template>
 
-                            <template v-slot:item.id="{ item }" >
+                            <!--<template v-slot:item.id="{ item }" >
                                   <v-icon color="grey darken-4" v-model="item.id" medium>
                                     mdi-account-edit
                                 </v-icon>
-                            </template>                             
+                            </template>-->                         
                       
                         </v-data-table>
                         
@@ -85,7 +85,6 @@ export default {
     },
 
     data: () => ({
-        routeName: 'Usuários',
         usersDB: '',
         headers:
         [
@@ -102,10 +101,32 @@ export default {
             {text: 'Admin', value: 'isAdmin', align:'center'},
             {text: 'Fornecedor', value: 'isSupplier', align:'center'},
             {text: 'Ativo', value: 'isActive', align:'center'},
-            {text: '', value: 'id'}
+            //{text: '', value: 'id'}
             
         ],
-        users: []
+        users:[
+            {
+                nome: 'José',
+                sobrenome: 'Silva',
+                username: 'jose.silva',
+                isAdmin: true,
+                isSupplier: false,
+                isActive: true,
+                id: 1,
+                align:'center'
+            },
+            {
+                nome: 'João',
+                sobrenome: 'Gomes',
+                username: 'joaogomes',
+                isAdmin: false,
+                isSupplier: true,
+                isActive: false,
+                id: 2,
+               
+            },
+
+        ]
     }),
    
    methods: {
@@ -118,8 +139,8 @@ export default {
                console.log(err.response.data)
            }
            
-       }
-   },
+       },
+    },
 
     mounted(){
        this.list()

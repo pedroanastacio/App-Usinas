@@ -10,20 +10,23 @@ const router = new Router({
     routes: [
         {
             path: '/',
-            redirect: '/login'
+            name: 'Home',
+            component: () => import('./views/Home.vue')
         },
         {
             path: "/login",
             name: 'Login',
             component: () => import('./views/Login.vue')
-        },{
-            path: "/import",
-            name: 'Import',
-            component: () => import('./views/Import.vue')
-        },{
+        },
+        {
             path: "/users",
-            name: 'Users',
+            name: 'Usuários',
             component: () => import('./views/Users.vue')
+        },
+        {
+            path: "/import",
+            name: 'Importar dados',
+            component: () => import('./views/Import.vue')
         }
     ]
 })
@@ -32,6 +35,8 @@ router.beforeEach((to, from, next) => {
     if (to.name !== 'Login' && !isAuthenticated()) next({ name: 'Login' })
     // if the user is not authenticated, `next` is called twice
     next()
+
+   
   })
 
 export default router  

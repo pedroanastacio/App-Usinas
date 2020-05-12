@@ -1,6 +1,6 @@
 <template>
     <div>
-    <DrawerToolbar :routeName="routeName"/>
+    <DrawerToolbar :routeName="$route.name"/>
     <v-container>
         <div class="col-sm-9">
             <v-file-input
@@ -35,7 +35,6 @@ export default {
 
     data: () => ({
         file: '',
-        routeName: 'Importar dados',
         importFailed: '',
         importSuccess: '',
         message: '',

@@ -1,9 +1,9 @@
 <template>
     <div>
         <v-app-bar app class="elevation-0 primary white--text">
-            <h3>{{routeName}}</h3>
+            <v-list-item-title>{{routeName}}</v-list-item-title>
             <v-spacer></v-spacer>                
-            <small>Usuário</small>
+            <small>JOSÉ</small>
             <v-menu offset-y>
                 <template v-slot:activator="{ on }">
                     <v-btn
@@ -17,14 +17,23 @@
                     </v-btn>
                 </template>    
 
-                <v-list>
-                <v-list-tile
-                    v-for="(item, index) in menuDropdown" 
-                    :key="index"
-                    
+                <v-list
+                flat
+                class="primary"
+                dark
+                @click="logoutBtn()"
                 >
-                <v-list-tile-title>{{ item.title}}</v-list-tile-title>
-                </v-list-tile>
+                    <v-list-item
+                    @click="logoutBtn"
+                    >
+                        <v-list-item-content align="center" justify="center">
+                            <v-list-item-title>
+                                 <v-icon class="pt-0" medium>mdi-logout-variant</v-icon>
+                                Sair
+                            </v-list-item-title>
+                            
+                        </v-list-item-content>
+                    </v-list-item>
                 </v-list>
             </v-menu>
               
@@ -36,20 +45,26 @@
         :permanent="!$vuetify.breakpoint.xsOnly"
         dark
         class="primary white--text">
-            <v-list>
-                <v-list-item>
-                    <v-list-item-content align="center" >
+            <v-list flat>
+                <v-list-item
+                link
+                :to="homeLink"
+                >
+                    <v-list-item-content align="center" class="dropDownMenu" >
                         <v-list-item-title class="title">
                             App Usinas
                         </v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
-                
-                <v-divider class="light mx-4"></v-divider>
+            </v-list>
 
+            <v-divider class="light mx-4"></v-divider>
+
+            <v-list rounded>
                 <v-list-item
-                v-for="item in items"
-                :key="item.title"
+                v-for="(item, index) in items"
+                :key="index"
+                :to="item.link"
                 link
                 >
                     <v-list-item-icon>
@@ -62,7 +77,10 @@
                 </v-list-item>
             </v-list>
 
-            <v-list class="adminList">
+            <v-list 
+            rounded
+            class="adminList"
+            >
                  <v-list-item>
                     <v-list-item-content align="center" justify="center">
                         <v-list-item-title class="title">
@@ -74,8 +92,9 @@
 
             <v-divider class="light mx-4"></v-divider>
                 <v-list-item
-                    v-for="itemAdmin in itemsAdmin"
-                    :key="itemAdmin.title"
+                    v-for="(itemAdmin, index) in itemsAdmin"
+                    :key="index"
+                    :to="itemAdmin.link"
                     link
                     >
                     <v-list-item-icon>
@@ -92,19 +111,22 @@
 </template>
 
 <script>
+import { logout } from '../services/AuthStorage'
+
+
 export default {
     name: 'DrawerToolbar',
     data: () => ({
-        menuDropdown: [{ title: 'Sair' }],
+        homeLink: '/',
         items: [
             { title: 'Consumo geral', icon: 'mdi-chart-donut' },
             { title: 'Consumo por setor', icon: 'mdi-chart-line' },
             
         ],
         itemsAdmin: [
-            { title: 'Usuários', icon: 'mdi-account' },
+            { title: 'Usuários', icon: 'mdi-account', link: '/users' },
             { title: 'Setores', icon: 'mdi-view-dashboard' },
-            { title: 'Importar dados', icon: 'mdi-file-upload' },
+            { title: 'Importar dados', icon: 'mdi-file-upload', link:'/import' },
         ],
         
 
@@ -114,6 +136,14 @@ export default {
        routeName:{
            type: String,
            description: "Nome da página",
+       }
+   },
+
+   methods: {
+       async logoutBtn() {
+           console.log('logout')
+           await logout()
+           this.$router.replace("/login")
        }
    }
     
@@ -127,6 +157,8 @@ export default {
     width: 100%;
 }
 
-
+.dropDownMenu{
+    display: inline;
+}
 
 </style>
