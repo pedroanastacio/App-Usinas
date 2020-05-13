@@ -130,7 +130,19 @@
                     try {
                         const response = await Auth.authenticate(this.user)
                         this.loginFailed = false
-                        login(response.data.token)
+                        
+                        const user = {
+                            "nome": response.data.nome,
+                            "sobrenome": response.data.sobrenome,
+                            "isAdmin": response.data.isAdmin,
+                            "isSupplier": response.data.isSupplier,
+                            "isActive": response.data.isActive,
+                            "type": response.data.type,
+                            "token": response.data.token,
+                            "refreshToken": response.data.refreshToken
+                        }
+                                               
+                        login(user)
                         this.$router.push({ name: 'Home'})
                     }
                     catch(err) {

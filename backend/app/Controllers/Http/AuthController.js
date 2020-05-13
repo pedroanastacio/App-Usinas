@@ -1,13 +1,26 @@
 'use strict'
 
+const User = use('App/Models/User');
+
 class AuthController {
    
-    async authenticate({ request, auth }){
+    async authenticate({ request, response, auth }){
         const { username, password } = request.all()
 
-        const token = auth.attempt(username, password)
+        try{
+            const token = await auth.attempt(username, password)
 
-        return token
+            const user = await User.findByOrFail('username', username)
+
+            Object.assign(user, token)
+
+            return response.status(200).json(user)
+
+        }catch(err){
+            return response.status(401).json({ message: 'Usuário não existe'})
+        }
+        
+        
     }
 
    
