@@ -1,28 +1,42 @@
 <template>
     <div>
-    <DrawerToolbar :routeName="$route.name"/>
-    <v-container>
-        <div class="col-sm-9">
-            <v-file-input
-                label="Selecione um arquivo"
-                placeholder="Arquivo"
-                @change="loadCSV"
-                accept=".csv"
-                outlined/>
-            <v-btn @click="uploadFile" class="success" :loading="importing">Importar
-               <v-icon right>mdi-file-upload</v-icon>
-            </v-btn>
-        </div>
+        <DrawerToolbar :routeName="$route.name"/>
+        <v-container>
+            <v-card class="col-sm-9 pa-5 pt-6 elevation-4">
+                <v-file-input
+                    label="Selecione um arquivo"
+                    placeholder="Arquivo"
+                    @change="loadCSV"
+                    accept=".csv"
+                    outlined/>
+                <v-btn @click="uploadFile" class="success" :loading="importing">Importar
+                <v-icon right>mdi-file-upload</v-icon>
+                </v-btn>
+            </v-card>
+        </v-container>
 
-        <v-alert type="error" v-show="importFailed" class="alert" fluid>
+        <v-alert
+        type="error"
+        v-model="importFailed"
+        class="importAlert"
+        transition="slide-x-reverse-transition"
+        dismissible
+        
+        >
             {{message}}
         </v-alert> 
-        <v-alert type="success" v-show="importSuccess" class="alert" fluid>
+        <v-alert
+        type="success"
+        v-model="importSuccess" 
+        class="importAlert"
+        transition="slide-x-reverse-transition"
+        dismissible
+        >
             {{message}}
+        
         </v-alert>
-    </v-container>
     </div>
-</template>
+</template> 
 
 <script>
 import Consumo from '../services/Consumo'
@@ -35,8 +49,8 @@ export default {
 
     data: () => ({
         file: '',
-        importFailed: '',
-        importSuccess: '',
+        importFailed: false,
+        importSuccess: false,
         message: '',
         importing: false,
     }),
@@ -45,8 +59,8 @@ export default {
         loadCSV(file) {
             this.file = file
             console.log(this.file)
-            this.importFailed = ''
-            this.importSuccess = ''
+            this.importFailed = false
+            this.importSuccess = false
         }, 
         
         async uploadFile(){
@@ -88,22 +102,22 @@ export default {
                     this.importSuccess = false
                     this.importFailed = true
                     this.message = err.response.data.message
-                    console.log(err)
+                   
                 }
             
             }
-        }
+        },
+
     }
 
 }
 </script>
 
 <style>
-.alert{
-    position: fixed;
+.importAlert{
+    position: absolute;
     bottom: 0;
     right: 0;
-    margin-right: 3px;
     
 }
 </style>

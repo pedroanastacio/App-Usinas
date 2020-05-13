@@ -19,8 +19,7 @@
 
                 <v-list
                 flat
-                class="primary"
-                dark
+                class="cinza"
                 @click="logoutBtn()"
                 >
                     <v-list-item
@@ -143,7 +142,7 @@ export default {
        async logoutBtn() {
            console.log('logout')
            await logout()
-           this.$router.replace("/login")
+           this.$router.push({ name: 'Login' })
        }
    }
     
@@ -152,7 +151,7 @@ export default {
 
 <style>
 .adminList{
-    position: fixed;
+    position: absolute;
     bottom: 0;
     width: 100%;
 }

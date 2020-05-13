@@ -4,9 +4,16 @@
         fluid
         
     >
-        <v-alert type="error" v-show="loginFailed" class="mt-0" fluid>
+        <v-alert
+        class="loginAlert"
+        type="error"
+        v-show="loginFailed"
+        transition="slide-y-transition"
+        fluid
+        >
             {{error}}
         </v-alert>
+        
         <v-row 
         align="center"
         justify="center"
@@ -124,7 +131,7 @@
                         const response = await Auth.authenticate(this.user)
                         this.loginFailed = false
                         login(response.data.token)
-                        this.$router.replace("/")
+                        this.$router.push({ name: 'Home'})
                     }
                     catch(err) {
                         console.log(err)
@@ -140,20 +147,16 @@
 </script>
 
 <style>
-.v-alert{
-    width: 100%;
-    position: fixed;
-    top: 0;
+.loginAlert{
+    position: absolute;
     left: 0;
-    right: 0;
+    top: 0;
+    width: 100%;
     border-radius: 0px !important;
     display: flex;
-    align-content: center;
     justify-content: center;
+    align-items: center;
 }
 
-.v-container{
-   overflow: hidden; 
-}
 
 </style>
