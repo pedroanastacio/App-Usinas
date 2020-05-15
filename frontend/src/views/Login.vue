@@ -71,8 +71,8 @@
 
 <script>
     import { required, minLength, maxLength } from 'vuelidate/lib/validators'
-    import Auth from '../services/Auth'
-    import { login } from "../services/AuthStorage";
+    //import Auth from '../services/Auth'
+   // import { login } from "../services/AuthStorage";
 
     export default {
         data: () => ({
@@ -116,7 +116,8 @@
                 !this.$v.user.username.required && errors.push('Usuário é obrigatório')
                 !this.$v.user.username.maxLength && errors.push('Usuário excedeu o limite de caracteres')
                 return errors 
-            }
+            },
+           
         },
 
         methods: {
@@ -128,7 +129,7 @@
                 }    
                 else {
                     try {
-                        const response = await Auth.authenticate(this.user)
+                        /*const response = await Auth.authenticate(this.user)
                         this.loginFailed = false
                         
                         const user = {
@@ -143,19 +144,23 @@
                         }
                                                
                         login(user)
+                        this.$router.push({ name: 'Home'})*/
+
+                        await this.$store.dispatch('auth/login', this.user)
+                        this.loginFailed = false
                         this.$router.push({ name: 'Home'})
                     }
                     catch(err) {
-                        console.log(err)
                         this.error = err.response.data.message
                         this.loginFailed = true
                     }
                 }
                     
            }                        
-    }  
+    },
     
-    }    
+    
+}    
 </script>
 
 <style>

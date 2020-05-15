@@ -9,6 +9,11 @@ const router = new Router({
     base: process.env.BASE_URL,
     routes: [
         {
+            path : '*',
+            name: '404',
+            component: () => import('./views/404Page.vue')
+        },
+        {
             path: '/',
             name: 'Home',
             component: () => import('./views/Home.vue')
@@ -36,7 +41,8 @@ router.beforeEach((to, from, next) => {
     // if the user is not authenticated, `next` is called twice
     next()
 
-   
+    if(to.name == 'Login' && isAuthenticated()) next({ name: 'Home' })
+    next()
   })
 
 export default router  

@@ -3,7 +3,7 @@
         <v-app-bar app class="elevation-0 primary white--text">
             <v-list-item-title>{{routeName}}</v-list-item-title>
             <v-spacer></v-spacer>                
-            <small>JOSÉ</small>
+            <small>{{ currentUser }}</small>
             <v-menu offset-y>
                 <template v-slot:activator="{ on }">
                     <v-btn
@@ -110,7 +110,7 @@
 </template>
 
 <script>
-import { logout } from '../services/AuthStorage'
+//import { removeToken } from '../services/AuthStorage'
 
 
 export default {
@@ -138,14 +138,21 @@ export default {
        }
    },
 
+   computed: {
+        currentUser(){
+            return this.$store.state.auth.user.nome + ' ' + this.$store.state.auth.user.sobrenome
+        }
+   },
+
    methods: {
        async logoutBtn() {
-           console.log('logout')
-           await logout()
-           this.$router.push({ name: 'Login' })
+            await this.$store.dispatch('auth/logout')
+            this.$router.push({ name: 'Login' })
        }
-   }
-    
+   },
+
+      
+  
 }
 </script>
 

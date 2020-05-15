@@ -14,11 +14,11 @@ class IsActive {
    */
   async handle ({ request, response }, next) {
     const { username } = request.all()
-
+    
     try {
-    const user = await User.findByOrFail('username', username)
-
-    if(!user.isActive)
+      response.user = await User.findByOrFail('username', username)
+      
+    if(!response.user.isActive)
       return response.status(401).json({ message: 'Usuário desativado'})
 
     await next()
@@ -26,8 +26,6 @@ class IsActive {
     catch(err){
       if(err.code == 'E_MISSING_DATABASE_ROW')
         return response.status(401).json({ message: 'Usuário não existe'})
-      else if(err.code == 'E_PASSWORD_MISMATCH')
-        return response.status(401).json({ message: 'Senha incorreta'})
       else{
         return response.status(500).json({ message: 'Ocorreu um erro interno'})
       }
