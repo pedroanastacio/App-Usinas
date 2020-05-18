@@ -2,12 +2,27 @@
 #include <SD.h>
 File myFile;
 
-void setup() {
+const int buttonPin = 3;
 
-  Serial.begin(9600);
-  while (!Serial) {
-    // wait for serial port to connect. Needed for native USB port only
+void setup() {
+  pinMode(buttonPin, INPUT);
+}
+
+
+void loop() {
+  int buttonState;
+  buttonState = digitalRead(buttonPin);
+
+  if (buttonState == LOW)
+  {
+    cartaosd();
   }
+}
+
+
+void cartaosd() {
+  Serial.begin(9600);
+
   Serial.print("Iniciando o SD card...");
   if (!SD.begin(10)) {
     Serial.println("Falha na Inicialização!");
@@ -18,19 +33,12 @@ void setup() {
   myFile = SD.open("test.txt", FILE_WRITE);
 
   if (myFile) {
-    Serial.print("Escrevendo test.txt...");
-    myFile.println("Arquivo teste :)");
-    myFile.println("Testando 1, 2, 3.");
-    for (int i = 0; i < 20; i++) {
-      myFile.println(i);
-    }
+    Serial.print("Escrevendo arquivo no SD...");
+    myFile.println("Arquivo teste");
+    
     myFile.close();
     Serial.println("Feito");
   } else {
     Serial.println("Erro abrindo test.txt");
   }
-}
-
-void loop() {
-  //
 }
