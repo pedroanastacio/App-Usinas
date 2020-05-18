@@ -1,19 +1,27 @@
 <template>
     <div>
         <DrawerToolbar :routeName="$route.name"/>
-        <v-container>
-            <v-card class="col-sm-9 pa-5 pt-6 elevation-4">
-                <v-file-input
-                    label="Selecione um arquivo"
-                    placeholder="Arquivo"
-                    @change="loadCSV"
-                    accept=".csv"
-                    outlined/>
-                <v-btn @click="uploadFile" class="success" :loading="importing">Importar
-                <v-icon right>mdi-file-upload</v-icon>
-                </v-btn>
-            </v-card>
-        </v-container>
+        <v-row>             
+            <v-col
+            cols="12"
+            sm="12"
+            md="12" 
+            lg="12"
+            xl="12"
+            >
+                <v-card class="col-sm-9 pa-5 pt-6 elevation-4 mx-3">
+                    <v-file-input
+                        label="Selecione um arquivo"
+                        placeholder="Arquivo"
+                        @change="loadCSV"
+                        accept=".csv"
+                        outlined/>
+                    <v-btn @click="uploadFile" class="success" :loading="importing">Importar
+                    <v-icon right>mdi-file-upload</v-icon>
+                    </v-btn>
+                </v-card>
+            </v-col>
+        </v-row>
 
         <v-alert
         type="error"

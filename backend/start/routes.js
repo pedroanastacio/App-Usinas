@@ -9,12 +9,12 @@
 | routes for different URLs and bind Controller actions to them.
 |
 | A complete guide on routing is available here.
-| http://adonisjs.com/docs/4.1/routing
+| http://adonisjs.com/docs/4.1/routing 
 |
 */
 
 /** @type {typeof import('@adonisjs/framework/src/Route/Manager')} */
-const Route = use('Route')
+const Route = use('Route') 
 
 Route.post('/authenticate', 'AuthController.authenticate').middleware(["isActive"]).validator('AuthValidator')
 

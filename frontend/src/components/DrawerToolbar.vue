@@ -1,31 +1,43 @@
 <template>
     <div>
         <v-app-bar app class="elevation-0 primary white--text">
-            <v-list-item-title>{{routeName}}</v-list-item-title>
-            <v-spacer></v-spacer>                
-            <small>{{ currentUser }}</small>
-            <v-menu offset-y>
+            <v-list-item-title class="routeTitle">{{routeName}}</v-list-item-title>
+            <v-list-item-title class="username">{{ currentUser }}</v-list-item-title>
+            <v-menu
+            transition="slide-y-transition"
+            bottom
+            >
                 <template v-slot:activator="{ on }">
                     <v-btn
                     small
                     color="primary"
                     slot="activator"
-                    class="elevation-0 ml-2 pa-0"
+                    class="elevation-0  pa-0"
                     v-on="on"
                     >
-                    <v-icon small color="white">mdi-chevron-down</v-icon>
+                    <v-icon small color="white">mdi-dots-vertical</v-icon>
                     </v-btn>
                 </template>    
 
                 <v-list
+                class="primary dropDownMenu"
                 flat
-                class="cinza"
-                @click="logoutBtn()"
+                dark
                 >
+                    <v-list-item>
+                        <v-list-item-content align="left" justify="center">
+                            <v-list-item-title>
+                                <v-icon class="pt-0" medium>mdi-account</v-icon>
+                                Perfil
+                            </v-list-item-title>
+                            
+                        </v-list-item-content>
+                    </v-list-item>
+
                     <v-list-item
                     @click="logoutBtn"
                     >
-                        <v-list-item-content align="center" justify="center">
+                        <v-list-item-content align="left" justify="center">
                             <v-list-item-title>
                                  <v-icon class="pt-0" medium>mdi-logout-variant</v-icon>
                                 Sair
@@ -49,7 +61,7 @@
                 link
                 :to="homeLink"
                 >
-                    <v-list-item-content align="center" class="dropDownMenu" >
+                    <v-list-item-content align="center">
                         <v-list-item-title class="title">
                             App Usinas
                         </v-list-item-title>
@@ -140,7 +152,10 @@ export default {
 
    computed: {
         currentUser(){
-            return this.$store.state.auth.user.nome + ' ' + this.$store.state.auth.user.sobrenome
+            if(this.$store.state.auth.user != null)
+                return this.$store.state.auth.user.nome + ' ' + this.$store.state.auth.user.sobrenome
+            else
+                return null    
         }
    },
 
@@ -163,8 +178,13 @@ export default {
     width: 100%;
 }
 
-.dropDownMenu{
-    display: inline;
+.routeTitle{
+    font-size: 1.2rem;
+    
 }
 
+.username{
+    font-size: 0.85rem;
+    text-align: end;
+}
 </style>

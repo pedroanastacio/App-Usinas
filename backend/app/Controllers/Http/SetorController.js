@@ -1,6 +1,7 @@
 'use strict'
 
 const Setor = use('App/Models/Setor')
+const Database = use('Database')
 
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
@@ -19,10 +20,17 @@ class SetorController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index ( ) {
-    const setores = Setor.all()
+  async index ({request, response} ) {
+    const { page, itemsPerPage } = request.all()
 
-    return setores
+    try{
+      const setores = await Database.from('setores').paginate(page, itemsPerPage)
+
+      return response.status(200).json(setores)
+    }
+    catch(err){
+      return response.status(500).json({ message: 'Ocorreu um erro interno' })
+    }    
   }
 
   /**

@@ -57,7 +57,7 @@
                            
                         </v-card-text>
                         <v-card-actions class="justify-center text-center">
-                            <v-btn type="submit" class="px-4" color="primary">Entrar                           
+                            <v-btn type="submit" class="px-4" color="primary" :loading="isLoading">Entrar                           
                                 <v-icon right>mdi-login-variant</v-icon>
                             </v-btn>
                         </v-card-actions>
@@ -82,7 +82,8 @@
             },
             show: false,
             error: '',
-            loginFailed: false        
+            loginFailed: false,
+            isLoading: false,     
         }),
 
         validations: {
@@ -122,6 +123,8 @@
 
         methods: {
             async login(){
+                this.isLoading = true
+                   
                 this.$v.$touch()
                 
                 if(this.$v.$invalid) {
@@ -147,16 +150,16 @@
                         this.$router.push({ name: 'Home'})*/
 
                         await this.$store.dispatch('auth/login', this.user)
-                        this.loginFailed = false
+                        this.loginFailed = this.isLoading = false
                         this.$router.push({ name: 'Home'})
                     }
                     catch(err) {
                         this.error = err.response.data.message
                         this.loginFailed = true
+                        this.isLoading = false
                     }
                 }
-                    
-           }                        
+            }                  
     },
     
     
