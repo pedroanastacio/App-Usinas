@@ -18,7 +18,7 @@ const Route = use('Route')
 
 Route.post('/authenticate', 'AuthController.authenticate').middleware(["isActive"]).validator('AuthValidator')
 
-Route.post('/users', 'UserController.store').middleware(["auth", "isAuthAndActive","isAdmin"])
+Route.post('/users', 'UserController.store').middleware(["auth", "isAuthAndActive","isAdmin"]).validator('StoreUser')
 Route.get('/users', 'UserController.index').middleware(["auth", "isAuthAndActive","isAdmin"])
 Route.put('/users/:id', 'UserController.update').middleware(["auth", "isAuthAndActive","isAdmin"])
 Route.get('/users/:id', 'UserController.show').middleware(["auth", "isAuthAndActive","isAdmin"])

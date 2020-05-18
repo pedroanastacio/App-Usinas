@@ -9,7 +9,8 @@ export const users = {
             totalItems: '',
         },
         usersData: [],
-        
+        storedUser: '',
+            
     },
 
     actions: {
@@ -24,6 +25,17 @@ export const users = {
             }
         },
 
+        async storeUser({ commit }, userData) {
+            try {
+                const user = await UsersService.store(userData)
+                commit('storeUserSuccess', user)
+                return Promise.resolve()
+            }
+            catch(err){
+                return Promise.reject(err)
+            }
+        }
+
         
     },
 
@@ -36,8 +48,12 @@ export const users = {
                 lastPage: response.lastPage,
             }
             state.usersData = response.data
-            
         },
+
+        storeUserSuccess(state, user) {
+            state.storeUserData.storedUser = user.data
+           
+        }
 
        
     }

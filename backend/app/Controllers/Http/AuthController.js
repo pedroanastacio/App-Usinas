@@ -14,7 +14,7 @@ class AuthController {
             
             Object.assign(user, token)
             
-            return response.status(200).json(user)
+            return user
 
         }catch(err){
             if(err.code == 'E_MISSING_DATABASE_ROW')

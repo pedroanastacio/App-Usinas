@@ -122,8 +122,6 @@
 </template>
 
 <script>
-//import { removeToken } from '../services/AuthStorage'
-
 
 export default {
     name: 'DrawerToolbar',

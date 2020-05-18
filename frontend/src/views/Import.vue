@@ -29,10 +29,10 @@
         class="importAlert"
         transition="slide-x-reverse-transition"
         dismissible
-        
         >
             {{message}}
         </v-alert> 
+        
         <v-alert
         type="success"
         v-model="importSuccess" 
@@ -41,7 +41,6 @@
         dismissible
         >
             {{message}}
-        
         </v-alert>
     </div>
 </template> 
@@ -87,7 +86,6 @@ export default {
                 formData.append('file', this.file)
                 try{
                     const response = await Consumo.store(formData) 
-                    console.log(response)
                     this.importing = false
                     if(response.data.type == "extname"){
                         this.importSuccess = false
@@ -123,7 +121,7 @@ export default {
 
 <style>
 .importAlert{
-    position: absolute;
+    position: fixed;
     bottom: 0;
     right: 0;
     

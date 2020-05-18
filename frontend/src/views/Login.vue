@@ -71,8 +71,7 @@
 
 <script>
     import { required, minLength, maxLength } from 'vuelidate/lib/validators'
-    //import Auth from '../services/Auth'
-   // import { login } from "../services/AuthStorage";
+    
 
     export default {
         data: () => ({
@@ -95,7 +94,7 @@
                 password: {
                     required,
                     minLength: minLength(6),
-                    maxLength: maxLength(80)
+                    maxLength: maxLength(60)
                 }
             }
         },
@@ -128,7 +127,7 @@
                 this.$v.$touch()
                 
                 if(this.$v.$invalid) {
-                    return 
+                     this.isLoading = false
                 }    
                 else {
                     try {
@@ -154,7 +153,10 @@
                         this.$router.push({ name: 'Home'})
                     }
                     catch(err) {
-                        this.error = err.response.data.message
+                        if(err.response.status == 400)
+                            this.error = err.response.data[0].message
+                        else
+                            this.error = err.response.data.message
                         this.loginFailed = true
                         this.isLoading = false
                     }

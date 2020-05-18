@@ -2,46 +2,56 @@
     <div> 
         <DrawerToolbar :routeName="$route.name"/>
             <v-row>             
-                <v-col
-                cols="12"
-                sm="12"
-                md="12" 
-                lg="12"
-                xl="12"
-                >
-                    <!--<v-card class="elevation-4 mx-3 mb-2">
-                        <v-card-title class="mb-0 pb-0">
-                            <v-select
-                            :items="searchOptions"
-                            label="Pesquisar por"
-                            dense
-                            outlined
-                            @change="searchSelect"
-                            v-model="searchBy"
-                            ></v-select>
-                            
-                            <v-text-field
+                <v-col>
+                    <v-card class="elevation-4 mx-3 mb-2 pb-0">
+                        
+                    </v-card>
+
+                    <v-card class="elevation-4 mx-3">
+                        <!--<v-card-title class="pb-0 mb-0">
+                            <v-col
+                            cols="12"
+                            sm="12"
+                            md="6"
+                            lg="6"
+                            xl="6"
+                            class="my-0 py-0"
+                            >
+                                <v-select
+                                :items="searchOptions"
+                                label="Pesquisar por"
+                                dense
+                                outlined
+                                @change="searchSelect"
+                                v-model="searchBy"
+                                class="pb-0 mb-0 mx-1"
+                                />
+                                            
+                            </v-col>                
+                        
+                            <v-col
+                            cols="12"
+                            sm="12"
+                            md="6"
+                            lg="6"
+                            xl="6"
+                            class="my-0 py-0"
+                            >
+                                <v-text-field
                                 v-show="showSearchBar"
+                                v-model="searchText"
                                 outlined
                                 dense
-                                v-model="searchText"
                                 append-icon="mdi-magnify"
-                                label="Pesquisar"
+                                :label="searchLabel"
                                 single-line
-                                class="ml-2"
-                            ></v-text-field>
+                                class="pb-0 mb-0 mx-1"
+                                @click:append="makeSearch"
+                                v-on:keyup.enter="makeSearch"
+                                />
+                            </v-col>                
+                        </v-card-title>-->
 
-                            <v-switch 
-                            v-show="showSearchSwitch"
-                            :label="switchStatus ? 'Active': 'Non-Active'" 
-                            v-model="switchStatus"
-                            color="primary"
-                            @change="changeSwitchStatus">
-                            </v-switch>
-      
-                        </v-card-title>
-                    </v-card>-->
-                    <v-card class="elevation-4 mx-3">
                         <v-data-table   
                         v-show="!error"
                         :server-items-length="paginate.itemsLength"
@@ -49,19 +59,16 @@
                         :headers="headers"   
                         :items="this.$store.state.users.usersData"
                         :loading="isLoading"
-                        :footer-props="{
-                            'items-per-page-options': [5,10,15,20],
-                        }"
+                        :footer-props="{ 'items-per-page-options': [5,10,15,20] }"
                         @update:items-per-page="getItemsPerPage"
                         @update:page="getPage"
-                        @update:sort-by="sortByFunc"
                         @update:sort-desc="sortDescFunc"
+                        @update:sort-by="sortByFunc"
                         loading-text="Carregando usuários..."
                         class="elevation-1"        
                         locale="pt-BR"  
                         item-key="username"  
                         no-data-text="Nenhum usuário encontrado" 
-                        
                         >
                        
                             <template v-slot:item.isAdmin="{ item } ">
@@ -89,7 +96,7 @@
 
                             <template v-slot:item.isActive="{ item }" >
                                 <v-layout justify-center>
-                                    <v-icon color="light-green darken-1" v-model="item.isActive" 
+                                    <v-icon color="success" v-model="item.isActive" 
                                     v-if="item.isActive === true" 
                                     medium>
                                         mdi-checkbox-marked
@@ -127,7 +134,7 @@
             </v-alert>
 
             <div class="mx-3 mb-3">  
-                <v-btn class="px-4" color="success"> 
+                <v-btn class="px-4" color="success" @click="newUser"> 
                     Novo Usuário                         
                     <v-icon right medium>mdi-account-plus</v-icon>
                 </v-btn>
@@ -137,7 +144,6 @@
 
 <script>
 import DrawerToolbar from '../components/DrawerToolbar'
-//import Users from '../services/Users'
 
 export default {
     components: {
@@ -145,19 +151,13 @@ export default {
     },
 
     data: () => ({
-        /*searchBy: '',
+        searchBy: '',
         searchText: '',
-        showSearchBar: false,
-        showSearchSwitch: false,
-        switchStatus: false,
         searchOptions: [
             {text: 'Nome', value: 'nome'},
             {text: 'Sobrenome', value: 'sobrenome'},
             {text: 'Usuário', value: 'username'},
-            {text: 'Administrador', value: 'isAdmin'},
-            {text: 'Fornecedor', value: 'isSupplier'},
-            {text: 'Atividade', value: 'isActive'},
-        ],*/
+        ],
         paginate: {
             page: 1,
             itemsPerPage: 10,
@@ -177,22 +177,39 @@ export default {
             {text: 'Administrador', value: 'isAdmin', align:'center', class: "light-blue darked-1 white--text"},
             {text: 'Fornecedor', value: 'isSupplier', align:'center', class: "light-blue darked-1 white--text"},
             {text: 'Ativo', value: 'isActive', align:'center', class: "light-blue darked-1 white--text"},
-            //{text: '', value: 'id'}
-            
         ],
         
     }),
 
+    computed: {
+        
+        showSearchBar() {
+            if(this.searchBy == 'nome' || this.searchBy == 'sobrenome' || this.searchBy == 'username'){
+                return true
+            }   
+            else {
+                return false
+            } 
+        },
+        searchLabel() {
+            if(this.searchBy == 'nome')
+                return 'Digite o nome do usuário'
+            else if(this.searchBy == 'sobrenome')   
+                return 'Digite o sobrenome do usuário' 
+            else
+                return 'Digite o usuário'    
+        }
+    },
        
     methods: {
-        async list(){
+        async getUsers(){
            this.isLoading = true
            try{
                 const paginateParams = {
                     page: this.paginate.page,
                     itemsPerPage: this.paginate.itemsPerPage,
                     orderBy: this.sortData.orderBy,
-                    sortDesc: this.sortData.sortDesc
+                    sortDesc: this.sortData.sortDesc,
                 }
                 await this.$store.dispatch('users/getUsers', paginateParams)
                 this.paginate.page = this.$store.state.users.pagination.page
@@ -208,53 +225,51 @@ export default {
            }
            
        },
-
         
         getItemsPerPage(val) {
            this.paginate.itemsPerPage = val
-           this.list()
+           this.getUsers()
         },
 
         getPage(val) {
             this.paginate.page = val
-            this.list()
+            this.getUsers()
         },
 
         tryAgain(){
             this.error = false
-            this.list()
-        },
-
-        sortByFunc(val) {
-            this.sortData.orderBy = val[0]
-            this.list()
+            this.getUsers()
         },
 
         sortDescFunc(val) {
             this.sortData.sortDesc = val[0]
-            this.list()
-        }
-
-        /*searchSelect(val) {
-            this.searchBy = val
-
-            if(this.searchBy == 'nome' || this.searchBy == 'sobrenome' || this.searchBy == 'username'){
-                this.showSearchSwitch = false
-                this.showSearchBar = true
-            }   
-            else {
-                this.showSearchBar = false
-                this.showSearchSwitch = true
-            } 
+            this.getUsers()
         },
 
-        changeSwitchStatus() {
-            this.switchStatus = !this.switchStatus
-        }*/
+        sortByFunc(val) {
+            this.sortData.orderBy = val[0]
+            if(this.sortData.sortDesc)
+                return
+            this.getUsers()    
+        },
+
+        searchSelect(val) {
+            this.searchBy = val
+        },
+
+        makeSearch() {
+            
+        },
+
+        newUser() {
+            this.$router.push({ name: 'Novo usuário'})
+        }
+
+        
     },
 
     mounted(){
-        this.list()
+        this.getUsers()
         
     }
     
@@ -264,6 +279,8 @@ export default {
 
 <style>
 .textError{
-    font-size: 1.2rem;
+    font-size: 1.2em;
 }
+
+
 </style>

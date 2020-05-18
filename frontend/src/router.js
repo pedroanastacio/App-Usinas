@@ -32,6 +32,11 @@ const router = new Router({
             path: "/import",
             name: 'Importar dados',
             component: () => import('./views/Import.vue')
+        },
+        {
+            path: "/newuser",
+            name: 'Novo usuário',
+            component: () => import('./views/NewUser.vue')
         }
     ]
 })
