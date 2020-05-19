@@ -7,7 +7,7 @@
                 <v-form @submit.prevent="createUser">
                     <v-card class="elevation-12 pb-1">
                             <v-container fluid class="mt-0 my-5">
-                                <v-card-text> 
+                                <v-card-text class="mb-0 pb-0"> 
                                     <v-card-subtitle class="ma-0 pa-0 title font-weight-bold primary--text">
                                         Dados
                                     </v-card-subtitle>
@@ -64,7 +64,7 @@
                                     ></v-divider>
 
 
-                                    <v-row>
+                                    <v-row >
                                         <v-col
                                         cols="12"
                                         sm="12"
@@ -101,7 +101,7 @@
                                             @click:append="show = !show"
                                             :error-messages="passwordErrors"
                                             required
-                                            outlined                                   
+                                            outlined    
                                             />       
                                         </v-col>
                                     </v-row>                  
@@ -264,7 +264,6 @@ export default {
                     this.alertData.show = true
                     
                     this.resetForm()
-                    
                     //this.$router.replace({ name: 'Usuários'});
                 }
                 catch(err) {

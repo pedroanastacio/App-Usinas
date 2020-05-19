@@ -61,6 +61,40 @@ class UserController {
         }    
     }
 
+    async search ({ request, response }) {
+        const search = request.get()
+
+        let page = search.page || 1
+        let itemsPerPage = search.itemsPerPage || 10
+        
+        if(typeof search.orderBy === 'undefined' || search.orderBy == 'null')
+            search.orderBy = 'nome'
+        
+        if(typeof search.sortDesc === 'undefined' || search.sortDesc == 'null' || search.sortDesc == 'false')
+           search.sortDesc = 'asc'   
+        else 
+           search.sortDesc = 'desc'  
+           
+           console.log(search.column + ' ' + search.term)
+        
+        try{
+            const users = await Database
+                .from('users')
+                .where(search.column, 'ILIKE', '%'+search.term+'%')
+                .orderBy(search.orderBy, search.sortDesc)
+                .paginate(page, itemsPerPage)
+
+                console.log(users)
+
+            return response.status(200).json(users)
+        }
+        catch(err){
+            return response.status(500).json({ message: 'Houve um erro ao carregar a tabela de usuários' })
+        }  
+           
+    }
+
+
     async show ({ params, response }) {
         try{
             const user = await User.findOrFail(params.id)
