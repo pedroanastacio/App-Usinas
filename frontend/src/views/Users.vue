@@ -8,14 +8,14 @@
                     </v-card>
 
                     <v-card class="elevation-4 mx-3">
-                        <!--<v-card-title class="pb-0 mb-0">
+                        <v-card-title class="pb-0 mb-0">
                             <v-col
                             cols="12"
                             sm="12"
                             md="6"
                             lg="6"
                             xl="6"
-                            class="my-0 py-0"
+                            class="my-0 py-0 px-1"
                             >
                                 <v-select
                                 :items="searchOptions"
@@ -24,7 +24,7 @@
                                 outlined
                                 @change="searchSelect"
                                 v-model="searchBy"
-                                class="pb-0 mb-0 mx-1"
+                                class="pb-0 mb-0"
                                 />
                                             
                             </v-col>                
@@ -35,7 +35,7 @@
                             md="6"
                             lg="6"
                             xl="6"
-                            class="my-0 py-0"
+                            class="my-0 py-0 px-1"
                             >
                                 <v-text-field
                                 v-show="showSearchBar"
@@ -45,12 +45,15 @@
                                 append-icon="mdi-magnify"
                                 :label="searchLabel"
                                 single-line
-                                class="pb-0 mb-0 mx-1"
+                                class="pb-0 mb-0"
+                                clearable
+                                @click:clear="clearSearch"
                                 @click:append="makeSearch"
                                 v-on:keyup.enter="makeSearch"
+                                
                                 />
                             </v-col>                
-                        </v-card-title>-->
+                        </v-card-title>
 
                         <v-data-table   
                         v-show="!error"
@@ -158,6 +161,7 @@ export default {
             {text: 'Sobrenome', value: 'sobrenome'},
             {text: 'Usuário', value: 'username'},
         ],
+        isSearching: false,
         paginate: {
             page: 1,
             itemsPerPage: 10,
@@ -212,7 +216,19 @@ export default {
                     orderBy: this.sortData.orderBy,
                     sortDesc: this.sortData.sortDesc,
                 }
-                await this.$store.dispatch('users/getUsers', paginateParams)
+
+                if(this.isSearching == true) {
+                    let searchParams = {
+                        searchBy: this.searchBy,
+                        searchText: this.searchText
+                    }
+
+                    searchParams = Object.assign(searchParams, paginateParams)
+                    await this.$store.dispatch('users/searchUsers', searchParams)
+                }    
+                else {
+                    await this.$store.dispatch('users/getUsers', paginateParams)
+                }
                 this.paginate.page = this.$store.state.users.pagination.page
                 this.paginate.itemsPerPage = this.$store.state.users.pagination.rowsPerPage
                 this.paginate.itemsLength = this.$store.state.users.pagination.totalItems
@@ -257,16 +273,30 @@ export default {
 
         searchSelect(val) {
             this.searchBy = val
+            this.searchText = ''
         },
 
         makeSearch() {
-            
+            if(this.searchText == null || typeof this.searchText == undefined || this.searchText == '') {
+              this.isSearching = false
+            }  
+            else {
+                this.isSearching = true
+            }
+            this.paginate.page = 1
+            this.getUsers()
+        },
+
+        clearSearch() {
+            this.isSearching = false;
+            this.searchText = ''
+            this.paginate.page = 1
+            this.getUsers()
         },
 
         newUser() {
             this.$router.push({ name: 'Novo usuário'})
-        }
-
+        },
         
     },
 
