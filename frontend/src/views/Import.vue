@@ -65,7 +65,6 @@ export default {
     methods: {
         loadCSV(file) {
             this.file = file
-            console.log(this.file)
             this.importFailed = false
             this.importSuccess = false
         }, 

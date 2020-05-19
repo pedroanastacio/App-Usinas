@@ -57,7 +57,7 @@ class UserController {
             return response.status(200).json(users)
         }
         catch(err){
-            return response.status(500).json({ message: 'Ocorreu um erro interno' })
+            return response.status(500).json({ message: 'Houve um erro ao carregar a table de usuários' })
         }    
     }
 

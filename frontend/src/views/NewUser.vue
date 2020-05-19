@@ -254,12 +254,17 @@ export default {
             }    
             else {
                 try {
+                    this.user.nome = await this.capitalize(this.user.nome)
+                    this.user.sobrenome = await this.capitalize(this.user.sobrenome)
+
                     const storedUser = await Users.store(this.user)
                     this.isLoading = false
                     this.alertData.message = storedUser.data.nome + ' ' + storedUser.data.sobrenome + ' cadastrado(a) com sucesso'
                     this.alertData.type = 'success'
                     this.alertData.show = true
+                    
                     this.resetForm()
+                    
                     //this.$router.replace({ name: 'Usuários'});
                 }
                 catch(err) {
@@ -284,8 +289,15 @@ export default {
             }
 
             this.$v.$reset()
+        },
+
+        capitalize(string) {
+            if (typeof string !== 'string') return string
+                return string.charAt(0).toUpperCase() + string.slice(1)
         }
-    }
+    },
+
+    
 }
 
 </script>

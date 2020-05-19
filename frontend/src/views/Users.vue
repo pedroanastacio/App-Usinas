@@ -126,7 +126,7 @@
             transition="slide-x-reverse-transition"
             >
                 <v-row align="center" >
-                    <v-col class="grow">Houve um erro ao carregar a tabela de usuários.</v-col>
+                    <v-col class="grow">{{ message }}</v-col>
                     <v-col class="shrink">
                         <v-btn light class="grey lighten-2" @click="tryAgain">Tentar novamente</v-btn>
                     </v-col>
@@ -169,6 +169,7 @@ export default {
         },
         isLoading: false,
         error: false,
+        message: '',
         headers:
         [
             {text: 'Nome', value:'nome', align: 'left',  class: "light-blue darked-1 white--text tile dark"},
@@ -221,6 +222,7 @@ export default {
            }
            catch(err){
                 this.isLoading = false
+                this.message = err.response.data.message
                 this.error = true
            }
            
