@@ -8,7 +8,9 @@
                     </v-card>
 
                     <v-card class="elevation-4 mx-3">
-                        <v-card-title class="pb-0 mb-0">
+                        <v-card-title 
+                        v-show="!error&&!isLoading"
+                        class="pb-0 mb-0">
                             <v-col
                             cols="12"
                             sm="12"

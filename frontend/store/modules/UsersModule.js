@@ -9,8 +9,6 @@ export const users = {
             totalItems: '',
         },
         usersData: [],
-        
-            
     },
 
     actions: {
@@ -35,8 +33,6 @@ export const users = {
                 return Promise.reject(err)
             }
         }
-
-        
     },
 
     mutations: {
@@ -49,8 +45,6 @@ export const users = {
             }
             state.usersData = response.data
         },
-
-        
     }
 }
 
