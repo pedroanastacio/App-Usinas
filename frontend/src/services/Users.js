@@ -10,6 +10,17 @@ export default {
         }}) 
     },
 
+    search: (searchParams) => {
+        return api.get('users/search', { params: {
+            page: searchParams.page,
+            itemsPerPage: searchParams.itemsPerPage,
+            orderBy: searchParams.orderBy,
+            sortDesc: searchParams.sortDesc,
+            column: searchParams.searchBy,
+            term: searchParams.searchText
+        }})
+    },
+
     store: (user) => {
         return api.post('users', user)
     },

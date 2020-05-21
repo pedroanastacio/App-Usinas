@@ -1,4 +1,4 @@
-import AuthService from "../../src/services/auth"
+import AuthService from "../../src/services/Auth"
 import { setToken, removeToken, getUser } from '../../src/services/AuthStorage'
 
 const user = JSON.parse(getUser())

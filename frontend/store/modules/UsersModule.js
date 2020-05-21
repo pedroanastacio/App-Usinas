@@ -9,8 +9,6 @@ export const users = {
             totalItems: '',
         },
         usersData: [],
-        storedUser: '',
-            
     },
 
     actions: {
@@ -25,18 +23,16 @@ export const users = {
             }
         },
 
-        async storeUser({ commit }, userData) {
-            try {
-                const user = await UsersService.store(userData)
-                commit('storeUserSuccess', user)
+        async searchUsers({ commit }, searchParams) {
+            try{
+                const response = await UsersService.search(searchParams)
+                commit('getUsersSuccess', response.data)
                 return Promise.resolve()
             }
             catch(err){
                 return Promise.reject(err)
             }
         }
-
-        
     },
 
     mutations: {
@@ -49,13 +45,6 @@ export const users = {
             }
             state.usersData = response.data
         },
-
-        storeUserSuccess(state, user) {
-            state.storeUserData.storedUser = user.data
-           
-        }
-
-       
     }
 }
 

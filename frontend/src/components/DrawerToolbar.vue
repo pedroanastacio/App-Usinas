@@ -1,8 +1,9 @@
 <template>
     <div>
         <v-app-bar app class="elevation-0 primary white--text">
+            <v-app-bar-nav-icon dark class="hidden-md-and-up" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
             <v-list-item-title class="routeTitle">{{routeName}}</v-list-item-title>
-            <v-list-item-title class="username">{{ currentUser }}</v-list-item-title>
+            <v-list-item-title class="username hidden-xs-only">{{ currentUser }}</v-list-item-title>
             <v-menu
             transition="slide-y-transition"
             bottom
@@ -49,11 +50,12 @@
             </v-menu>
               
         </v-app-bar>
-
-        <v-navigation-drawer 
+        
+        <v-navigation-drawer
+        v-model="drawer"
         app 
         fixed 
-        :permanent="!$vuetify.breakpoint.xsOnly"
+        :permanent="!$vuetify.breakpoint.smAndDown"
         dark
         class="primary white--text">
             <v-list flat>
@@ -88,11 +90,12 @@
                 </v-list-item>
             </v-list>
 
+            <div class="secondList">
             <v-list 
             rounded
-            class="adminList"
+            v-if="isAdmin"
             >
-                 <v-list-item>
+                <v-list-item>
                     <v-list-item-content align="center" justify="center">
                         <v-list-item-title class="title">
                            Administrador
@@ -117,6 +120,28 @@
                     </v-list-item-content>
                 </v-list-item>
             </v-list>
+
+            <v-list 
+            rounded
+            class="mt-0 pt-0"
+            v-if="isSupplier"
+            >
+                 <v-list-item
+                    v-for="(itemSupplier, index) in itemsSupplier"
+                    :key="index"
+                    :to="itemSupplier.link"
+                    link
+                    >
+                    <v-list-item-icon>
+                        <v-icon>{{ itemSupplier.icon }}</v-icon>
+                    </v-list-item-icon>
+        
+                    <v-list-item-content>
+                        <v-list-item-title>{{ itemSupplier.title }}</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+            </v-list>
+            </div>           
         </v-navigation-drawer>
     </div>
 </template>
@@ -126,6 +151,7 @@
 export default {
     name: 'DrawerToolbar',
     data: () => ({
+        drawer: false,
         homeLink: '/',
         items: [
             { title: 'Consumo geral', icon: 'mdi-chart-donut' },
@@ -134,11 +160,11 @@ export default {
         ],
         itemsAdmin: [
             { title: 'Usuários', icon: 'mdi-account', link: '/users' },
-            { title: 'Setores', icon: 'mdi-view-dashboard' },
-            { title: 'Importar dados', icon: 'mdi-file-upload', link:'/import' },
+            { title: 'Setores', icon: 'mdi-view-dashboard', link: '/setores' },
         ],
-        
-
+        itemsSupplier: [
+            { title: 'Importar dados', icon: 'mdi-file-upload', link:'/import' },
+        ]
     }),
 
    props: {
@@ -149,35 +175,52 @@ export default {
    },
 
    computed: {
-        currentUser(){
+        currentUser() {
             if(this.$store.state.auth.user != null)
                 return this.$store.state.auth.user.nome + ' ' + this.$store.state.auth.user.sobrenome
             else
                 return null    
+        },
+
+        isAdmin() {
+            if(this.$store.state.auth.user != null)
+                return this.$store.state.auth.user.isAdmin
+            else
+                return null    
+        },
+
+        isSupplier() {
+            if(this.$store.state.auth.user != null)
+                return this.$store.state.auth.user.isSupplier
+            else
+                return null      
         }
+
+        
    },
 
    methods: {
        async logoutBtn() {
             await this.$store.dispatch('auth/logout')
             this.$router.push({ name: 'Login' })
-       }
+       },
+   
    },
-
-      
+ 
   
 }
 </script>
 
 <style>
-.adminList{
+
+.secondList{
     position: absolute;
     bottom: 0;
     width: 100%;
 }
 
 .routeTitle{
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     
 }
 
@@ -185,4 +228,5 @@ export default {
     font-size: 0.85rem;
     text-align: end;
 }
+
 </style>
