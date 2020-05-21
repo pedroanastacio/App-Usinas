@@ -10,7 +10,7 @@ export default {
     },
 
     update: (id, setor) => {
-        return api.post(`setores/${id}`, setor)
+        return api.put(`setores/${id}`, setor)
     },
 
     show: (id) => {

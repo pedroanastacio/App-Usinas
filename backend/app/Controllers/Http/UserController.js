@@ -3,6 +3,7 @@
 const User = use('App/Models/User')
 const Database = use('Database')
 
+
 class UserController {
     
     async store({ request, response }){
@@ -24,12 +25,12 @@ class UserController {
     async update ({ params, request }) {
         const user = await User.findOrFail(params.id)
 
-        const data = request.only(['username', 'password', 'nome', 'sobrenome', 'isAdmin', 'isSupplier', 'isActive'])
+        const data = request.all()
 
         user.merge(data)
 
         await user.save()
-
+        
         return user
     }
 
@@ -47,7 +48,6 @@ class UserController {
         else 
            pagination.sortDesc = 'desc'    
         
-           
         try{
             const users = await Database
                 .from('users')
@@ -75,8 +75,7 @@ class UserController {
         else 
            search.sortDesc = 'desc'  
            
-           console.log(search.column + ' ' + search.term)
-        
+                   
         try{
             const users = await Database
                 .from('users')
@@ -84,25 +83,18 @@ class UserController {
                 .orderBy(search.orderBy, search.sortDesc)
                 .paginate(page, itemsPerPage)
 
-                console.log(users)
-
             return response.status(200).json(users)
         }
         catch(err){
             return response.status(500).json({ message: 'Houve um erro ao carregar a tabela de usuários' })
         }  
-           
     }
 
 
-    async show ({ params, response }) {
-        try{
-            const user = await User.findOrFail(params.id)
-            return user
-        }
-        catch(err){
-            return response.status(500).json({ message: 'Ocorreu um erro interno' })
-        }
+    async show ({ params }) {
+        const user = await User.findOrFail(params.id)
+       
+        return user
     }
 }
 

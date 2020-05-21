@@ -1,6 +1,6 @@
 <template>
     <div> 
-        <DrawerToolbar :routeName="$route.name"/>
+        <DrawerToolbar :routeName="$route.meta.title"/>
             <v-row>             
                 <v-col>
                     <v-card class="elevation-4 mx-3 mb-2 pb-0">
@@ -74,6 +74,7 @@
                         locale="pt-BR"  
                         item-key="username"  
                         no-data-text="Nenhum usuário encontrado" 
+                        @click:row="handleClickRow"
                         >
                        
                             <template v-slot:item.isAdmin="{ item } ">
@@ -297,8 +298,12 @@ export default {
         },
 
         newUser() {
-            this.$router.push({ name: 'Novo usuário'})
+            this.$router.push({ name: 'Novo usuário' })
         },
+
+        handleClickRow(val) {
+            this.$router.push({name: 'Editar usuário', params: { id: val.id, user: val }})
+        }
         
     },
 

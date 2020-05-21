@@ -1,6 +1,6 @@
 <template>
     <div>
-    <DrawerToolbar :routeName="$route.name"/>
+    <DrawerToolbar :routeName="$route.meta.title"/>
     <v-container>
        
     </v-container>

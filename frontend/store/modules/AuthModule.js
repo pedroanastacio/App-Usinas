@@ -4,8 +4,8 @@ import { setToken, removeToken, getUser } from '../../src/services/AuthStorage'
 const user = JSON.parse(getUser())
 
 const initialState = user
-  ? { status: { loggedIn: true }, user }
-  : { status: { loggedIn: false }, user: null };
+  ? { user }
+  : { user: null };
 
   
 export const auth = {
@@ -33,7 +33,7 @@ export const auth = {
                 return Promise.resolve()
 
             }catch(err){
-                commit('loginFailure')
+                commit('logout')
                 return Promise.reject(err)
             }
         },
@@ -46,17 +46,10 @@ export const auth = {
 
     mutations: {
         loginSuccess(state, user) {
-            state.status.loggedIn = true
             state.user = user
         },
 
-        loginFailure(state) {
-            state.status.loggedIn = false
-            state.user = null
-        },
-
         logout(state) {
-            state.status.loggedIn = false
             state.user = null
         }
     }

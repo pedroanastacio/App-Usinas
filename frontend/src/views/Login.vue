@@ -2,7 +2,6 @@
     <v-container 
         class="fill-height cinza" 
         fluid
-        
     >
         <v-alert
         class="loginAlert"

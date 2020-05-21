@@ -26,7 +26,7 @@ export default {
     },
 
     update: (id, user) => {
-        return api.post(`users/${id}`, user)
+        return api.put(`users/${id}`, user)
     },
 
     show: (id) => {

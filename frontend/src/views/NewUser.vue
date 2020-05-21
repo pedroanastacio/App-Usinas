@@ -1,6 +1,6 @@
 <template>
 <div>
-     <DrawerToolbar :routeName="$route.name"/>
+     <DrawerToolbar :routeName="$route.meta.title"/>
         <v-container>
         <v-row>
             <v-col>
@@ -81,6 +81,7 @@
                                             name="username"
                                             type="text"
                                             :error-messages="usernameErrors"
+                                            @keydown.space.prevent
                                             />
                                         </v-col>   
 
@@ -138,6 +139,7 @@
                 </v-form>
          </v-col>
         </v-row>
+     
     </v-container>
     
      <v-alert
@@ -159,7 +161,6 @@ import { required, minLength, maxLength } from 'vuelidate/lib/validators'
 import Users from '../services/Users'
 
 import DrawerToolbar from '../components/DrawerToolbar'
-
 
 export default {
     components: {
@@ -256,7 +257,7 @@ export default {
                 try {
                     this.user.nome = await this.capitalize(this.user.nome)
                     this.user.sobrenome = await this.capitalize(this.user.sobrenome)
-
+                    this.user.username = await this.normalize(this.user.username)
                     const storedUser = await Users.store(this.user)
                     this.isLoading = false
                     this.alertData.message = storedUser.data.nome + ' ' + storedUser.data.sobrenome + ' cadastrado(a) com sucesso'
@@ -291,12 +292,13 @@ export default {
         },
 
         capitalize(string) {
-            if (typeof string !== 'string') return string
-                return string.charAt(0).toUpperCase() + string.slice(1)
+            return string.toUpperCase()
+        },
+
+        normalize(string) {
+            return string.toLowerCase()
         }
     },
-
-    
 }
 
 </script>
