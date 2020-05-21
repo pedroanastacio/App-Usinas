@@ -2,7 +2,8 @@ volatile int flow_frequency; // Measures flow sensor pulses
 unsigned int l_hour; // Calculated litres/hour
 unsigned char flowsensor = 2; // Sensor Input
 
-int led = 13;
+int led_verm = 13;
+int led_verd = 12;
 
 void flow () // Interrupt function
 {
@@ -11,8 +12,11 @@ void flow () // Interrupt function
 
 void setup()
 {
-   pinMode(led, OUTPUT);
+   pinMode(led_verm, OUTPUT);
+   pinMode(led_verd, OUTPUT);
    pinMode(flowsensor, INPUT);
+   
+   digitalWrite(led_verd, HIGH);
    digitalWrite(flowsensor, HIGH); // Optional Internal Pull-Up
    Serial.begin(9600);
    attachInterrupt(0, flow, RISING); // Setup Interrupt
@@ -21,7 +25,7 @@ void setup()
 
 void loop ()
 { 
-  digitalWrite(led, HIGH);
+  digitalWrite(led_verm, HIGH);
 
   // Pulse frequency (Hz) = 7.5Q, Q is flow rate in L/min.
   l_hour = (flow_frequency * 60 / 7.5); // (Pulse frequency x 60 min) / 7.5Q = flowrate in L/hour
@@ -30,6 +34,6 @@ void loop ()
   Serial.println(" L/hour");
   
   delay(100);
-  digitalWrite(led, LOW);
+  digitalWrite(led_verm, LOW);
   delay(900);
 }
