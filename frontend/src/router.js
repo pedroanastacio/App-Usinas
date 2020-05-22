@@ -11,42 +11,82 @@ const router = new Router({
         {
             path : '*',
             name: '404',
-            component: () => import('./views/404Page.vue')
+            component: () => import('./views/404Page.vue'), 
+            meta: {
+                title: "Página não encontrada",
+            }
         },
         {
             path: '/',
             name: 'Home',
-            component: () => import('./views/Home.vue')
+            component: () => import('./views/Home.vue'),
+            meta: {
+                title: "Home",
+            }
         },
         {
             path: "/login",
             name: 'Login',
-            component: () => import('./views/Login.vue')
+            component: () => import('./views/Login.vue'),
+            meta: {
+                title: "Login",
+            }
         },
         {
             path: "/users",
             name: 'Usuários',
-            component: () => import('./views/Users.vue')
+            component: () => import('./views/Users.vue'),
+            meta: {
+                title: "Usuários",
+            }
         },
         {
             path: "/import",
             name: 'Importar dados',
-            component: () => import('./views/Import.vue')
+            component: () => import('./views/Import.vue'),
+            meta: {
+                title: "Importar dados",
+            }
         },
         {
-            path: "/newuser",
+            path: "/user",
             name: 'Novo usuário',
-            component: () => import('./views/NewUser.vue')
+            component: () => import('./views/NewUser.vue'),
+            meta: {
+                title: "Novo Usuário",
+            }
+        },
+        {
+            path: "/user/:id",
+            name: 'Editar usuário',
+            component: () => import('./views/EditUser.vue'),
+            meta: {
+                title: "Editar usuário",
+            }
         },
         {
             path: "/setores",
             name: 'Setores',
-            component: () => import('./views/Setores.vue')
+            component: () => import('./views/Setores.vue'),
+            meta: {
+                title: "Setores",
+            }
         },{
-            path: "/novosetor",
+            path: "/setor",
             name: 'Novo setor',
-            component: () => import('./views/NovoSetor.vue')
-        }
+            component: () => import('./views/NovoSetor.vue'),
+            meta: {
+                title: "Novo setor",
+            }
+        },
+        {
+            path: "/setor/:slug",
+            name: 'Editar setor',
+            component: () => import('./views/NovoSetor.vue'),
+            meta: {
+                title: "Editar setor",
+            }
+        },
     ]
 })
 
