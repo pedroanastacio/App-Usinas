@@ -57,7 +57,7 @@ class UserController {
             return response.status(200).json(users)
         }
         catch(err){
-            return response.status(500).json({ message: 'Houve um erro ao carregar a table de usuários' })
+            return response.status(500).json({ message: 'Ocorreu um erro interno' })
         }    
     }
 
@@ -75,7 +75,6 @@ class UserController {
         else 
            search.sortDesc = 'desc'  
            
-                   
         try{
             const users = await Database
                 .from('users')
@@ -86,7 +85,7 @@ class UserController {
             return response.status(200).json(users)
         }
         catch(err){
-            return response.status(500).json({ message: 'Houve um erro ao carregar a tabela de usuários' })
+            return response.status(500).json({ message: 'Ocorreu um erro interno' })
         }  
     }
 

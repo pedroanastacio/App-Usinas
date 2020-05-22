@@ -21,16 +21,59 @@ class SetorController {
    * @param {View} ctx.view
    */
   async index ({request, response} ) {
-    const { page, itemsPerPage } = request.all()
+    const pagination = request.get()
+
+    let page = pagination.page || 1
+    let itemsPerPage = pagination.itemsPerPage || 10
+    
+    if(typeof pagination.orderBy === 'undefined' || pagination.orderBy == 'null')
+        pagination.orderBy = 'nome'
+    
+    if(typeof pagination.sortDesc === 'undefined' || pagination.sortDesc == 'null' || pagination.sortDesc == 'false')
+       pagination.sortDesc = 'asc'   
+    else 
+       pagination.sortDesc = 'desc'    
 
     try{
-      const setores = await Database.from('setores').paginate(page, itemsPerPage)
+      const setores = await Database
+        .from('setores')
+        .orderBy(pagination.orderBy, pagination.sortDesc)
+        .paginate(page, itemsPerPage)
 
       return response.status(200).json(setores)
     }
     catch(err){
       return response.status(500).json({ message: 'Ocorreu um erro interno' })
     }    
+  }
+
+
+  async search ({ request, response }) {
+    const search = request.get()
+
+      let page = search.page || 1
+      let itemsPerPage = search.itemsPerPage || 10
+      
+      if(typeof search.orderBy === 'undefined' || search.orderBy == 'null')
+        search.orderBy = 'nome'
+      
+      if(typeof search.sortDesc === 'undefined' || search.sortDesc == 'null' || search.sortDesc == 'false')
+        search.sortDesc = 'asc'   
+      else 
+        search.sortDesc = 'desc'  
+          
+      try{
+          const setores = await Database
+            .from('setores')
+            .where('nome', 'ILIKE', '%'+search.term+'%')
+            .orderBy(search.orderBy, search.sortDesc)
+            .paginate(page, itemsPerPage)
+
+          return response.status(200).json(setores)
+      }
+      catch(err){
+          return response.status(500).json({ message: 'Ocorreu um erro interno' })
+      }  
   }
 
   /**
@@ -54,12 +97,19 @@ class SetorController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store ({ request }) {
+  async store ({ request, response }) {
     const data = request.only(['nome', 'isActive'])
 
-    const setor = await Setor.create(data)
-
-    return setor
+    try{
+      const setor = await Setor.create(data)
+      return setor
+    }
+    catch(err){
+      if(err.constraint == 'setores_nome_unique')
+        return response.status(409).json({ message: 'Setor já existe'})
+      else
+        return response.status(500).json({ message: 'Ocorreu um erro interno' })  
+    }
   }
 
   /**
@@ -72,7 +122,7 @@ class SetorController {
    * @param {View} ctx.view
    */
   async show ({ params, request }) {
-    const setor = await Setor.findOrFail(params.id)
+    const setor = await Setor.findByOrFail('slug', params.slug)
 
     return setor
   }
@@ -98,7 +148,7 @@ class SetorController {
    * @param {Response} ctx.response
    */
   async update ({ params, request }) {
-    const setor = await Setor.findOrFail(params.id)
+    const setor = await Setor.findByOrFail('slug', params.slug)
 
     const data = request.only(['nome', 'isActive' ])
 

@@ -26,8 +26,9 @@ Route.get('/users/:id', 'UserController.show').middleware(["auth", "isAuthAndAct
 
 Route.post('/setores', 'SetorController.store').middleware(["auth", "isAuthAndActive","isAdmin"])
 Route.get('/setores', 'SetorController.index').middleware(["auth", "isAuthAndActive","isAdmin"])
-Route.put('/setores/:id', 'SetorController.update').middleware(["auth", "isAuthAndActive","isAdmin"])
-Route.get('/setores/:id', 'SetorController.show').middleware(["auth", "isAuthAndActive","isAdmin"])
+Route.get('/setores/search', 'SetorController.index').middleware(["auth", "isAuthAndActive","isAdmin"])
+Route.put('/setores/:slug', 'SetorController.update').middleware(["auth", "isAuthAndActive","isAdmin"])
+Route.get('/setores/:slug', 'SetorController.show').middleware(["auth", "isAuthAndActive","isAdmin"])
 
 Route.post('/consumo', 'ConsumoController.store').middleware(["auth", "isAuthAndActive", "isSupplier"])
 Route.get('/consumo', 'ConsumoController.index').middleware(["auth", "isAuthAndActive"])
