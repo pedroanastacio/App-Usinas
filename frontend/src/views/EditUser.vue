@@ -20,7 +20,7 @@
 
                                         <v-row>
                                             <v-col
-                                            cols="12"
+                                            xs="12"
                                             sm="12"
                                             md="6"
                                             lg="6"
@@ -39,7 +39,7 @@
                                             </v-col> 
 
                                             <v-col
-                                            cols="12"
+                                            xs="12"
                                             sm="12"
                                             md="6"
                                             lg="6"
@@ -69,7 +69,7 @@
 
                                         <v-row >
                                             <v-col
-                                            cols="12"
+                                            xs="12"
                                             sm="12"
                                             md="6"
                                             lg="6"
@@ -89,7 +89,7 @@
                                             </v-col>   
 
                                             <v-col
-                                            cols="12"
+                                            xs="12"
                                             sm="12"
                                             md="6"
                                             lg="6"
@@ -104,7 +104,6 @@
                                                 :append-icon="!show ? 'mdi-eye' : 'mdi-eye-off'"
                                                 @click:append="show = !show"
                                                 :error-messages="passwordErrors"
-                                                required
                                                 outlined    
                                                 class="mb-0 pb-0"
                                                 :disabled="!changePassword"

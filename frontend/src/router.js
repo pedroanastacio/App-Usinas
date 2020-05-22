@@ -87,6 +87,14 @@ const router = new Router({
                 title: "Editar setor",
             }
         },
+        {
+            path: "/changepassword",
+            name: 'Alterar Senha',
+            component: () => import('./views/ChangePassword.vue'),
+            meta: {
+                title: "Alterar senha",
+            }
+        }
     ]
 })
 

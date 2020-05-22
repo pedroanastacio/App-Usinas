@@ -25,25 +25,25 @@
                 flat
                 dark
                 >
-                    <v-list-item>
-                        <v-list-item-content align="left" justify="center">
-                            <v-list-item-title>
-                                <v-icon class="pt-0" medium>mdi-account</v-icon>
-                                Perfil
-                            </v-list-item-title>
-                            
+                    <v-list-item
+                    :to="'/changepassword'"
+                    >
+                        <v-list-item-icon class="mr-3">
+                            <v-icon medium>mdi-key-outline</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-content>
+                            <v-list-item-title>Alterar senha</v-list-item-title>
                         </v-list-item-content>
                     </v-list-item>
 
                     <v-list-item
                     @click="logoutBtn"
                     >
-                        <v-list-item-content align="left" justify="center">
-                            <v-list-item-title>
-                                 <v-icon class="pt-0" medium>mdi-logout-variant</v-icon>
-                                Sair
-                            </v-list-item-title>
-                            
+                        <v-list-item-icon class="mr-3">
+                            <v-icon medium>mdi-logout-variant</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-content>
+                            <v-list-item-title>Sair</v-list-item-title>
                         </v-list-item-content>
                     </v-list-item>
                 </v-list>

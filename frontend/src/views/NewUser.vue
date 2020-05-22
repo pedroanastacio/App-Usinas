@@ -17,7 +17,7 @@
 
                                     <v-row>
                                         <v-col
-                                        cols="12"
+                                        xs="12"
                                         sm="12"
                                         md="6"
                                         lg="6"
@@ -36,7 +36,7 @@
                                         </v-col> 
 
                                         <v-col
-                                        cols="12"
+                                        xs="12"
                                         sm="12"
                                         md="6"
                                         lg="6"
@@ -66,7 +66,7 @@
 
                                     <v-row >
                                         <v-col
-                                        cols="12"
+                                        xs="12"
                                         sm="12"
                                         md="6"
                                         lg="6"
@@ -86,7 +86,7 @@
                                         </v-col>   
 
                                         <v-col
-                                        cols="12"
+                                        xs="12"
                                         sm="12"
                                         md="6"
                                         lg="6"

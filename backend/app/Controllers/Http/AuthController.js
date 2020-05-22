@@ -1,7 +1,5 @@
 'use strict'
 
-const User = use('App/Models/User');
-
 class AuthController {
    
     async authenticate({ request, response, auth }){
@@ -24,8 +22,17 @@ class AuthController {
             else
                 return response.status(500).json({ message: 'Ocorreu um erro interno'})
         }
-        
-        
+    }
+
+
+    async getUserId({ auth, response }) {
+        try {
+            const { id } = await auth.getUser()
+            return id
+        }
+        catch(err) {
+            response.status(401).json({ message: 'Você não está logado'})
+        }
     }
 
    
