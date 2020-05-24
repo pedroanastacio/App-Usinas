@@ -122,7 +122,7 @@ class SetorController {
    * @param {View} ctx.view
    */
   async show ({ params, request }) {
-    const setor = await Setor.findByOrFail('slug', params.slug)
+    const setor = await Setor.findOrFail(params.id)
 
     return setor
   }
@@ -148,7 +148,7 @@ class SetorController {
    * @param {Response} ctx.response
    */
   async update ({ params, request }) {
-    const setor = await Setor.findByOrFail('slug', params.slug)
+    const setor = await Setor.findOrFail(params.id)
 
     const data = request.only(['nome', 'isActive' ])
 

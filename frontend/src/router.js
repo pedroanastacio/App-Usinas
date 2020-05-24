@@ -80,9 +80,9 @@ const router = new Router({
             }
         },
         {
-            path: "/setor/:slug",
+            path: "/setor/:id",
             name: 'Editar setor',
-            component: () => import('./views/NovoSetor.vue'),
+            component: () => import('./views/EditSetor.vue'),
             meta: {
                 title: "Editar setor",
             }

@@ -10,8 +10,8 @@ export default {
         }})
     },
 
-    index: (searchParams) => {
-        return api.get('setores', { params: {
+    search: (searchParams) => {
+        return api.get('setores/search', { params: {
             page: searchParams.page,
             itemsPerPage: searchParams.itemsPerPage,
             orderBy: searchParams.orderBy,
@@ -24,11 +24,11 @@ export default {
         return api.post('setores', setor)
     },
 
-    update: (slug, setor) => {
-        return api.put(`setores/${slug}`, setor)
+    update: (id, setor) => {
+        return api.put(`setores/${id}`, setor)
     },
 
-    show: (slug) => {
-        return api.get(`setores/${slug}`)
+    show: (id) => {
+        return api.get(`setores/${id}`)
     }
 }

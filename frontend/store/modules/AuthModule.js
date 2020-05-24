@@ -15,7 +15,6 @@ export const auth = {
     actions: {
         async login({ commit }, userData) {
             try{
-                
                 const response = await AuthService.authenticate(userData)
                 const user = {
                     "nome": response.data.nome,

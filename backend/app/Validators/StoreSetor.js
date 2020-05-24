@@ -3,7 +3,7 @@
 class StoreSetor {
   get rules () {
     return {
-      nome: 'required|max:150'
+      nome: 'required|max:255'
     }
   }
 

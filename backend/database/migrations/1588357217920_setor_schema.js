@@ -7,8 +7,8 @@ class SetorSchema extends Schema {
   up () {
     this.create('setores', (table) => {
       table.increments()
-      table.string('nome', 150).unique().notNullable()
-      table.string('slug')
+      table.string('nome', 255).unique().notNullable()
+      table.string('slug', 300)
       table.boolean('isActive').defaultTo(true)
       table.timestamps()
     })

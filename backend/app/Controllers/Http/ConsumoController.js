@@ -23,10 +23,8 @@ class ConsumoController {
    * @param {View} ctx.view
    */
   async index ({ request, response, view }) {
-      return Consumo.all()
-    
+    return await Consumo.all()
   }
-
   /**
    * Render a form to be used for creating a new consumo.
    * GET consumos/create
@@ -36,6 +34,7 @@ class ConsumoController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
+
   async create ({ request, response, view }) {
   }
 
@@ -102,8 +101,6 @@ class ConsumoController {
     }
   }
 
-
-
   /**
    * Display a single consumo.
    * GET consumos/:id
@@ -149,6 +146,65 @@ class ConsumoController {
    */
   async destroy ({ params, request, response }) {
   }
+
+  async totalAllTime ({ response }) {
+    try {
+      const total = await Database
+      .from('consumos')
+      .sum('litros')
+    
+      return response.status(200).json({total: total[0].sum})
+    }
+    catch(err) {
+      return response.status(500).json({ error: err })
+    }
+    
+  }
+
+  async totalDay ({ request, response }) {
+    const params = request.all()
+
+    try {
+      const total = await Database
+      .from('consumos')
+      .whereRaw(`data::date = '${params.date}'`)
+      .sum('litros')
+
+      return response.status(200).json({total: total[0].sum})  
+    }
+    catch(err) {
+      return response.status(500).json({ error: err })
+    }
+    
+  }
+
+  async totalPeriod ({ request, response }) {
+    const params = request.all()
+
+    try {
+      const total = await Database
+        .from('consumos')
+        .whereRaw(`data::date between '${params.initialDate}' and '${params.endDate}'`)
+        .sum('litros')
+
+      const dates = await Database
+        .table('consumos')
+        .distinct('data')
+        .whereRaw(`data::date between '${params.initialDate}' and '${params.endDate}'`)
+      
+      const numDates = await Database
+        .from('consumos')
+        .countDistinct('data')
+        .whereRaw(`data::date between '${params.initialDate}' and '${params.endDate}'`)
+      
+      return response.status(200).json({ total: total[0].sum, dates: dates, numDates: numDates[0].count })  
+    }
+    catch(err) {
+      return response.status(500).json({ error: err })
+    }    
+    
+  }
+
 }
 
 module.exports = ConsumoController
