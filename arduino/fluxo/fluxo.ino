@@ -1,14 +1,22 @@
 #include <SPI.h>
 #include <SD.h>
+#include "RTClib.h"
 
-volatile int flow_frequency; // Measures flow sensor pulses
-unsigned int l_hour; // Calculated litres/hour
-unsigned char flowsensor = 2; // Sensor Input
+RTC_DS3231 rtc;
+
+volatile int flow_frequency;
+float l_hora;
+float l_seg;
+unsigned char flowsensor = 2;
+unsigned long currentTime;
+unsigned long cloopTime;
+
+float water_consumption = 0.0;
+int file_counter = 0;
+String temp;
 
 int led_verm = 10;
 int led_verd = 9;
-
-File file;
 
 void flow () // Interrupt function
 {
@@ -22,41 +30,62 @@ void setup()
    pinMode(flowsensor, INPUT);
 
    Serial.begin(9600);
-
-   Serial.println("Iniciando SD CARD");
-   while(!SD.begin(4)){
-     Serial.println("Falha ao iniciar SD CARD");
-   }
-   Serial.println("SD CARD Iniciado");
-
-   Serial.println("Gerando arquivo test.txt");
-   file = SD.open("test.txt", FILE_WRITE);
-   file.close();
-
-   if(SD.exists("test.txt")){
-    Serial.println("test existe"); 
-   }
-   else{
-    Serial.println("test não existe");
-   }
    
    digitalWrite(led_verd, HIGH);
-   digitalWrite(flowsensor, HIGH); // Optional Internal Pull-Up
-   attachInterrupt(0, flow, RISING); // Setup Interrupt
-   sei(); // Enable interrupts
+   digitalWrite(flowsensor, HIGH);
+   attachInterrupt(0, flow, RISING);
+   currentTime = millis();
+   cloopTime = currentTime;
+
+   if(! rtc.begin()){
+     Serial.println("DS3231 não encontrado");
+   }
+   if(rtc.lostPower()){
+     Serial.println("DS3231 OK!");
+     //rtc.adjust(DateTime(F(__DATE__), F(__TIME__))); //AJUSTAR HORA DO MODULO RTC
+   }
+   delay(100);
+
+   Serial.println("setor_id,data,litros");
 }
 
 void loop ()
 { 
-  digitalWrite(led_verm, HIGH);
-
-  // Pulse frequency (Hz) = 7.5Q, Q is flow rate in L/min.
-  l_hour = (flow_frequency * 60 / 7.5); // (Pulse frequency x 60 min) / 7.5Q = flowrate in L/hour
-  flow_frequency = 0; // Reset Counter
-  Serial.print(l_hour, DEC); // Print litres/hour
-  Serial.println(" L/hour");
+  currentTime = millis();
   
-  delay(100);
+  if(currentTime > (cloopTime + 1000)){
+    file_counter++;
+    digitalWrite(led_verm, HIGH);
+    
+    l_hora = ((flow_frequency * 60) / 7.5);
+    l_seg = l_hora/3600;
+    flow_frequency = 0;
+    water_consumption = water_consumption + l_seg;
+
+    if(file_counter == 60){
+      DateTime now = rtc.now();
+
+      temp = "1,";
+      temp += now.day();
+      temp += "/";
+      temp += now.month();
+      temp += "/";
+      temp += now.year();
+      temp += " ";
+      temp += now.hour();
+      temp += ":";
+      temp += now.minute();
+      temp += ",";
+      temp += water_consumption;
+      
+      Serial.println(temp);
+      
+      water_consumption = 0;
+      file_counter = 0;
+    }
+    delay(500);
+  }
+  
   digitalWrite(led_verm, LOW);
-  delay(900);
+  delay(500);
 }
