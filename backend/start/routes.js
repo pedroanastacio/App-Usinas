@@ -33,6 +33,7 @@ Route.get('/setores/:id', 'SetorController.show').middleware(["auth", "isAuthAnd
 
 Route.post('/consumo', 'ConsumoController.store').middleware(["auth", "isAuthAndActive", "isSupplier"])
 Route.get('/consumo', 'ConsumoController.index').middleware(["auth", "isAuthAndActive"])
-Route.get('/consumo/totalAllTime', 'ConsumoController.totalAllTime').middleware(["auth", "isAuthAndActive"])
-Route.get('/consumo/totalDay', 'ConsumoController.totalDay').middleware(["auth", "isAuthAndActive"])
-Route.get('/consumo/totalPeriod', 'ConsumoController.totalPeriod').middleware(["auth", "isAuthAndActive"])
+Route.get('/consumo/consumeAllTime', 'ConsumoController.consumeAllTime').middleware(["auth", "isAuthAndActive"])
+Route.get('/consumo/consumeDay', 'ConsumoController.consumeDay').middleware(["auth", "isAuthAndActive"])
+Route.get('/consumo/consumePerPeriod', 'ConsumoController.consumePerPeriod').middleware(["auth", "isAuthAndActive"])
+Route.get('/consumo/consumePerYear', 'ConsumoController.consumePerYear').middleware(["auth", "isAuthAndActive"])
