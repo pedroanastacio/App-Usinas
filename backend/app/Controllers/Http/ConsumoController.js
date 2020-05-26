@@ -144,6 +144,7 @@ class ConsumoController {
    */
   async destroy ({ params, request, response }) {
   }
+ //----------------------------------------------------------------------------------------------------------
 
   async consumeAllTime({ response }) {
     try{
@@ -185,6 +186,7 @@ class ConsumoController {
       return Promise.reject(err)
     }   
   }
+ //----------------------------------------------------------------------------------------------------------
 
   async consumePerPeriod ({ request, response }) {
     const params = request.all()
@@ -233,7 +235,7 @@ class ConsumoController {
       return Promise.reject(err)
     }   
   }
-
+//------------------------------------------------------------------------------------------------------
   
   async consumePerYear({ request, response }) {
     const params = request.all()
@@ -265,7 +267,7 @@ class ConsumoController {
 
   async generalConsumePerYear(params) {
     try {
-      const datesAndConsume = await Database
+      const consume = await Database
         .raw(`SELECT sum(c.litros) as litros, s.nome as setor
           FROM consumos as c
           INNER JOIN setores as s   
@@ -273,42 +275,143 @@ class ConsumoController {
           WHERE EXTRACT(year FROM data) = '${params.year}'
           GROUP BY s.id`)
         
-      return Promise.resolve(datesAndConsume)  
+      return Promise.resolve(consume)  
     }
     catch(err){
       return Promise.reject(err)
     }   
   }
+//----------------------------------------------------------------------------------------------------------
 
-  async consumeDay ({ request, response }) {
+  async consumePerMonth({ request, response }) {
     const params = request.all()
 
     try {
-      const total = await Database
-      .from('consumos')
-      .whereRaw(`data::date = '${params.date}'`)
-      .sum('litros')
+      const total = await this.totalConsumePerMonth(params)
+      const consume = await this.generalConsumePerMonth(params)
 
-      return response.status(200).json({ consumo: total[0].sum })  
+      return response.status(200).json({ total: total, consumos: consume.rows })
     }
     catch(err) {
       return response.status(500).json({ error: err })
     }
   }
 
-  async datesAndConsumePerPeriod(params) {
+  async totalConsumePerMonth(params) {
+    try {
+      const total = await Database
+        .from('consumos')
+        .whereRaw(`EXTRACT(month FROM data) = '${params.month}' AND EXTRACT(year FROM data) = '${params.year}'`)
+        .sum('litros')
+      
+      return Promise.resolve(total[0].sum)
+    }
+    catch(err){
+      return Promise.reject(err)
+    }
+  }
+
+  async generalConsumePerMonth(params) {
+    try {
+      const consume = await Database
+        .raw(`SELECT sum(c.litros) as litros, s.nome as setor
+          FROM consumos as c
+          INNER JOIN setores as s   
+          ON c.setor_id = s.id     
+          WHERE EXTRACT(month FROM data) = '${params.month}' AND EXTRACT(year FROM data) = '${params.year}'
+          GROUP BY s.id`)
+        
+      return Promise.resolve(consume) 
+    }
+    catch(err) {
+      return Promise.reject(err)
+    }
+  }
+
+//----------------------------------------------------------------------------------------------------------
+
+  async consumePerDay ({ request, response }) {
+    const params = request.all()
+
+    try {
+      const total = await this.totalConsumePerDay(params)
+      const consume = await this.generalConsumePerDay(params)
+
+      return response.status(200).json({ total: total[0].sum, consumos: consume.rows })  
+    }
+    catch(err) {
+      return response.status(500).json({ error: err })
+    }
+  }
+
+  async totalConsumePerDay(params) {
+    try {
+      const total = await Database
+      .from('consumos')
+      .whereRaw(`data::date = '${params.date}'`)
+      .sum('litros')
+
+      return Promise.resolve(total[0].sum)
+    }
+    catch(err){
+      return Promise.reject(err)
+    }
+  }
+
+  async generalConsumePerDay(params) {
+    try {
+      const consume = await Database
+        .raw(`SELECT sum(c.litros) as litros, s.nome as setor
+        FROM consumos as c
+        INNER JOIN setores as s   
+        ON c.setor_id = s.id     
+        WHERE data::DATE = '${params.date}'
+        GROUP BY s.id`)
+
+      return Promise.resolve(consume)
+    }
+    catch(err){
+      return Promise.reject(err)
+    }
+  }
+
+//----------------------------------------------------------------------------------------------------------
+  async sectorConsumeAllTime({ request, response }) {
+    const params = request.all()
+
+    try{
+      const total = await this.sectorTotalConsumeAllTime(params)
+      const datesAndConsume = await this.sectorDatesAndConsumeAllTime(params)
+
+      return response.status(200).json({ total: total[0].sum, consumos: datesAndConsume.rows })  
+    }
+    catch(err) {
+      return response.status(500).json({ error: err })
+    }
+  }
+
+  async sectorTotalConsumeAllTime(params) {
+    try {
+      const total = await Database
+        .from('consumos')
+        .whereRaw(`setor_id = '${params.setor_id}'`)
+        .sum('litros')
+
+      return Promise.resolve(total[0].sum)
+    }
+    catch(err) {
+      return Promise.reject(err)
+    }
+  }
+
+  async sectorDatesAndConsumeAllTime(params) {
     try {
       const datesAndConsume = await Database
-        .raw(`SELECT TO_CHAR(c.data ,'DD/MM/YYYY') AS data, sum(c.litros) as consumo, s.id as setor
-          FROM consumos as c
-          INNER JOIN setores as s
-          ON c.setor_id = s.id
-          WHERE data::date BETWEEN '${params.initialDate}' AND '${params.endDate}'
-          GROUP BY c.data, s.id`)
-        /*.table('consumos')
-        .distinct('data')
-        .whereRaw(`data::date between '${params.initialDate}' and '${params.endDate}'`)*/
-      
+        .raw(`SELECT TO_CHAR(data ,'DD/MM/YYYY') AS data, sum(litros) as litros,
+          FROM consumos 
+          WHERE setor_id = '${params.setor_id}'
+          GROUP BY data`)
+            
       return Promise.resolve(datesAndConsume)  
     }
     catch(err){
@@ -316,26 +419,86 @@ class ConsumoController {
     }   
   }
 
-  async numDatesPerPeriod(params) {
+//----------------------------------------------------------------------------------------------------------
+  async sectorConsumePerPeriod({ request, response }) {
+    const params = request.all()
+
+    try{
+      const total = await this.sectorTotalConsumePerPeriod(params)
+      const datesAndConsume = await this.sectorDatesAndConsumePerPeriod(params)
+
+      return response.status(200).json({ total: total, consumos: datesAndConsume.rows })
+    }
+    catch(err) {
+      return response.status(500).json({ error: err })
+    }
+  }
+
+  async sectorTotalConsumePerPeriod(params) {
     try {
-      const numDates =  await Database
-        .from('consumos')
-        .countDistinct('data')
-        .whereRaw(`data::date between '${params.initialDate}' and '${params.endDate}'`)
-         
-      return Promise.resolve(numDates[0].count)  
+      const total = await Database
+      .from('consumos')
+      .whereRaw(`setor_id = '${params.setor_id}' AND 'data::date between '${params.initialDate}' and '${params.endDate}'`)
+      .sum('litros')
+
+      return Promise.resolve(total[0].sum)
+    }
+    catch(err){
+      return Promise.reject(err)
+    }
+  }
+
+  async sectorDatesAndConsumePerPeriod(params) {
+    try {
+      const datesAndConsume = await Database
+        .raw(`SELECT TO_CHAR(data ,'DD/MM/YYYY') AS data, sum(litros) as litros,
+          FROM consumos 
+          WHERE setor_id = '${params.setor_id}' AND data::date BETWEEN '${params.initialDate}' AND '${params.endDate}'
+          GROUP BY data`)
+            
+      return Promise.resolve(datesAndConsume)  
     }
     catch(err){
       return Promise.reject(err)
     }   
   }
 
-  async datesAndConsumePerYear(params) {
+//----------------------------------------------------------------------------------------------------------
+  async sectorConsumePerYear({ request, response }) {
+    const params = request.all()
+
+    try{
+      const total = await this.sectorTotalConsumePerYear(params)
+      const datesAndConsume = await this.sectorDatesAndConsumePerYear(params)
+
+      return response.status(200).json({ total: total, consumos: datesAndConsume.rows })
+    }
+    catch(err) {
+      return response.status(500).json({ error: err })
+    }
+  }
+
+
+  async sectorTotalConsumePerYear(params) {
+    try {
+      const total = await Database
+      .from('consumos')
+      .whereRaw(`setor_id = '${params.setor_id}' AND EXTRACT(year FROM data) = '${params.year}'`)
+      .sum('litros')
+
+      return Promise.resolve(total[0].sum)
+    }
+    catch(err){
+      return Promise.reject(err)
+    }
+  } 
+
+  async sectorDatesAndConsumePerYear(params) {
     try {
       const datesAndConsume = await Database
-        .raw(`SELECT TO_CHAR(data ,'DD/MM/YYYY') AS data, sum(litros) as consumo
+        .raw(`SELECT TO_CHAR(data ,'DD/MM/YYYY') AS data, sum(litros) as litros
           FROM consumos
-          WHERE EXTRACT(year FROM data) = '${params.year}'
+          WHERE setor_id = '${params.setor_id} AND EXTRACT(year FROM data) = '${params.year}'
           GROUP BY data`)
         
       return Promise.resolve(datesAndConsume)  
@@ -343,6 +506,94 @@ class ConsumoController {
     catch(err){
       return Promise.reject(err)
     }   
+  }
+
+//----------------------------------------------------------------------------------------------------------
+  async sectorConsumePerMonth({ request, response }) {
+    const params = request.all()
+
+    try {
+      const total = await this.sectorTotalConsumePerMonth(params)
+      const datesAndConsume = await this.sectorDatesAndConsumePerMonth(params)
+
+      return response.status(200).json({ total: total, consumos: datesAndConsume.rows })
+    }
+    catch(err) {
+      return response.status(500).json({ error: err })
+    }
+  }
+
+  async sectorTotalConsumePerMonth(params) {
+    try{
+      const total = await Database
+        .from('consumos')
+        .whereRaw(`setor_id = '${params.setor_id}' AND EXTRACT(year FROM data) = '${params.year}' AND EXTRACT(month FROM data) = '${params.month}'`)
+        .sum('litros')
+
+      return Promise.resolve(total[0].sum)  
+    }
+    catch(err) {
+      return Promise.reject(err)
+    }
+  }
+
+  async sectorDatesAndConsumePerMonth(params) {
+    try{
+      const datesAndConsume = await Database
+        .raw(`SELECT TO_CHAR(data ,'DD/MM/YYYY') AS data, sum(litros) as litros
+        FROM consumos
+        WHERE setor_id = '${params.setor_id} AND EXTRACT(year FROM data) = '${params.year}' AND EXTRACT(month FROM data) = '${params.month}'
+        GROUP BY data`)
+
+      return Promise.resolve(datesAndConsume)  
+    }
+    catch(err) {
+      return Promise.reject(err)
+    }
+  }
+
+//----------------------------------------------------------------------------------------------------------
+  async sectorConsumePerDay({ request, response }) {
+    const params = request.all()
+
+    try{
+      const total = await this.sectorTotalConsumePerDay(params)
+      const hoursAndConsume = await this.sectorHoursAndConsumePerDay(params)
+
+      return response.status(200).json({ total: total, consumos: hoursAndConsume.rows })
+    }
+    catch(err) {
+      return response.status(500).json({ error: err })
+    }
+  }
+
+  async sectorTotalConsumePerDay(params) {
+    try{
+      const total = await Database
+      .from('consumos')
+      .whereRaw(`setor_id = '${params.setor_id}' AND data::DATE = '${params.date}'`)
+      .sum('litros')
+
+      return Promise.resolve(total[0].sum)  
+    }
+    catch(err) {
+      return Promise.reject(err)
+    }
+  }
+
+  async sectorHoursAndConsumePerDay(params) {
+    try{
+      const hoursAndConsume = await Database
+        .raw(`SELECT TO_CHAR(data ,'DD/MM/YYYY HH:mm') AS data, sum(litros) as litros
+        FROM consumos
+        WHERE setor_id = '${params.setor_id} AND data::DATE = '${params.date}'
+        GROUP BY data, date_trunc('hour', data)`)
+
+      return Promise.resolve(hoursAndConsume)  
+    }
+    catch(err) {
+      return Promise.reject(err)
+    }
   }
 
 }
