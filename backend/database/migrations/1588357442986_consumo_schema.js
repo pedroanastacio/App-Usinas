@@ -13,6 +13,7 @@ class ConsumoSchema extends Schema {
         .references('id')
         .inTable('setores')
         .onUpdate('CASCADE')
+        .notNullable()
       table.datetime('data').notNullable()
       table.decimal('litros', 9, 2).notNullable() 
       table
@@ -21,6 +22,7 @@ class ConsumoSchema extends Schema {
       .references('id')
       .inTable('users')
       .onUpdate('CASCADE')   
+      .notNullable()
       table.timestamps()
     })
   }

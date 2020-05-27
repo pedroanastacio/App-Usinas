@@ -221,7 +221,6 @@ export default {
 
 .routeTitle{
     font-size: 1.1rem;
-    
 }
 
 .username{

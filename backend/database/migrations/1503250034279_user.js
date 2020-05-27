@@ -11,9 +11,9 @@ class UserSchema extends Schema {
       table.string('password', 60).notNullable()
       table.string('nome', 150).notNullable()
       table.string('sobrenome', 150).notNullable()
-      table.boolean('isAdmin').defaultTo(false)
-      table.boolean('isSupplier').defaultTo(false)
-      table.boolean('isActive').defaultTo(true)
+      table.boolean('isAdmin').defaultTo(false).notNullable()
+      table.boolean('isSupplier').defaultTo(false).notNullable()
+      table.boolean('isActive').defaultTo(true).notNullable()
       table.timestamps()
     })
   }

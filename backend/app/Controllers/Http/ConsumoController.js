@@ -65,7 +65,7 @@ class ConsumoController {
     })
   
     if (!uploadedFile.moved()) {
-      return uploadedFile.error()
+      return response.status(500).json({ message: 'Importação falhou', error: err})
     }
 
     const jsonArray = await csvtojson().fromFile('tmp/' + dir + fileName);
@@ -79,22 +79,24 @@ class ConsumoController {
       setoresId.push(parseInt(row.setor_id))
       row.user_id = user_id
     })
-    
-    try{ 
-      const setoresDB = await Database.select('id').from('setores')
+
+     try{ 
+     /* const setoresDB = await Database.select('id').from('setores')
       let newSetoresDB = []
-      setoresDB.forEach(setor => {
+      await setoresDB.forEach(setor => {
         newSetoresDB.push(setor.id)
       })
       const csvValid = newSetoresDB.some(id => setoresId.indexOf(id) > 0)
-
       if(!csvValid)
         return response.status(400).json({ message: 'Não foi possível importar arquivo. Conteúdo inválido', description: 'invalid id'})
-     
+     */
       await Consumo.createMany(jsonArray)
       return response.status(200).json({ message: 'Importação concluída com sucesso'})
     }
     catch(err){
+      if(err.constraint == 'consumos_setor_id_foreign')
+        return response.status(500).json({ message: 'Não foi possível importar arquivo. Conteúdo inválido', error: err})
+      
       return response.status(500).json({ message: 'Importação falhou', error: err})
     }
   }
@@ -154,7 +156,7 @@ class ConsumoController {
       return response.status(200).json({ total: total, consumos: consume.rows })
     }
     catch(err) {
-      return response.status(500).json({ error: err })
+     return response.status(500).json({ error: err })
     }
   }
 
@@ -272,7 +274,7 @@ class ConsumoController {
           FROM consumos as c
           INNER JOIN setores as s   
           ON c.setor_id = s.id     
-          WHERE EXTRACT(year FROM data) = '${params.year}'
+          WHERE EXTRACT(year FROM c.data) = '${params.year}'
           GROUP BY s.id`)
         
       return Promise.resolve(consume)  
@@ -318,7 +320,7 @@ class ConsumoController {
           FROM consumos as c
           INNER JOIN setores as s   
           ON c.setor_id = s.id     
-          WHERE EXTRACT(month FROM data) = '${params.month}' AND EXTRACT(year FROM data) = '${params.year}'
+          WHERE EXTRACT(month FROM c.data) = '${params.month}' AND EXTRACT(year FROM c.data) = '${params.year}'
           GROUP BY s.id`)
         
       return Promise.resolve(consume) 
@@ -337,7 +339,7 @@ class ConsumoController {
       const total = await this.totalConsumePerDay(params)
       const consume = await this.generalConsumePerDay(params)
 
-      return response.status(200).json({ total: total[0].sum, consumos: consume.rows })  
+      return response.status(200).json({ total: total, consumos: consume.rows })  
     }
     catch(err) {
       return response.status(500).json({ error: err })
@@ -365,7 +367,7 @@ class ConsumoController {
         FROM consumos as c
         INNER JOIN setores as s   
         ON c.setor_id = s.id     
-        WHERE data::DATE = '${params.date}'
+        WHERE c.data::DATE = '${params.date}'
         GROUP BY s.id`)
 
       return Promise.resolve(consume)
@@ -376,14 +378,12 @@ class ConsumoController {
   }
 
 //----------------------------------------------------------------------------------------------------------
-  async sectorConsumeAllTime({ request, response }) {
-    const params = request.all()
-
+  async sectorConsumeAllTime({ response, params }) {
     try{
       const total = await this.sectorTotalConsumeAllTime(params)
       const datesAndConsume = await this.sectorDatesAndConsumeAllTime(params)
-
-      return response.status(200).json({ total: total[0].sum, consumos: datesAndConsume.rows })  
+    
+      return response.status(200).json({ total: total, consumos: datesAndConsume.rows })  
     }
     catch(err) {
       return response.status(500).json({ error: err })
@@ -394,7 +394,7 @@ class ConsumoController {
     try {
       const total = await Database
         .from('consumos')
-        .whereRaw(`setor_id = '${params.setor_id}'`)
+        .whereRaw(`setor_id = ${params.id}`)
         .sum('litros')
 
       return Promise.resolve(total[0].sum)
@@ -407,25 +407,26 @@ class ConsumoController {
   async sectorDatesAndConsumeAllTime(params) {
     try {
       const datesAndConsume = await Database
-        .raw(`SELECT TO_CHAR(data ,'DD/MM/YYYY') AS data, sum(litros) as litros,
-          FROM consumos 
-          WHERE setor_id = '${params.setor_id}'
+        .raw(`SELECT TO_CHAR(data,'DD/MM/YYYY') AS data, sum(litros) as litros
+          FROM consumos
+          WHERE setor_id = ${params.id}
           GROUP BY data`)
             
       return Promise.resolve(datesAndConsume)  
     }
     catch(err){
+      console.log(err)
       return Promise.reject(err)
     }   
   }
 
 //----------------------------------------------------------------------------------------------------------
-  async sectorConsumePerPeriod({ request, response }) {
-    const params = request.all()
-
+  async sectorConsumePerPeriod({ request, response, params }) {
+    const parameters = request.all()
+   
     try{
-      const total = await this.sectorTotalConsumePerPeriod(params)
-      const datesAndConsume = await this.sectorDatesAndConsumePerPeriod(params)
+      const total = await this.sectorTotalConsumePerPeriod(params, parameters)
+      const datesAndConsume = await this.sectorDatesAndConsumePerPeriod(params, parameters)
 
       return response.status(200).json({ total: total, consumos: datesAndConsume.rows })
     }
@@ -434,11 +435,11 @@ class ConsumoController {
     }
   }
 
-  async sectorTotalConsumePerPeriod(params) {
+  async sectorTotalConsumePerPeriod(params, parameters) {
     try {
       const total = await Database
       .from('consumos')
-      .whereRaw(`setor_id = '${params.setor_id}' AND 'data::date between '${params.initialDate}' and '${params.endDate}'`)
+      .whereRaw(`setor_id = ${params.id} AND data::date between '${parameters.initialDate}' and '${parameters.endDate}'`)
       .sum('litros')
 
       return Promise.resolve(total[0].sum)
@@ -448,12 +449,12 @@ class ConsumoController {
     }
   }
 
-  async sectorDatesAndConsumePerPeriod(params) {
+  async sectorDatesAndConsumePerPeriod(params, parameters) {
     try {
       const datesAndConsume = await Database
-        .raw(`SELECT TO_CHAR(data ,'DD/MM/YYYY') AS data, sum(litros) as litros,
+        .raw(`SELECT TO_CHAR(data ,'DD/MM/YYYY') AS data, sum(litros) as litros
           FROM consumos 
-          WHERE setor_id = '${params.setor_id}' AND data::date BETWEEN '${params.initialDate}' AND '${params.endDate}'
+          WHERE setor_id = ${params.id} AND data::date BETWEEN '${parameters.initialDate}' AND '${parameters.endDate}'
           GROUP BY data`)
             
       return Promise.resolve(datesAndConsume)  
@@ -464,12 +465,12 @@ class ConsumoController {
   }
 
 //----------------------------------------------------------------------------------------------------------
-  async sectorConsumePerYear({ request, response }) {
-    const params = request.all()
+  async sectorConsumePerYear({ request, response, params }) {
+    const parameters = request.all()
 
     try{
-      const total = await this.sectorTotalConsumePerYear(params)
-      const datesAndConsume = await this.sectorDatesAndConsumePerYear(params)
+      const total = await this.sectorTotalConsumePerYear(params, parameters)
+      const datesAndConsume = await this.sectorDatesAndConsumePerYear(params, parameters)
 
       return response.status(200).json({ total: total, consumos: datesAndConsume.rows })
     }
@@ -479,11 +480,11 @@ class ConsumoController {
   }
 
 
-  async sectorTotalConsumePerYear(params) {
+  async sectorTotalConsumePerYear(params, parameters) {
     try {
       const total = await Database
       .from('consumos')
-      .whereRaw(`setor_id = '${params.setor_id}' AND EXTRACT(year FROM data) = '${params.year}'`)
+      .whereRaw(`setor_id = ${params.id} AND EXTRACT(year FROM data) = '${parameters.year}'`)
       .sum('litros')
 
       return Promise.resolve(total[0].sum)
@@ -493,12 +494,12 @@ class ConsumoController {
     }
   } 
 
-  async sectorDatesAndConsumePerYear(params) {
+  async sectorDatesAndConsumePerYear(params, parameters) {
     try {
       const datesAndConsume = await Database
         .raw(`SELECT TO_CHAR(data ,'DD/MM/YYYY') AS data, sum(litros) as litros
           FROM consumos
-          WHERE setor_id = '${params.setor_id} AND EXTRACT(year FROM data) = '${params.year}'
+          WHERE setor_id = ${params.id} AND EXTRACT(year FROM data) = '${parameters.year}'
           GROUP BY data`)
         
       return Promise.resolve(datesAndConsume)  
@@ -509,12 +510,12 @@ class ConsumoController {
   }
 
 //----------------------------------------------------------------------------------------------------------
-  async sectorConsumePerMonth({ request, response }) {
-    const params = request.all()
+  async sectorConsumePerMonth({ request, response, params }) {
+    const parameters = request.all()
 
     try {
-      const total = await this.sectorTotalConsumePerMonth(params)
-      const datesAndConsume = await this.sectorDatesAndConsumePerMonth(params)
+      const total = await this.sectorTotalConsumePerMonth(params, parameters)
+      const datesAndConsume = await this.sectorDatesAndConsumePerMonth(params, parameters)
 
       return response.status(200).json({ total: total, consumos: datesAndConsume.rows })
     }
@@ -523,11 +524,11 @@ class ConsumoController {
     }
   }
 
-  async sectorTotalConsumePerMonth(params) {
+  async sectorTotalConsumePerMonth(params, parameters) {
     try{
       const total = await Database
         .from('consumos')
-        .whereRaw(`setor_id = '${params.setor_id}' AND EXTRACT(year FROM data) = '${params.year}' AND EXTRACT(month FROM data) = '${params.month}'`)
+        .whereRaw(`setor_id = ${params.id} AND EXTRACT(year FROM data) = '${parameters.year}' AND EXTRACT(month FROM data) = '${parameters.month}'`)
         .sum('litros')
 
       return Promise.resolve(total[0].sum)  
@@ -537,12 +538,12 @@ class ConsumoController {
     }
   }
 
-  async sectorDatesAndConsumePerMonth(params) {
+  async sectorDatesAndConsumePerMonth(params, parameters) {
     try{
       const datesAndConsume = await Database
         .raw(`SELECT TO_CHAR(data ,'DD/MM/YYYY') AS data, sum(litros) as litros
         FROM consumos
-        WHERE setor_id = '${params.setor_id} AND EXTRACT(year FROM data) = '${params.year}' AND EXTRACT(month FROM data) = '${params.month}'
+        WHERE setor_id = ${params.id} AND EXTRACT(year FROM data) = '${parameters.year}' AND EXTRACT(month FROM data) = '${parameters.month}'
         GROUP BY data`)
 
       return Promise.resolve(datesAndConsume)  
@@ -553,12 +554,12 @@ class ConsumoController {
   }
 
 //----------------------------------------------------------------------------------------------------------
-  async sectorConsumePerDay({ request, response }) {
-    const params = request.all()
+  async sectorConsumePerDay({ request, response, params }) {
+    const parameters = request.all()
 
     try{
-      const total = await this.sectorTotalConsumePerDay(params)
-      const hoursAndConsume = await this.sectorHoursAndConsumePerDay(params)
+      const total = await this.sectorTotalConsumePerDay(params, parameters)
+      const hoursAndConsume = await this.sectorHoursAndConsumePerDay(params, parameters)
 
       return response.status(200).json({ total: total, consumos: hoursAndConsume.rows })
     }
@@ -567,11 +568,11 @@ class ConsumoController {
     }
   }
 
-  async sectorTotalConsumePerDay(params) {
+  async sectorTotalConsumePerDay(params, parameters) {
     try{
       const total = await Database
       .from('consumos')
-      .whereRaw(`setor_id = '${params.setor_id}' AND data::DATE = '${params.date}'`)
+      .whereRaw(`setor_id = ${params.id} AND data::DATE = '${parameters.date}'`)
       .sum('litros')
 
       return Promise.resolve(total[0].sum)  
@@ -581,12 +582,12 @@ class ConsumoController {
     }
   }
 
-  async sectorHoursAndConsumePerDay(params) {
+  async sectorHoursAndConsumePerDay(params, parameters) {
     try{
       const hoursAndConsume = await Database
-        .raw(`SELECT TO_CHAR(data ,'DD/MM/YYYY HH:mm') AS data, sum(litros) as litros
+        .raw(`SELECT TO_CHAR(data ,'DD/MM/YYYY') AS data, TO_CHAR(data ,'HH:mm') AS hora, sum(litros) as litros
         FROM consumos
-        WHERE setor_id = '${params.setor_id} AND data::DATE = '${params.date}'
+        WHERE setor_id = ${params.id} AND data::DATE = '${parameters.date}'
         GROUP BY data, date_trunc('hour', data)`)
 
       return Promise.resolve(hoursAndConsume)  
