@@ -20,6 +20,13 @@ export default {
         }})
     },
 
+    list: (params) => {
+        return api.get('listSetores', {params: {
+            page: params.page,
+            setorStatus: params.setorStatus
+        }})
+    },
+
     store: (setor) => {
         return api.post('setores', setor)
     },

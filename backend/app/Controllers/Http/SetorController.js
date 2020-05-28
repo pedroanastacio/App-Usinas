@@ -76,6 +76,24 @@ class SetorController {
       }  
   }
 
+
+async list ({ request, response }){
+  const params = request.get()
+
+  try{
+    const setores = await Database
+      .from('setores')
+      .orderBy('nome', 'desc')
+      .where('isActive', params.setorStatus)
+      .paginate(params.page, 20)
+
+    return response.status(200).json(setores)
+  }
+  catch(err){
+    return response.status(500).json({ message: 'Ocorreu um erro interno', description: err })
+  }    
+}
+
   /**
    * Render a form to be used for creating a new setor.
    * GET setors/create
