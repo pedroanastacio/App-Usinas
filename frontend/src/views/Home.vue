@@ -3,7 +3,13 @@
     <DrawerToolbar :routeName="$route.meta.title"/>
     <v-container>
         <v-row>
-            <v-col>
+            <v-col
+            xs="12"
+            sm="12"
+            md="8"
+            lg="8"
+            xl="8"
+            >
                 <v-card>
                    <doughnut-chart
                     v-if="loaded"
@@ -11,6 +17,20 @@
                     />
                 </v-card>
             </v-col>
+            <v-col
+            md="4"
+            lg="4"    
+            xl="4"
+            >
+                <v-card>
+                    <v-card-title>
+                        Consumo Total
+                    </v-card-title>
+                    <v-card-text>
+                        {{totalConsume}}
+                    </v-card-text>
+                </v-card>    
+            </v-col>    
         </v-row>        
     </v-container>
     </div>
@@ -34,6 +54,7 @@ export default {
                 data: []
             }]
         },
+        totalConsume: '',
         loaded: false,
 
     }),
@@ -48,7 +69,7 @@ export default {
                 this.chartdata.datasets[0].data.push(element.litros)
             });
            
-            console.log(this.chartdata.datasets[0].data)
+            this.totalConsume = response.data.total
             this.loaded = true
         }
         catch (err) {
