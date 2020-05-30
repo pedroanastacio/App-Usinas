@@ -2,9 +2,11 @@
 <div>
     <DrawerToolbar :routeName="$route.meta.title"/>
     <v-container 
-        class="fill-height"
-        align-start
-        fluid>
+    class="fill-height pt-0"
+    align-start
+    fluid
+    
+    >
         <v-row v-show="!gettingSetor&&!errorGettingSetor">
             <v-col>
                 <v-form @submit.prevent="createSector">

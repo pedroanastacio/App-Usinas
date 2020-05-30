@@ -154,7 +154,7 @@ export default {
         drawer: false,
         homeLink: '/',
         items: [
-            { title: 'Consumo geral', icon: 'mdi-chart-donut' },
+            { title: 'Consumo geral', icon: 'mdi-chart-donut', link: '/' },
             { title: 'Consumo por setor', icon: 'mdi-chart-line' },
             
         ],
@@ -220,11 +220,11 @@ export default {
 }
 
 .routeTitle{
-    font-size: 1.1rem;
+    font-size: 1.1em;
 }
 
 .username{
-    font-size: 0.85rem;
+    font-size: 0.85em;
     text-align: end;
 }
 

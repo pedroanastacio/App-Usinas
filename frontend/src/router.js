@@ -21,7 +21,7 @@ const router = new Router({
             name: 'Home',
             component: () => import('./views/Home.vue'),
             meta: {
-                title: "Home",
+                title: "Consumo Geral",
             }
         },
         {

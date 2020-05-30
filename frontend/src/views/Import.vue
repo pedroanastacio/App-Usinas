@@ -9,7 +9,7 @@
             lg="12"
             xl="12"
             >
-                <v-card class="col-sm-9 pa-5 pt-6 elevation-4 mx-3 mt-2">
+                <v-card class="col-sm-9 pa-5 pt-6 elevation-4 mx-3">
                     <v-file-input
                         label="Selecione um arquivo"
                         placeholder="Arquivo"

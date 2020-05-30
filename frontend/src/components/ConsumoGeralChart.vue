@@ -8,10 +8,14 @@ export default {
       type: Object,
       default: null
     },
+    options: {
+      type: Object,
+      default: null
+    }
   
   },
   async mounted () {
-    await this.renderChart(this.chartdata)
+    await this.renderChart(this.chartdata, this.options)
   }
 }
 </script>

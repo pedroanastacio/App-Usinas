@@ -10,6 +10,13 @@ export default {
         }})
     },
 
+    list: (params) => {
+        return api.get('listSetores', {params: {
+            page: params.page,
+            setorStatus: params.setorStatus
+        }})
+    },
+
     search: (searchParams) => {
         return api.get('setores/search', { params: {
             page: searchParams.page,
@@ -20,10 +27,11 @@ export default {
         }})
     },
 
-    list: (params) => {
-        return api.get('listSetores', {params: {
-            page: params.page,
-            setorStatus: params.setorStatus
+    searchSetores: (searchParams) => {
+        return api.get('setores/searchSetores', { params: {
+            page: searchParams.page,
+            setorStatus: searchParams.setorStatus,
+            term: searchParams.searchText,
         }})
     },
 

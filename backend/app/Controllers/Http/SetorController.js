@@ -77,7 +77,7 @@ class SetorController {
   }
 
 
-async list ({ request, response }){
+async list ({ request, response }) {
   const params = request.get()
 
   try{
@@ -93,6 +93,24 @@ async list ({ request, response }){
     return response.status(500).json({ message: 'Ocorreu um erro interno', description: err })
   }    
 }
+
+  async searchSetores({ request, response }) {
+    const search = request.get()
+
+    try{
+      const setores = await Database
+        .from('setores')
+        .orderBy('nome', 'desc')
+        .where('isActive', search.setorStatus)
+        .andWhere('nome', 'ILIKE', '%'+search.term+'%')
+        .paginate(search.page, 20)
+
+      return response.status(200).json(setores)
+    }
+    catch(err){
+        return response.status(500).json({ message: 'Ocorreu um erro interno' })
+    }  
+  }
 
   /**
    * Render a form to be used for creating a new setor.

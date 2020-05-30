@@ -2,7 +2,7 @@
     <div class="fill-height" fluid>
      <DrawerToolbar :routeName="$route.meta.title"/>
         <v-container 
-        class="fill-height"
+        class="fill-height pt-0"
         align-start
         fluid>
             <v-row v-show="!gettingUser&&!errorGettingUser">

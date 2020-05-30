@@ -17,6 +17,7 @@ export default new Vuetify({
           //secondary: colors.red.lighten4, // #FFCDD2
           accent: colors.indigo.base, // #3F51B5
           cinza: colors.grey.lighten3,
+          cinzaEscuro: colors.grey.darken2
         },
       },
     },

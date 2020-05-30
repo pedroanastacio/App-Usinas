@@ -3,11 +3,7 @@
         <DrawerToolbar :routeName="$route.meta.title"/>
             <v-row>             
                 <v-col>
-                    <v-card class="elevation-4 mx-3 mb-2 pb-0">
-                        
-                    </v-card>
-
-                    <v-card class="elevation-4 mx-3">
+                    <v-card class="mx-3">
                         <v-card-title 
                         v-show="!error&&!isLoading"
                         class="pb-0 mb-0">
@@ -192,7 +188,7 @@ export default {
     computed: {
         
         showSearchBar() {
-            if(this.searchBy == 'nome' || this.searchBy == 'sobrenome' || this.searchBy == 'username'){
+            if(this.searchBy == 'nome' || this.searchBy == 'sobrenome' || this.searchBy == 'username') {
                 return true
             }   
             else {
