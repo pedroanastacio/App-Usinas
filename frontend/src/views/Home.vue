@@ -3,7 +3,6 @@
         <DrawerToolbar :routeName="$route.meta.title"/>
         <v-container
         fluid
-        v-if="loaded"
         class="pt-0"
         >
             <v-row>
@@ -21,6 +20,7 @@
                                 :items="periodOptions"
                                 label="Período"
                                 outlined
+                                prepend-icon="mdi-calendar-search"
                                 v-model="period"
                                 @change="setDatePickerLabel"
                                 ></v-select>
@@ -31,38 +31,21 @@
                             sm="4"
                             class="pb-0 mb-0"
                             >
-                                <v-menu
+                                <v-select
                                 v-if="period == 'ano'"
-                                :close-on-content-click="false"
-                                :nudge-right="35"
-                                transition="scale-transition"
-                                offset-y 
-                                max-width="290px"
-                                min-width="290px"
-                                >
-                                    <template v-slot:activator="{ on }">
-                                        <v-text-field
-                                        label="Ano"
-                                        prepend-icon="mdi-calendar"
-                                        readonly
-                                        :value="dateSelect"
-                                        v-on="on"
-                                        outlined
-                                        />
-                                    </template>
-                                    <v-date-picker
-                                    locale="pt-br"
-                                    v-model="year"
-                                    no-title
-                                    @input="dateMenu = false"
-                                   
-                                    />
-                                </v-menu>
+                                :items="years"
+                                label="Ano"
+                                outlined
+                                prepend-icon="mdi-calendar"
+                                v-model="dateVal"
+                                @change="getYearConsumeData"
+                                ></v-select>
                                
                                 <v-menu
                                 v-if="period == 'mes'"
                                 :close-on-content-click="false"
-                                :nudge-right="35"
+                                :nudge-right="33"
+                                :nudge-top="30"
                                 transition="scale-transition"
                                 offset-y 
                                 max-width="290px"
@@ -85,6 +68,9 @@
                                     no-title
                                     @input="dateMenu = false"
                                     @change="getMonthConsumeData"
+                                    :min="minDate"
+                                    :max="maxDate"
+                                    color="primary"
                                     />
                                 </v-menu>
                             
@@ -92,7 +78,8 @@
                                 <v-menu
                                 v-if="period == 'dia' || period == 'intervalo'"
                                 :close-on-content-click="false"
-                                :nudge-right="35"
+                                :nudge-right="33"
+                                :nudge-top="30"
                                 transition="scale-transition"
                                 offset-y 
                                 max-width="290px"
@@ -113,7 +100,10 @@
                                     v-model="dateVal"
                                     no-title
                                     @input="dateMenu = false"
-                                    @change="getDayConsumeData"
+                                    @change="handleWithDates"
+                                    :min="minDate"
+                                    :max="maxDate"
+                                    color="primary"
                                     />
                                 </v-menu>
                             </v-col>    
@@ -126,7 +116,8 @@
                                 <v-menu
                                 v-if="period == 'intervalo'"
                                 :close-on-content-click="false"
-                                :nudge-right="35"
+                                :nudge-right="33"
+                                :nudge-top="30"
                                 transition="scale-transition"
                                 offset-y 
                                 max-width="290px"
@@ -137,24 +128,31 @@
                                         label="Data final"
                                         prepend-icon="mdi-calendar"
                                         readonly
-                                        :value="dateSelect"
+                                        :value="dateSelect2"
                                         v-on="on"
                                         outlined
                                         />
                                     </template>
                                     <v-date-picker
                                     locale="pt-br"
-                                    v-model="dateVal"
+                                    v-model="dateVal2"
                                     no-title
                                     @input="dateMenu = false"
+                                    @change="handleWithDates"
+                                    :min="dateVal"
+                                    :max="maxDate"
+                                    color="primary"
                                     />
                                 </v-menu>
                             </v-col>    
                         </v-card-title>    
                     </v-card>
                 </v-col>
-            </v-row>    
-            <v-row>
+            </v-row>  
+
+            <v-row
+            v-if="loaded&&!error&&!noDataForPeriod"
+            >
                 <v-col
                 xs="12"
                 sm="8"
@@ -164,33 +162,63 @@
                 align="center"
                 justify="center"
                 >
-                    <v-card class="pa-4">
+                    <v-card 
+                    class="pa-4">
                         <doughnut-chart
                         class="doughnut_card"
                         :chartdata="chartdata"
                         :options="options"
                         />
-                    </v-card>
+                    </v-card>             
                 </v-col>
+
                 <v-col
                 sm="4"
                 md="4"
                 lg="4"    
                 xl="4"
                 >
-                    <v-card>
+                    <v-card class="pb-4">
                         <v-card-text class="grey--text">
                             Consumo total
                         </v-card-text>
                         <v-card-title class="cinzaEscuro--text layout justify-center consumo_total">
                             <v-icon large color="primary">mdi-water</v-icon>
-                            {{totalConsume}}L
-                        </v-card-title>
+                            {{totalConsume}} L
+                        </v-card-title>                    
                     </v-card>    
                 </v-col>    
-            </v-row>        
-        </v-container>
-        <LoadingPage :show="!loaded" />
+            </v-row>    
+
+            <v-row v-show="!loaded&&!error&&!noDataForPeriod">
+                <v-col>
+                    <LoadingPage :show="!loaded&&!error&&!noDataForPeriod"/>  
+                </v-col>    
+            </v-row>      
+
+            <v-row v-show="loaded&&error&&!noDataForPeriod">
+                <v-col>
+                    <ErrorAlert :show="loaded&&error&&!noDataForPeriod" message="Houve um erro ao carregar dados de consumo" />    
+                </v-col>    
+            </v-row> 
+
+            <v-row v-show="loaded&&!error&&noDataForPeriod">
+                <v-col>
+                    <v-alert
+                    v-show="loaded&&!error&&noDataForPeriod"
+                    prominent
+                    type="info"
+                    transition="slide-x-reverse-transition"
+                    class=" mt-2"
+                    >
+                        <v-row align="center" >
+                            <v-col class="grow">Nenhum registro encontrado correspondente a este período</v-col>
+                        </v-row>
+                    </v-alert> 
+                </v-col>    
+            </v-row>    
+
+        </v-container>  
     </div>
 </template>
 
@@ -198,14 +226,16 @@
 import DrawerToolbar from '../components/DrawerToolbar'
 import DoughnutChart from '../components/ConsumoGeralChart'
 import LoadingPage from '../components/LoadingPage'
-
+import ErrorAlert from '../components/ErrorAlert'
 import Consumo from '../services/Consumo'
+
 
 export default {
     components:{
         DrawerToolbar,
         DoughnutChart,
-        LoadingPage
+        LoadingPage,
+        ErrorAlert
     },
 
     data: () => ({
@@ -223,6 +253,8 @@ export default {
         },
         totalConsume: '',
         loaded: false,
+        error: false,
+        noDataForPeriod: false,
         period: 'mes',
         periodOptions: [
             {text: 'Desde sempre', value: 'sempre'},
@@ -231,15 +263,17 @@ export default {
             {text: 'Mês', value: 'mes'},
             {text: 'Dia', value: 'dia'},
         ],
+        dateVal: new Date().toISOString().substr(0, 7),
+        dateVal2: null,
+        minDate: '2020-01-01',
+        maxDate: new Date().toISOString().substr(0, 10),
         dateMenu: false,
-        dateVal: null,
-        year: null,
         labelInput1: null,
     }),
 
     computed: {
         showInput() {
-            if(this.period == 'intervalo' || this.period == 'ano' || this.period == 'mes' || this.period == 'dia') {
+            if(this.period != 'sempre') {
                 return true
             }   
             else {
@@ -251,18 +285,46 @@ export default {
             return this.formatDate(this.dateVal);  
         },
 
+        dateSelect2() {
+            return this.formatDate(this.dateVal2);  
+        },
+
+        years() {
+            const year = new Date().getFullYear()
+            return Array.from({length: year - 2019}, (value, index) => 2020 + index)
+        }
+
     },
 
     watch: {
-        period() {
-            this.dateVal = null
+        period(val) {
+            if(val == 'mes') {
+                this.dateVal = new Date().toISOString().substr(0, 7)
+                this.getMonthConsumeData()
+            }
+            else if(val == 'dia') {
+                this.dateVal = new Date().toISOString().substr(0, 10)
+                this.getDayConsumeData()
+            }
+            else if(val == 'ano') {
+                this.dateVal = parseInt(new Date().toISOString().substr(0, 4))
+                this.getYearConsumeData()
+            } 
+            else if(val == 'intervalo') {
+                this.dateVal = new Date().toISOString().substr(0, 10)
+                this.dateVal2 = new Date().toISOString().substr(0, 10)
+                this.getIntervalConsumeData()
+            } 
+            else{
+                this.dateVal = null
+            }
         }
     },
 
     methods: {
         setDatePickerLabel() {
             if(this.period == 'dia')
-                this.labelInput1 = 'Data'   
+                this.labelInput1 = 'Dia'   
             else if (this.period == 'intervalo')
                 this.labelInput1 = 'Data inicial'  
             else if (this.period == 'sempre')
@@ -270,7 +332,7 @@ export default {
             else
                 return
         },
-
+        
         formatDate(date) {
             if (!date) return null
 
@@ -282,6 +344,14 @@ export default {
                 const [year, month] = date.split('-')
                 return `${month}/${year}`
             }
+            else {
+               return date
+            }
+        },
+
+        formatDate2(date) {
+            const [year, month, day] = date.split('-')
+            return `${year},${month},${day}`
         },
 
         getMonth(date) {
@@ -316,14 +386,6 @@ export default {
         },
 
         getParamsMonthConsume() {
-            if(this.dateVal == null){
-                let params = {
-                    year: new Date().getFullYear(),
-                    month: new Date().getMonth()+1,
-                }
-                return params
-            }
-            
             let params = {
                 year: this.getYear(this.dateVal),
                 month: this.getMonth(this.dateVal),
@@ -331,48 +393,107 @@ export default {
             return params
         },
 
-        dealwithConsumeData(data) {
+                
+        handleWithconsumeData(data) {
             data.consumos.forEach(element => {
             this.chartdata.labels.push(element.setor)
             this.chartdata.datasets[0].data.push(element.litros)
             this.chartdata.datasets[0].backgroundColor.push(this.getRandomColor())
             });
 
+            if(data.consumos.length == 0){
+                this.noDataForPeriod = true
+            }
+           
             this.totalConsume = data.total
+
             this.loaded = true
         },
 
+        handleWithError() {
+            this.loaded = this.error = true
+            this.noDataForPeriod = false
+        },
+
+        handleWithDates() {
+            if(this.period == 'intervalo'){
+                const date1 = new Date(this.formatDate2(this.dateVal))
+                const date2 = new Date(this.formatDate2(this.dateVal2))
+              
+                if(date1 > date2) 
+                    this.dateVal2 = this.dateVal
+
+                this.getIntervalConsumeData()
+                return
+            }
+            
+            this.getDayConsumeData()
+        },
+
         async getAllTimeConsumeData() {
-            this.loaded = false
+            this.error = this.loaded = this.noDataForPeriod = false
             this.resetChartData()
 
             try {
                 const response = await Consumo.generalAllTime()
-                this.dealwithConsumeData(response.data)
+                this.handleWithconsumeData(response.data)
             }
             catch (err) {
-                console.error(err)
+                this.handleWithError()
+            }
+        },
+
+        async getYearConsumeData() {
+            this.error = this.loaded = this.noDataForPeriod = false
+            this.resetChartData()
+            
+            try {
+                let params = {
+                    year: this.dateVal
+                }
+
+                const response = await Consumo.generalPerYear(params)
+                this.handleWithconsumeData(response.data)
+            }
+            catch (err) {
+                this.handleWithError()
+            }
+        },
+
+        async getIntervalConsumeData() {
+            this.error = this.loaded = this.noDataForPeriod = false
+            this.resetChartData()
+            
+            try {
+                let params = {
+                    initialDate: this.dateVal,
+                    endDate: this.dateVal2
+                }
+                
+                const response = await Consumo.generalPerPeriod(params)
+                this.handleWithconsumeData(response.data)
+            }
+            catch (err) {
+                this.handleWithError()
             }
         },
 
         async getMonthConsumeData() {
-            this.loaded = false
+            this.error = this.loaded = this.noDataForPeriod = false
             this.resetChartData()
-
+            
             try {
                 const response = await Consumo.generalPerMonth(this.getParamsMonthConsume())
-                this.dealwithConsumeData(response.data)
+                this.handleWithconsumeData(response.data)
             }
             catch (err) {
-                console.error(err)
+                console.log(err)
+                this.handleWithError()
             }
         },
 
         async getDayConsumeData() {
-            if(this.period == 'intervalo')
-                return
-                
-            this.loaded = false
+            this.error = this.loaded = this.noDataForPeriod = false
             this.resetChartData()
 
             try {
@@ -380,15 +501,15 @@ export default {
                     date: this.dateVal
                 }
                 const response = await Consumo.generalPerDay(params)
-                this.dealwithConsumeData(response.data)
+                this.handleWithconsumeData(response.data)
             }
             catch (err) {
-                console.error(err)
+                this.handleWithError()
             }
         }
     },
 
-    async mounted () {
+    async mounted() {  
        this.getMonthConsumeData()
     }
 }
