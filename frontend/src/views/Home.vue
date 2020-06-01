@@ -159,16 +159,26 @@
                 md="8"
                 lg="8"
                 xl="8"
-                align="center"
+                
                 justify="center"
                 >
                     <v-card 
-                    class="pa-4">
-                        <doughnut-chart
-                        class="doughnut_card"
-                        :chartdata="chartdata"
-                        :options="options"
-                        />
+                    class="pb-4">
+                        <v-card-text v-if="period != 'intervalo'" class="grey--text">
+                            Consumo - {{dateSelect}}
+                        </v-card-text>
+
+                        <v-card-text v-if="period == 'intervalo'" class="grey--text">
+                            Consumo - {{dateSelect}} a {{dateSelect2}}
+                        </v-card-text>
+
+                        <div  align="center">
+                            <doughnut-chart
+                            class="doughnut_card"
+                            :chartdata="chartdata"
+                            :options="options"
+                            />
+                        </div>
                     </v-card>             
                 </v-col>
 
@@ -187,6 +197,25 @@
                             {{totalConsume}} L
                         </v-card-title>                    
                     </v-card>    
+                </v-col>    
+            </v-row>    
+
+            <v-row 
+            v-if="loaded&&!error&&!noDataForPeriod"
+            >
+                <v-col>
+                    <v-data-table
+                    v-show="!error"
+                    :headers="headers"                       
+                    :items="consumeData"
+                    :loading="!loaded"
+                    loading-text="Carregando setores..."
+                    no-data-text="Nenhum setor encontrado"
+                    locale="pt-BR"  
+                    item-key="id"
+                    :hide-default-footer="true"
+                    class="elevation-2"
+                    /> 
                 </v-col>    
             </v-row>    
 
@@ -228,6 +257,7 @@ import DoughnutChart from '../components/ConsumoGeralChart'
 import LoadingPage from '../components/LoadingPage'
 import ErrorAlert from '../components/ErrorAlert'
 import Consumo from '../services/Consumo'
+import chroma from 'chroma-js'
 
 
 export default {
@@ -269,6 +299,12 @@ export default {
         maxDate: new Date().toISOString().substr(0, 10),
         dateMenu: false,
         labelInput1: null,
+        consumeData: [],
+        headers: [
+            {text: 'Setor', align: 'left', value:'setor', class: "primary white--text" },
+            {text: 'Litros (L)', align:'left', value: 'litros', class: "primary white--text"}, 
+            {text: 'Porcentagem (%)', align: 'left', value: 'percent', class: "primary white--text"}
+        ]
     }),
 
     computed: {
@@ -316,7 +352,7 @@ export default {
                 this.getIntervalConsumeData()
             } 
             else{
-                this.dateVal = null
+                this.dateVal = 'Desde sempre'
             }
         }
     },
@@ -364,6 +400,10 @@ export default {
             return `${year}`
         },
 
+        getColors(length) {
+            return chroma.scale(['#69F0AE','#1565C0', 'red']).colors(length);
+        },
+
         getRandomColor() {
             var letters = '0123456789ABCDEF'.split('');
             var color = '#';
@@ -383,6 +423,7 @@ export default {
             }
 
             this.totalConsume = ''
+            this.consumeData = []
         },
 
         getParamsMonthConsume() {
@@ -393,13 +434,25 @@ export default {
             return params
         },
 
+        percentCalculate(total, sectorConsume) {
+            return parseFloat((sectorConsume/total)*100).toFixed(2);
+        },
+
                 
         handleWithconsumeData(data) {
+            //this.consumeData = data.consumos
+            
             data.consumos.forEach(element => {
             this.chartdata.labels.push(element.setor)
             this.chartdata.datasets[0].data.push(element.litros)
-            this.chartdata.datasets[0].backgroundColor.push(this.getRandomColor())
+            this.consumeData.push({
+                "setor": element.setor,
+                "litros": `${element.litros}L`,
+                "percent": `${this.percentCalculate(data.total, element.litros)}%`
+                })
             });
+
+            this.chartdata.datasets[0].backgroundColor = this.getColors(data.consumos.length)
 
             if(data.consumos.length == 0){
                 this.noDataForPeriod = true

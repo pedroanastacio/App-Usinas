@@ -34,23 +34,24 @@
                     </v-card-title>
                 
                     <v-data-table
-                        v-show="!error"
-                        :server-items-length="paginate.itemsLength"
-                        :options.sync="paginate"                           
-                        :headers="headers"                       
-                        :items="this.$store.state.setores.setoresData"
-                        :loading="isLoading"
-                        :footer-props="{ 'items-per-page-options': [5,10,15,20] }"
-                        @update:items-per-page="getItemsPerPage"
-                        @update:page="getPage"
-                        @update:sort-desc="sortDescFunc"
-                        @update:sort-by="sortByFunc"
-                        loading-text="Carregando setores..."
-                        no-data-text="Nenhum setor encontrado"
-                        class="elevation-1"        
-                        locale="pt-BR"  
-                        item-key="nome"
-                        @click:row="handleClickRow"                                                                   > 
+                    v-show="!error"
+                    :server-items-length="paginate.itemsLength"
+                    :options.sync="paginate"                           
+                    :headers="headers"                       
+                    :items="this.$store.state.setores.setoresData"
+                    :loading="isLoading"
+                    :footer-props="{ 'items-per-page-options': [5,10,15,20] }"
+                    @update:items-per-page="getItemsPerPage"
+                    @update:page="getPage"
+                    @update:sort-desc="sortDescFunc"
+                    @update:sort-by="sortByFunc"
+                    loading-text="Carregando setores..."
+                    no-data-text="Nenhum setor encontrado"
+                    class="elevation-1"        
+                    locale="pt-BR"  
+                    item-key="nome"
+                    @click:row="handleClickRow"
+                    > 
 
                         <template v-slot:item.isActive="{ item }" >
                             <v-layout justify-center>
@@ -125,9 +126,7 @@ export default {
         },
         
         headers:[
-            {text: 'Setor', align: 'left', value:'nome', 
-             class: "light-blue darked-1 white--text"              
-            },
+            {text: 'Setor', align: 'left', value:'nome', class: "light-blue darked-1 white--text"},
             {text: 'Ativo', value: 'isActive', align:'center',class: "light-blue darked-1 white--text"},       
         ],
     }),
