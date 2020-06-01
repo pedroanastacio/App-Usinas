@@ -155,7 +155,7 @@ export default {
         homeLink: '/',
         items: [
             { title: 'Consumo geral', icon: 'mdi-chart-donut', link: '/' },
-            { title: 'Consumo por setor', icon: 'mdi-chart-line' },
+            { title: 'Consumo por setor', icon: 'mdi-chart-line', link: '/listasetores' },
             
         ],
         itemsAdmin: [

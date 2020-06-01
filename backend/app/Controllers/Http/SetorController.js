@@ -83,7 +83,7 @@ async list ({ request, response }) {
   try{
     const setores = await Database
       .from('setores')
-      .orderBy('nome', 'desc')
+      .orderBy('nome', 'asc')
       .where('isActive', params.setorStatus)
       .paginate(params.page, 20)
 

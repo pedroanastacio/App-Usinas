@@ -126,8 +126,8 @@ export default {
         },
         
         headers:[
-            {text: 'Setor', align: 'left', value:'nome', class: "light-blue darked-1 white--text"},
-            {text: 'Ativo', value: 'isActive', align:'center',class: "light-blue darked-1 white--text"},       
+            {text: 'Setor', align: 'left', value:'nome', class: "primary darked-1 white--text"},
+            {text: 'Ativo', value: 'isActive', align:'center',class: "primary darked-1 white--text"},       
         ],
     }),
 

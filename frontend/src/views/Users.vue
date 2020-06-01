@@ -175,12 +175,12 @@ export default {
         message: '',
         headers:
         [
-            {text: 'Nome', value:'nome', align: 'left',  class: "light-blue darked-1 white--text tile dark"},
-            {text: 'Sobrenome', value: 'sobrenome', align:'left', class: "light-blue darked-1 white--text"},
-            {text: 'Usuário', value: 'username', align:'left', class: "light-blue darked-1 white--text"},
-            {text: 'Administrador', value: 'isAdmin', align:'center', class: "light-blue darked-1 white--text"},
-            {text: 'Fornecedor', value: 'isSupplier', align:'center', class: "light-blue darked-1 white--text"},
-            {text: 'Ativo', value: 'isActive', align:'center', class: "light-blue darked-1 white--text"},
+            {text: 'Nome', value:'nome', align: 'left',  class: "primary darked-1 white--text tile dark"},
+            {text: 'Sobrenome', value: 'sobrenome', align:'left', class: "primary darked-1 white--text"},
+            {text: 'Usuário', value: 'username', align:'left', class: "primary darked-1 white--text"},
+            {text: 'Administrador', value: 'isAdmin', align:'center', class: "primary darked-1 white--text"},
+            {text: 'Fornecedor', value: 'isSupplier', align:'center', class: "primary darked-1 white--text"},
+            {text: 'Ativo', value: 'isActive', align:'center', class: "primary darked-1 white--text"},
         ],
         
     }),

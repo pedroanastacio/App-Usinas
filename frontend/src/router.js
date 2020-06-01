@@ -94,6 +94,14 @@ const router = new Router({
             meta: {
                 title: "Alterar senha",
             }
+        },
+        {
+            path: "/listasetores",
+            name: 'Lista Setores',
+            component: () => import('./views/SectorsList.vue'),
+            meta: {
+                title: "Setores",
+            }
         }
     ]
 })

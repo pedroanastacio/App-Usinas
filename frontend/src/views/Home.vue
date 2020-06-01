@@ -447,8 +447,8 @@ export default {
             this.chartdata.datasets[0].data.push(element.litros)
             this.consumeData.push({
                 "setor": element.setor,
-                "litros": `${element.litros}L`,
-                "percent": `${this.percentCalculate(data.total, element.litros)}%`
+                "litros": `${Number(element.litros).toLocaleString('pt-BR')} L`,
+                "percent": `${Number(this.percentCalculate(data.total, element.litros)).toLocaleString('pt-BR')}%`
                 })
             });
 
@@ -458,7 +458,7 @@ export default {
                 this.noDataForPeriod = true
             }
            
-            this.totalConsume = data.total
+            this.totalConsume = Number(data.total).toLocaleString('pt-BR')
 
             this.loaded = true
         },
@@ -570,8 +570,8 @@ export default {
 
 <style>
 .doughnut_card{
-    max-width: 370px;
-    max-height: 370px;
+    max-width: 350px;
+    max-height: 350px;
 }
 
 .consumo_total {
