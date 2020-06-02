@@ -150,9 +150,15 @@
                             <v-list-item-avatar
                             size="40"
                             color="light-blue lighten-4"
-                            @click="console.log('kkk')"
                             >
-                                <v-btn class="ma-2" tile large color="primary" icon>
+                                <v-btn
+                                class="ma-2"
+                                tile
+                                large
+                                color="primary"
+                                icon
+                                @click="goToSectorConsumePage(setor.slug)"
+                                >
                                     <v-icon>mdi-water</v-icon>
                                 </v-btn>
                             </v-list-item-avatar>
@@ -345,10 +351,13 @@ export default {
             this.getSetores()
         },
 
-        changeStatusSetor(){
+        changeStatusSetor() {
             this.paginate.page = 1
-            
             this.getSetores()
+        },
+        
+        goToSectorConsumePage(slug) {
+            this.$router.push({ name: 'Consumo Setor', params: { slug: slug }})
         }
 
     },

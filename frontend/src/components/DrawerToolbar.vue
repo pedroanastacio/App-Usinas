@@ -65,7 +65,13 @@
                 >
                     <v-list-item-content align="center">
                         <v-list-item-title class="title">
-                            App Usinas
+                             <v-avatar size="40">
+                                <img
+                                src="@/assets/img/icon_drop.png"
+                                alt="WaterMeter"
+                                >
+                            </v-avatar>
+                            WaterMeter
                         </v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>

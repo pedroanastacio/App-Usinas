@@ -45,7 +45,7 @@
                             </v-switch>
 
                             <v-card-actions class=" mt-0 justify-center text-center">
-                                <v-btn type="submit" class="px-3 mt-0" color="primary">Cadastrar</v-btn>
+                                <v-btn type="submit" class="px-3 mt-0" color="primary" :loading="isLoading">Cadastrar</v-btn>
                             </v-card-actions>
                         </v-container>
                     </v-card>

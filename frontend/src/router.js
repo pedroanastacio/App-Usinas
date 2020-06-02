@@ -102,7 +102,16 @@ const router = new Router({
             meta: {
                 title: "Setores",
             }
+        },
+        {
+            path: "/consumo/setor/:slug",
+            name: 'Consumo Setor',
+            component: () => import('./views/SectorConsume.vue'),
+            meta: {
+                title: "Consumo por setor",
+            }
         }
+        
     ]
 })
 

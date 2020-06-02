@@ -302,8 +302,8 @@ export default {
         consumeData: [],
         headers: [
             {text: 'Setor', align: 'left', value:'setor', class: "primary white--text" },
-            {text: 'Litros (L)', align:'left', value: 'litros', class: "primary white--text"}, 
-            {text: 'Porcentagem (%)', align: 'left', value: 'percent', class: "primary white--text"}
+            {text: 'Litros (L)', align:'left', value: 'litros', class: "primary white--text", sortable: false}, 
+            {text: 'Porcentagem (%)', align: 'left', value: 'percent', class: "primary white--text", sortable: false}
         ]
     }),
 
@@ -443,13 +443,17 @@ export default {
             //this.consumeData = data.consumos
             
             data.consumos.forEach(element => {
-            this.chartdata.labels.push(element.setor)
-            this.chartdata.datasets[0].data.push(element.litros)
-            this.consumeData.push({
-                "setor": element.setor,
-                "litros": `${Number(element.litros).toLocaleString('pt-BR')} L`,
-                "percent": `${Number(this.percentCalculate(data.total, element.litros)).toLocaleString('pt-BR')}%`
-                })
+                if(element.setor.length > 30)
+                    this.chartdata.labels.push(`${element.setor.substring(0, 30)}...`)
+                else
+                    this.chartdata.labels.push(element.setor)
+                
+                this.chartdata.datasets[0].data.push(element.litros)
+                this.consumeData.push({
+                    "setor": element.setor,
+                    "litros": `${Number(element.litros).toLocaleString('pt-BR')} L`,
+                    "percent": `${Number(this.percentCalculate(data.total, element.litros)).toLocaleString('pt-BR')}%`
+                    })
             });
 
             this.chartdata.datasets[0].backgroundColor = this.getColors(data.consumos.length)

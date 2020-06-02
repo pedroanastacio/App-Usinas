@@ -25,7 +25,13 @@
                 <v-form @submit.prevent="login">
                     <v-card class="elevation-12 pb-4">
                         <v-card-title class="primary justify-center white--text">
-                            App Usinas
+                            <v-avatar size="40" class="mr-1">
+                                <img
+                                src="@/assets/img/icon_drop.png"
+                                alt="WaterMeter"
+                                >
+                            </v-avatar>
+                            WaterMeter
                         </v-card-title>
                         <v-card-text class="px-8 pl-5 py-4 pt-8">
                             

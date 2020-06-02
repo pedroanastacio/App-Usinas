@@ -48,7 +48,7 @@
                             </v-switch>
 
                             <v-card-actions class=" mt-0 justify-center text-center">
-                                <v-btn type="submit" class="px-3 mt-0" color="primary">Editar</v-btn>
+                                <v-btn type="submit" class="px-3 mt-0" color="primary" :loading="isLoading">Editar</v-btn>
                             </v-card-actions>
                             </v-container>
                         </v-card>
