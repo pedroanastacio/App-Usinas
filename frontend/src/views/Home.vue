@@ -43,7 +43,7 @@
                                
                                 <v-menu
                                 v-if="period == 'mes'"
-                                :close-on-content-click="false"
+                                :close-on-content-click="true"
                                 :nudge-right="33"
                                 :nudge-top="30"
                                 transition="scale-transition"
@@ -77,7 +77,7 @@
 
                                 <v-menu
                                 v-if="period == 'dia' || period == 'intervalo'"
-                                :close-on-content-click="false"
+                                :close-on-content-click="true"
                                 :nudge-right="33"
                                 :nudge-top="30"
                                 transition="scale-transition"
@@ -115,7 +115,7 @@
                             >
                                 <v-menu
                                 v-if="period == 'intervalo'"
-                                :close-on-content-click="false"
+                                :close-on-content-click="true"
                                 :nudge-right="33"
                                 :nudge-top="30"
                                 transition="scale-transition"
