@@ -40,32 +40,32 @@ export default {
         }})
     },
 
-    sectorAllTime: (id) => {
-        return api.get(`consumo/sectorAllTime/${id}`)
+    sectorAllTime: (slug) => {
+        return api.get(`consumo/sectorAllTime/${slug}`)
     },
 
     sectorPerPeriod: (params) => {
-        return api.get(`consumo/sectorPerPeriod/${params.id}`, { params: {
+        return api.get(`consumo/sectorPerPeriod/${params.slug}`, { params: {
             initialDate: params.initialDate,
             endDate: params.endDate
         }})
     },
 
     sectorPerYear: (params) => {
-        return api.get(`consumo/sectorPerYear/${params.id}`, { params: {
+        return api.get(`consumo/sectorPerYear/${params.slug}`, { params: {
             year: params.year
         }})
     },
 
     sectorPerMonth: (params) => {
-        return api.get(`consumo/sectorPerMonth/${params.id}`, { params: {
+        return api.get(`consumo/sectorPerMonth/${params.slug}`, { params: {
             year: params.year,
             month: params.month
         }})
     },
 
     sectorPerDay: (params) => {
-        return api.get(`consumo/sectorPerDay/${params.id}`, { params: {
+        return api.get(`consumo/sectorPerDay/${params.slug}`, { params: {
             date: params.date
         }})
     },

@@ -43,8 +43,8 @@ Route.get('/consumo/perYear', 'ConsumoController.consumePerYear').middleware(["a
 Route.get('/consumo/perMonth', 'ConsumoController.consumePerMonth').middleware(["auth", "isAuthAndActive"])
 Route.get('/consumo/perDay', 'ConsumoController.consumePerDay').middleware(["auth", "isAuthAndActive"])
 
-Route.get('/consumo/sectorAllTime/:id', 'ConsumoController.sectorConsumeAllTime').middleware(["auth", "isAuthAndActive"])
-Route.get('/consumo/sectorPerPeriod/:id', 'ConsumoController.sectorConsumePerPeriod').middleware(["auth", "isAuthAndActive"])
-Route.get('/consumo/sectorPerYear/:id', 'ConsumoController.sectorConsumePerYear').middleware(["auth", "isAuthAndActive"])
-Route.get('/consumo/sectorPerMonth/:id', 'ConsumoController.sectorConsumePerMonth').middleware(["auth", "isAuthAndActive"])
-Route.get('/consumo/sectorPerDay/:id', 'ConsumoController.sectorConsumePerDay').middleware(["auth", "isAuthAndActive"])
+Route.get('/consumo/sectorAllTime/:slug', 'ConsumoController.sectorConsumeAllTime').middleware(["auth", "isAuthAndActive"])
+Route.get('/consumo/sectorPerPeriod/:slug', 'ConsumoController.sectorConsumePerPeriod').middleware(["auth", "isAuthAndActive"])
+Route.get('/consumo/sectorPerYear/:slug', 'ConsumoController.sectorConsumePerYear').middleware(["auth", "isAuthAndActive"])
+Route.get('/consumo/sectorPerMonth/:slug', 'ConsumoController.sectorConsumePerMonth').middleware(["auth", "isAuthAndActive"])
+Route.get('/consumo/sectorPerDay/:slug', 'ConsumoController.sectorConsumePerDay').middleware(["auth", "isAuthAndActive"])
