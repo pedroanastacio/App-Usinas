@@ -440,7 +440,11 @@ export default {
 
                 
         handleWithconsumeData(data) {
-            //this.consumeData = data.consumos
+            if(data.consumos.length == 0){
+                this.noDataForPeriod = true
+                this.loaded = true
+                return
+            }
             
             data.consumos.forEach(element => {
                 if(element.setor.length > 30)
@@ -457,13 +461,7 @@ export default {
             });
 
             this.chartdata.datasets[0].backgroundColor = this.getColors(data.consumos.length)
-
-            if(data.consumos.length == 0){
-                this.noDataForPeriod = true
-            }
-           
             this.totalConsume = Number(data.total).toLocaleString('pt-BR')
-
             this.loaded = true
         },
 

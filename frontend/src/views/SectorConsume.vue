@@ -177,6 +177,7 @@
                             <line-chart
                             class="doughnut_card"
                             :chartdata="chartdata"
+                            :options="options"
                             />
                         </div>
                     </v-card>             
@@ -253,8 +254,23 @@ export default {
             labels: [],
             datasets: [{
                 data: [],
-                backgroundColor: []
             }]
+        },
+        options: {
+            scales: {
+                xAxes: [{
+                type: 'time',
+                time: {
+                parser: 'DD/MM/YYYY',
+                //tooltipFormat: 'll HH:mm',
+                unit: 'day',
+                unitStepSize: 1,
+                displayFormats: {
+                    'day': 'DD/MM/YYYY'
+                }
+                }
+                }]
+            }
         },
         totalConsume: '',
         loaded: false,
@@ -360,6 +376,11 @@ export default {
             return `${year},${month},${day}`
         },
 
+        formatDBDate(date) {
+            const [day, month, year] = date.split('/')
+            return `${year}-${month}-${day}`
+        },
+
         getMonth(date) {
             const month = date.split('-')
             return `${month[1]}`
@@ -413,10 +434,25 @@ export default {
         },
 
          handleWithconsumeData(data) {
-            //this.consumeData = data.consumos
-            
-           console.log(data)
+            if(data.consumos.length == 0){
+                this.noDataForPeriod = true
+                this.loaded = true
+                return
+            }
 
+            this.chartdata.datasets[0].label = this.$route.params.nome
+
+            data.consumos.forEach(element => {
+                this.chartdata.datasets[0].data.push({
+                   x: element.data,
+                   y: element.litros
+                })
+                this.chartdata.labels.push(element.data)   
+            })
+            
+           console.log(this.chartdata.labels)
+            
+            this.totalConsume = Number(data.total).toLocaleString('pt-BR')
             this.loaded = true
         },
 
@@ -504,7 +540,7 @@ export default {
     },
 
     async mounted() {  
-       this.getMonthConsumeData()
+        this.getMonthConsumeData()
     }
 }
 </script>

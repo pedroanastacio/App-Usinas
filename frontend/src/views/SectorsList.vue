@@ -157,7 +157,7 @@
                                 large
                                 color="primary"
                                 icon
-                                @click="goToSectorConsumePage(setor.slug)"
+                                @click="goToSectorConsumePage(setor)"
                                 >
                                     <v-icon>mdi-water</v-icon>
                                 </v-btn>
@@ -356,8 +356,8 @@ export default {
             this.getSetores()
         },
         
-        goToSectorConsumePage(slug) {
-            this.$router.push({ name: 'Consumo Setor', params: { slug: slug }})
+        goToSectorConsumePage(setor) {
+            this.$router.push({ name: 'Consumo Setor', params: { slug: setor.slug, nome: setor.nome }})
         }
 
     },
