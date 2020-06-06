@@ -172,7 +172,7 @@
                             Consumo - {{dateSelect}} a {{dateSelect2}}
                         </v-card-text>
 
-                        <div  align="center">
+                        <div align="center">
                             <doughnut-chart
                             class="doughnut_card"
                             :chartdata="chartdata"

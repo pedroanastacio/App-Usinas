@@ -416,7 +416,7 @@ class ConsumoController {
         .raw(`SELECT TO_CHAR(data,'DD/MM/YYYY') AS data, sum(litros) as litros
           FROM consumos
           WHERE setor_id = ${id}
-          GROUP BY data`)
+          GROUP BY TO_CHAR(data,'DD/MM/YYYY')`)
             
       return Promise.resolve(datesAndConsume)  
     }
@@ -467,7 +467,7 @@ class ConsumoController {
         .raw(`SELECT TO_CHAR(data ,'DD/MM/YYYY') AS data, sum(litros) as litros
           FROM consumos 
           WHERE setor_id  = ${id} AND data::date BETWEEN '${parameters.initialDate}' AND '${parameters.endDate}'
-          GROUP BY data`)
+          GROUP BY TO_CHAR(data ,'DD/MM/YYYY')`)
             
       return Promise.resolve(datesAndConsume)  
     }
@@ -515,10 +515,10 @@ class ConsumoController {
   async sectorDatesAndConsumePerYear(id, parameters) {
     try {
       const datesAndConsume = await Database
-        .raw(`SELECT TO_CHAR(data ,'DD/MM/YYYY') AS data, sum(litros) as litros
+        .raw(`SELECT TO_CHAR(data ,'MM/YYYY') AS data, sum(litros) as litros
           FROM consumos
           WHERE setor_id  = ${id} AND EXTRACT(year FROM data) = '${parameters.year}'
-          GROUP BY data`)
+          GROUP BY TO_CHAR(data ,'MM/YYYY')`)
         
       return Promise.resolve(datesAndConsume)  
     }
@@ -569,7 +569,7 @@ class ConsumoController {
         .raw(`SELECT TO_CHAR(data ,'DD/MM/YYYY') AS data, sum(litros) as litros
         FROM consumos
         WHERE setor_id = ${id} AND EXTRACT(year FROM data) = '${parameters.year}' AND EXTRACT(month FROM data) = '${parameters.month}'
-        GROUP BY data`)
+        GROUP BY TO_CHAR(data ,'DD/MM/YYYY')`)
 
       return Promise.resolve(datesAndConsume)  
     }
@@ -616,10 +616,14 @@ class ConsumoController {
   async sectorHoursAndConsumePerDay(id, parameters) {
     try{
       const hoursAndConsume = await Database
-        .raw(`SELECT TO_CHAR(data ,'DD/MM/YYYY') AS data, TO_CHAR(data ,'HH:mm') AS hora, sum(litros) as litros
+        .raw(`SELECT TO_CHAR(data , 'fmHH24') AS hora, sum(litros) as litros
         FROM consumos
         WHERE setor_id = ${id} AND data::DATE = '${parameters.date}'
-        GROUP BY data, date_trunc('hour', data)`)
+        GROUP BY TO_CHAR(data , 'fmHH24')`)
+
+        hoursAndConsume.rows.forEach(el => {
+          el.hora = `${el.hora}:00`
+        })
 
       return Promise.resolve(hoursAndConsume)  
     }

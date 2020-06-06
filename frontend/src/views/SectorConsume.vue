@@ -174,8 +174,8 @@
                         </v-card-text>
 
                         <div  align="center">
-                            <line-chart
-                            class="doughnut_card"
+                            <bar-chart
+                            class="bar_card"
                             :chartdata="chartdata"
                             :options="options"
                             />
@@ -235,7 +235,7 @@
 
 <script>
 import DrawerToolbar from '../components/DrawerToolbar'
-import LineChart from '../components/ConsumoSetorLineChart'
+import BarChart from '../components/ConsumoSetorChart'
 import LoadingPage from '../components/LoadingPage'
 import ErrorAlert from '../components/ErrorAlert'
 import Consumo from '../services/Consumo'
@@ -244,7 +244,7 @@ import Consumo from '../services/Consumo'
 export default {
     components:{
         DrawerToolbar,
-        LineChart,
+        BarChart,
         LoadingPage,
         ErrorAlert
     },
@@ -254,21 +254,22 @@ export default {
             labels: [],
             datasets: [{
                 data: [],
+                backgroundColor: "#1565C0",//version >2 useus background color
             }]
         },
         options: {
             scales: {
                 xAxes: [{
-                type: 'time',
-                time: {
-                parser: 'DD/MM/YYYY',
-                //tooltipFormat: 'll HH:mm',
-                unit: 'day',
-                unitStepSize: 1,
-                displayFormats: {
-                    'day': 'DD/MM/YYYY'
-                }
-                }
+                    type: 'time',
+                    time: {
+                        parser: 'DD/MM/YYYY',
+                        //tooltipFormat: 'll HH:mm',
+                        unit: 'day',
+                        unitStepSize: 5,
+                        displayFormats: {
+                            'day': 'DD/MM/YYYY'
+                        }
+                    }
                 }]
             }
         },
@@ -381,6 +382,13 @@ export default {
             return `${year}-${month}-${day}`
         },
 
+        getDaysOfMonth(date) {
+            let [year, month, day] = date.split('-')
+            day = 0
+            console.log(new Date(year, month, day).getDate())
+            return new Date(year, month, day).getDate();
+        },
+
         getMonth(date) {
             const month = date.split('-')
             return `${month[1]}`
@@ -396,7 +404,7 @@ export default {
             labels: [],
             datasets: [{
                 data: [],
-                backgroundColor: []
+                backgroundColor: "#1565C0",//version >2 useus background color
             }]
             }
 
@@ -433,7 +441,7 @@ export default {
             this.getDayConsumeData()
         },
 
-         handleWithconsumeData(data) {
+         handleWithConsumeData(data) {
             if(data.consumos.length == 0){
                 this.noDataForPeriod = true
                 this.loaded = true
@@ -442,18 +450,54 @@ export default {
 
             this.chartdata.datasets[0].label = this.$route.params.nome
 
-            data.consumos.forEach(element => {
-                this.chartdata.datasets[0].data.push({
-                   x: element.data,
-                   y: element.litros
+            if(this.period == 'dia') {
+                data.consumos.forEach(element => {
+                    this.chartdata.datasets[0].data.push({
+                        x: element.hora,
+                        y: element.litros
+                    }) 
                 })
-                this.chartdata.labels.push(element.data)   
-            })
-            
-           console.log(this.chartdata.labels)
-            
+            }
+            else {
+                data.consumos.forEach(element => {
+                    this.chartdata.datasets[0].data.push({
+                        x: element.data,
+                        y: element.litros
+                    }) 
+                })
+            }
+                     
             this.totalConsume = Number(data.total).toLocaleString('pt-BR')
             this.loaded = true
+        },
+
+        handleWithChartOptions() {
+            if(this.period == 'ano') {
+                this.options.scales.xAxes[0].type = 'time',
+                this.options.scales.xAxes[0].time.parser = 'MM/YYYY'
+                this.options.scales.xAxes[0].time.unit = 'month'
+                this.options.scales.xAxes[0].time.unitStepSize = 1,
+                this.options.scales.xAxes[0].time.displayFormats.month = 'MM/YYYY'
+                this.chartdata.labels = [`01/${this.dateVal}`, `12/${this.dateVal}`]
+            }
+            else if (this.period == 'mes') {
+                this.options.scales.xAxes[0].type = 'time',
+                this.options.scales.xAxes[0].time.parser = 'DD/MM/YYYY'
+                this.options.scales.xAxes[0].time.unit = 'day'
+                this.options.scales.xAxes[0].time.unitStepSize = 4,
+                this.options.scales.xAxes[0].time.displayFormats.day = 'DD/MM/YYYY'
+                const numDays = this.getDaysOfMonth(this.dateVal)
+                this.chartdata.labels = [`01/${this.getMonth(this.dateVal)}/${this.getYear(this.dateVal)}`, `${numDays}/${this.getMonth(this.dateVal)}/${this.getYear(this.dateVal)}`]
+            }
+            else if(this.period == 'dia') {
+                this.options.scales.xAxes[0].type = 'time',
+                this.options.scales.xAxes[0].time.parser = 'HH:mm'
+                this.options.scales.xAxes[0].time.unit = 'hour'
+                this.options.scales.xAxes[0].time.unitStepSize = 3,
+                this.options.scales.xAxes[0].time.displayFormats.hour = 'HH:mm'
+                this.chartdata.labels = ['00:00', '23:00']
+            }
+            
         },
 
         async getAllTimeConsumeData() {
@@ -462,7 +506,7 @@ export default {
 
             try {
                 const response = await Consumo.sectorAllTime(this.$route.params.slug)
-                this.handleWithconsumeData(response.data)
+                this.handleWithConsumeData(response.data)
             }
             catch (err) {
                 this.handleWithError()
@@ -480,7 +524,8 @@ export default {
                 }
 
                 const response = await Consumo.sectorPerYear(params)
-                this.handleWithconsumeData(response.data)
+                this.handleWithChartOptions()
+                this.handleWithConsumeData(response.data)
             }
             catch (err) {
                 this.handleWithError()
@@ -499,7 +544,7 @@ export default {
                 }
                 
                 const response = await Consumo.sectorPerPeriod(params)
-                this.handleWithconsumeData(response.data)
+                this.handleWithConsumeData(response.data)
             }
             catch (err) {
                 this.handleWithError()
@@ -512,7 +557,8 @@ export default {
             
             try {
                 const response = await Consumo.sectorPerMonth(this.getParamsMonthConsume())
-                this.handleWithconsumeData(response.data)
+                this.handleWithChartOptions()
+                this.handleWithConsumeData(response.data)
             }
             catch (err) {
                 console.log(err
@@ -531,7 +577,8 @@ export default {
                     date: this.dateVal
                 }
                 const response = await Consumo.sectorPerDay(params)
-                this.handleWithconsumeData(response.data)
+                this.handleWithChartOptions()
+                this.handleWithConsumeData(response.data)
             }
             catch (err) {
                 this.handleWithError()
@@ -548,6 +595,10 @@ export default {
 <style>
 .consumo_total {
     font-size: 1.6em;
+}
 
+.bar_card{
+    max-width: 360px;
+    max-height: 360px;
 }
 </style>
