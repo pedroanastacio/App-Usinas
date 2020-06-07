@@ -1,12 +1,14 @@
 <template>
     <div>
-        <DrawerToolbar :routeName="$route.meta.title"/>
+        <DrawerToolbar :routeName="sectorName"/>
          <v-container
         fluid
         class="pt-0"
         >
 
-            <v-row>
+            <v-row
+            v-if="loaded"
+            >
                 <v-col>
                     <v-card>
                         <v-card-title 
@@ -173,7 +175,7 @@
                             Consumo - {{dateSelect}} a {{dateSelect2}}
                         </v-card-text>
 
-                        <div  align="center">
+                        <div align="center">
                             <bar-chart
                             class="bar_card"
                             :chartdata="chartdata"
@@ -239,7 +241,7 @@ import BarChart from '../components/ConsumoSetorChart'
 import LoadingPage from '../components/LoadingPage'
 import ErrorAlert from '../components/ErrorAlert'
 import Consumo from '../services/Consumo'
-
+import Setores from '../services/Setores'
 
 export default {
     components:{
@@ -271,6 +273,14 @@ export default {
                         }
                     }
                 }]
+            },
+            tooltips: {
+                callbacks: {
+                label: (item) => `${item.yLabel} L`,
+                },
+            },
+            legend: {
+                display: false
             }
         },
         totalConsume: '',
@@ -292,6 +302,7 @@ export default {
         dateMenu: false,
         labelInput1: null,
         consumeData: [],
+        sectorName: ''
     }),
 
      computed: {
@@ -385,7 +396,6 @@ export default {
         getDaysOfMonth(date) {
             let [year, month, day] = date.split('-')
             day = 0
-            console.log(new Date(year, month, day).getDate())
             return new Date(year, month, day).getDate();
         },
 
@@ -404,7 +414,7 @@ export default {
             labels: [],
             datasets: [{
                 data: [],
-                backgroundColor: "#1565C0",//version >2 useus background color
+                backgroundColor: "#1565C0",
             }]
             }
 
@@ -441,14 +451,14 @@ export default {
             this.getDayConsumeData()
         },
 
-         handleWithConsumeData(data) {
+        handleWithConsumeData(data) {
             if(data.consumos.length == 0){
                 this.noDataForPeriod = true
                 this.loaded = true
                 return
             }
 
-            this.chartdata.datasets[0].label = this.$route.params.nome
+            this.chartdata.datasets[0].label = null
 
             if(this.period == 'dia') {
                 data.consumos.forEach(element => {
@@ -471,41 +481,89 @@ export default {
             this.loaded = true
         },
 
-        handleWithChartOptions() {
-            if(this.period == 'ano') {
-                this.options.scales.xAxes[0].type = 'time',
-                this.options.scales.xAxes[0].time.parser = 'MM/YYYY'
+        handleWithChartOptions(dateFormat) {
+            this.options.scales.xAxes[0].type = 'time',
+            this.options.scales.xAxes[0].time.parser = dateFormat
+        
+            if(this.period == 'sempre') {
+                this.options.scales.xAxes[0].time.unit = 'year'
+                this.options.scales.xAxes[0].time.unitStepSize = 1,
+                this.options.scales.xAxes[0].time.displayFormats.year = dateFormat
+                this.chartdata.labels = ['2020', `${new Date().toISOString().substr(0, 4)}`]
+            }
+            else if(this.period == 'intervalo') {
+                if(dateFormat == 'YYYY') {
+                    this.options.scales.xAxes[0].time.unit = 'year'
+                    this.options.scales.xAxes[0].time.unitStepSize = 1,
+                    this.options.scales.xAxes[0].time.displayFormats.year = dateFormat
+                    this.chartdata.labels = [`${this.getYear(this.dateVal)}`, `${this.getYear(this.dateVal2)}`]
+                }
+                else if(dateFormat == 'MM/YYYY') {
+                    this.options.scales.xAxes[0].time.unit = 'month'
+                    this.options.scales.xAxes[0].time.unitStepSize = 1,
+                    this.options.scales.xAxes[0].time.displayFormats.month = dateFormat
+                    this.chartdata.labels = [`${this.getMonth(this.dateVal)}/${this.getYear(this.dateVal)}`, `${this.getMonth(this.dateVal2)}/${this.getYear(this.dateVal2)}`]
+                }
+                else if(dateFormat == 'DD/MM/YYYY') {
+                    this.options.scales.xAxes[0].time.unit = 'day'
+                    this.options.scales.xAxes[0].time.unitStepSize = 2,
+                    this.options.scales.xAxes[0].time.displayFormats.day = dateFormat
+                    this.chartdata.labels = [this.formatDate(this.dateVal), this.formatDate(this.dateVal2)]
+                }
+                else {
+                    this.options.scales.xAxes[0].time.unit = 'hour'
+                    this.options.scales.xAxes[0].time.unitStepSize = 2,
+                    this.options.scales.xAxes[0].time.displayFormats.hour = dateFormat
+                    this.chartdata.labels = ['00:00', '23:00']
+                }
+            }
+            else if(this.period == 'ano') {
                 this.options.scales.xAxes[0].time.unit = 'month'
                 this.options.scales.xAxes[0].time.unitStepSize = 1,
-                this.options.scales.xAxes[0].time.displayFormats.month = 'MM/YYYY'
+                this.options.scales.xAxes[0].time.displayFormats.month = dateFormat
                 this.chartdata.labels = [`01/${this.dateVal}`, `12/${this.dateVal}`]
             }
             else if (this.period == 'mes') {
-                this.options.scales.xAxes[0].type = 'time',
-                this.options.scales.xAxes[0].time.parser = 'DD/MM/YYYY'
                 this.options.scales.xAxes[0].time.unit = 'day'
                 this.options.scales.xAxes[0].time.unitStepSize = 4,
-                this.options.scales.xAxes[0].time.displayFormats.day = 'DD/MM/YYYY'
+                this.options.scales.xAxes[0].time.displayFormats.day = dateFormat
                 const numDays = this.getDaysOfMonth(this.dateVal)
                 this.chartdata.labels = [`01/${this.getMonth(this.dateVal)}/${this.getYear(this.dateVal)}`, `${numDays}/${this.getMonth(this.dateVal)}/${this.getYear(this.dateVal)}`]
             }
             else if(this.period == 'dia') {
-                this.options.scales.xAxes[0].type = 'time',
-                this.options.scales.xAxes[0].time.parser = 'HH:mm'
                 this.options.scales.xAxes[0].time.unit = 'hour'
-                this.options.scales.xAxes[0].time.unitStepSize = 3,
-                this.options.scales.xAxes[0].time.displayFormats.hour = 'HH:mm'
+                this.options.scales.xAxes[0].time.unitStepSize = 2,
+                this.options.scales.xAxes[0].time.displayFormats.hour = dateFormat
                 this.chartdata.labels = ['00:00', '23:00']
             }
             
         },
 
+        async getSectorData() {
+            if(this.$route.params.nome != undefined) {
+                this.sectorName = this.$route.params.nome
+                return
+            }
+            else if(this.sectorName != '')
+                return
+           
+            try {
+                const response = await Setores.getName(this.$route.params.slug)
+                this.sectorName = response.data.nome
+            }
+            catch (err) {
+                this.handleWithError()
+            }
+        },
+
         async getAllTimeConsumeData() {
             this.error = this.loaded = this.noDataForPeriod = false
             this.resetChartData()
+            this.getSectorData()
 
             try {
                 const response = await Consumo.sectorAllTime(this.$route.params.slug)
+                this.handleWithChartOptions(response.data.periodo)
                 this.handleWithConsumeData(response.data)
             }
             catch (err) {
@@ -516,6 +574,7 @@ export default {
         async getYearConsumeData() {
             this.error = this.loaded = this.noDataForPeriod = false
             this.resetChartData()
+            this.getSectorData()
             
             try {
                 let params = {
@@ -524,7 +583,7 @@ export default {
                 }
 
                 const response = await Consumo.sectorPerYear(params)
-                this.handleWithChartOptions()
+                this.handleWithChartOptions(response.data.periodo)
                 this.handleWithConsumeData(response.data)
             }
             catch (err) {
@@ -535,6 +594,7 @@ export default {
         async getIntervalConsumeData() {
             this.error = this.loaded = this.noDataForPeriod = false
             this.resetChartData()
+            this.getSectorData()
             
             try {
                 let params = {
@@ -544,6 +604,7 @@ export default {
                 }
                 
                 const response = await Consumo.sectorPerPeriod(params)
+                this.handleWithChartOptions(response.data.periodo)
                 this.handleWithConsumeData(response.data)
             }
             catch (err) {
@@ -554,15 +615,14 @@ export default {
         async getMonthConsumeData() {
             this.error = this.loaded = this.noDataForPeriod = false
             this.resetChartData()
+            this.getSectorData()
             
             try {
                 const response = await Consumo.sectorPerMonth(this.getParamsMonthConsume())
-                this.handleWithChartOptions()
+                this.handleWithChartOptions(response.data.periodo)
                 this.handleWithConsumeData(response.data)
             }
             catch (err) {
-                console.log(err
-                )
                 this.handleWithError()
             }
         },
@@ -570,6 +630,7 @@ export default {
         async getDayConsumeData() {
             this.error = this.loaded = this.noDataForPeriod = false
             this.resetChartData()
+            this.getSectorData()
 
             try {
                 let params = {
@@ -577,7 +638,7 @@ export default {
                     date: this.dateVal
                 }
                 const response = await Consumo.sectorPerDay(params)
-                this.handleWithChartOptions()
+                this.handleWithChartOptions(response.data.periodo)
                 this.handleWithConsumeData(response.data)
             }
             catch (err) {
@@ -586,8 +647,8 @@ export default {
         }
     },
 
-    async mounted() {  
-        this.getMonthConsumeData()
+    mounted() {
+        this.getMonthConsumeData()      
     }
 }
 </script>

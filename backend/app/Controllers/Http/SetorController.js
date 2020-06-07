@@ -163,6 +163,12 @@ async list ({ request, response }) {
     return setor
   }
 
+  async getSectorName({params}) {
+    const setor = await Setor.findByOrFail('slug', params.slug)
+
+    return setor
+  }
+
   /**
    * Render a form to update an existing setor.
    * GET setors/:id/edit

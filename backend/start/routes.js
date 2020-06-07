@@ -33,6 +33,7 @@ Route.get('/setores/search', 'SetorController.search').middleware(["auth", "isAu
 Route.get('/setores/searchSetores', 'SetorController.searchSetores').middleware(["auth", "isAuthAndActive","isAdmin"])
 Route.put('/setores/:id', 'SetorController.update').middleware(["auth", "isAuthAndActive","isAdmin"])
 Route.get('/setores/:id', 'SetorController.show').middleware(["auth", "isAuthAndActive","isAdmin"])
+Route.get('/setores/getName/:slug', 'SetorController.getSectorName').middleware(["auth", "isAuthAndActive","isAdmin"])
 
 Route.post('/consumo', 'ConsumoController.store').middleware(["auth", "isAuthAndActive", "isSupplier"])
 Route.get('/consumo', 'ConsumoController.index').middleware(["auth", "isAuthAndActive"])

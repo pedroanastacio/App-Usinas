@@ -45,5 +45,9 @@ export default {
 
     show: (id) => {
         return api.get(`setores/${id}`)
+    },
+
+    getName: (slug) => {
+        return api.get(`setores/getName/${slug}`)
     }
 }

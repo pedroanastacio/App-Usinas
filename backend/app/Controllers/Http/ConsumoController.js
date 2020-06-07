@@ -389,7 +389,7 @@ class ConsumoController {
       const total = await this.sectorTotalConsumeAllTime(setor.id)
       const datesAndConsume = await this.sectorDatesAndConsumeAllTime(setor.id)
     
-      return response.status(200).json({ total: total, consumos: datesAndConsume.rows })  
+      return response.status(200).json({ total: total, periodo: 'YYYY', consumos: datesAndConsume.rows })  
     }
     catch(err) {
       return response.status(500).json({ data: err })
@@ -413,10 +413,10 @@ class ConsumoController {
   async sectorDatesAndConsumeAllTime(id) {
     try {
       const datesAndConsume = await Database
-        .raw(`SELECT TO_CHAR(data,'DD/MM/YYYY') AS data, sum(litros) as litros
+        .raw(`SELECT TO_CHAR(data,'YYYY') AS data, sum(litros) as litros
           FROM consumos
           WHERE setor_id = ${id}
-          GROUP BY TO_CHAR(data,'DD/MM/YYYY')`)
+          GROUP BY TO_CHAR(data,'YYYY')`)
             
       return Promise.resolve(datesAndConsume)  
     }
@@ -429,7 +429,22 @@ class ConsumoController {
 //----------------------------------------------------------------------------------------------------------
   async sectorConsumePerPeriod({ request, response, params }) {
     const parameters = request.all()
-   
+
+    const [year, month, day] = parameters.initialDate.split('-')
+    const [year2, month2, day2] = parameters.endDate.split('-')
+
+    let groupBy = ''
+
+    if(year != year2)
+      groupBy = 'YYYY'
+    else if(month != month2)  
+      groupBy = 'MM/YYYY'
+    else if(day == day2)
+      groupBy = 'fmHH24'
+    else 
+      groupBy = 'DD/MM/YYYY'
+
+    
     try{
       const setor = await Database
         .select('id')
@@ -438,9 +453,13 @@ class ConsumoController {
         .first()
 
       const total = await this.sectorTotalConsumePerPeriod(setor.id, parameters)
-      const datesAndConsume = await this.sectorDatesAndConsumePerPeriod(setor.id, parameters)
+      const datesAndConsume = await this.sectorDatesAndConsumePerPeriod(setor.id, parameters, groupBy)
 
-      return response.status(200).json({ total: total, consumos: datesAndConsume.rows })
+      if(groupBy == 'fmHH24'){
+        groupBy = 'HH:mm'
+       }
+
+      return response.status(200).json({ total: total, periodo: groupBy, consumos: datesAndConsume.rows })
     }
     catch(err) {
       return response.status(500).json({ data: err })
@@ -461,14 +480,20 @@ class ConsumoController {
     }
   }
 
-  async sectorDatesAndConsumePerPeriod(id, parameters) {
+  async sectorDatesAndConsumePerPeriod(id, parameters, groupBy) {
     try {
       const datesAndConsume = await Database
-        .raw(`SELECT TO_CHAR(data ,'DD/MM/YYYY') AS data, sum(litros) as litros
+        .raw(`SELECT TO_CHAR(data, '${groupBy}') AS data, sum(litros) as litros
           FROM consumos 
           WHERE setor_id  = ${id} AND data::date BETWEEN '${parameters.initialDate}' AND '${parameters.endDate}'
-          GROUP BY TO_CHAR(data ,'DD/MM/YYYY')`)
-            
+          GROUP BY TO_CHAR(data, '${groupBy}')`)
+      
+          if(groupBy == 'fmHH24'){
+           datesAndConsume.rows.forEach(el => {
+              el.data = `${el.data}:00`
+            })
+          }
+          
       return Promise.resolve(datesAndConsume)  
     }
     catch(err){
@@ -490,7 +515,7 @@ class ConsumoController {
       const total = await this.sectorTotalConsumePerYear(setor.id, parameters)
       const datesAndConsume = await this.sectorDatesAndConsumePerYear(setor.id, parameters)
 
-      return response.status(200).json({ total: total, consumos: datesAndConsume.rows })
+      return response.status(200).json({ total: total, periodo: 'MM/YYYY', consumos: datesAndConsume.rows })
     }
     catch(err) {
       return response.status(500).json({ data: err })
@@ -541,7 +566,7 @@ class ConsumoController {
       const total = await this.sectorTotalConsumePerMonth(setor.id, parameters)
       const datesAndConsume = await this.sectorDatesAndConsumePerMonth(setor.id, parameters)
 
-      return response.status(200).json({ total: total, consumos: datesAndConsume.rows })
+      return response.status(200).json({ total: total, periodo: 'DD/MM/YYYY', consumos: datesAndConsume.rows })
     }
     catch(err) {
       return err
@@ -592,7 +617,7 @@ class ConsumoController {
       const total = await this.sectorTotalConsumePerDay(setor.id, parameters)
       const hoursAndConsume = await this.sectorHoursAndConsumePerDay(setor.id, parameters)
 
-      return response.status(200).json({ total: total, consumos: hoursAndConsume.rows })
+      return response.status(200).json({ total: total, periodo: 'HH:mm', consumos: hoursAndConsume.rows })
     }
     catch(err) {
       return response.status(500).json({ data: err })
