@@ -209,8 +209,8 @@
                     :headers="headers"                       
                     :items="consumeData"
                     :loading="!loaded"
-                    loading-text="Carregando setores..."
-                    no-data-text="Nenhum setor encontrado"
+                    loading-text="Carregando dados de consumo..."
+                    no-data-text="Nenhum dado encontrado"
                     locale="pt-BR"  
                     item-key="id"
                     :hide-default-footer="true"
@@ -437,7 +437,6 @@ export default {
         percentCalculate(total, sectorConsume) {
             return parseFloat((sectorConsume/total)*100).toFixed(2);
         },
-
                 
         handleWithconsumeData(data) {
             if(data.consumos.length == 0){
@@ -457,7 +456,7 @@ export default {
                     "setor": element.setor,
                     "litros": `${Number(element.litros).toLocaleString('pt-BR')} L`,
                     "percent": `${Number(this.percentCalculate(data.total, element.litros)).toLocaleString('pt-BR')}%`
-                    })
+                })
             });
 
             this.chartdata.datasets[0].backgroundColor = this.getColors(data.consumos.length)

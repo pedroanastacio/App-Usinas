@@ -203,6 +203,24 @@
                 </v-col>    
             </v-row>    
 
+            <v-row 
+            v-if="loaded&&!error&&!noDataForPeriod"
+            >
+                <v-col>
+                    <v-data-table
+                    v-show="!error"
+                    :headers="headers"                       
+                    :items="consumeData"
+                    :loading="!loaded"
+                    loading-text="Carregando dados de consumo..."
+                    no-data-text="Nenhum dado encontrado"
+                    locale="pt-BR"  
+                    :hide-default-footer="true"
+                    class="elevation-2"
+                    /> 
+                </v-col>    
+            </v-row>    
+
             <v-row v-show="!loaded&&!error&&!noDataForPeriod">
                 <v-col>
                     <LoadingPage :show="!loaded&&!error&&!noDataForPeriod"/>  
@@ -302,7 +320,8 @@ export default {
         dateMenu: false,
         labelInput1: null,
         consumeData: [],
-        sectorName: ''
+        sectorName: '',
+        headers: []
     }),
 
      computed: {
@@ -422,6 +441,10 @@ export default {
             this.consumeData = []
         },
 
+        percentCalculate(total, sectorConsume) {
+            return parseFloat((sectorConsume/total)*100).toFixed(2);
+        },
+
         getParamsMonthConsume() {
             let params = {
                 slug: this.$route.params.slug,
@@ -460,21 +483,85 @@ export default {
 
             this.chartdata.datasets[0].label = null
 
-            if(this.period == 'dia') {
+            if(data.periodo == 'YYYY') {
+                 data.consumos.forEach(element => {
+                    this.chartdata.datasets[0].data.push({
+                        x: element.ano,
+                        y: element.litros
+                    })
+
+                    this.consumeData.push({
+                        "ano": element.ano,
+                        "litros": `${Number(element.litros).toLocaleString('pt-BR')} L`,
+                        "percent": `${Number(this.percentCalculate(data.total, element.litros)).toLocaleString('pt-BR')}%`
+                    }) 
+                })
+
+                this.headers = [
+                    {text: 'Ano', align: 'left', value:'ano', class: "primary white--text" },
+                    {text: 'Litros (L)', align:'left', value: 'litros', class: "primary white--text", sortable: false}, 
+                    {text: 'Porcentagem (%)', align: 'left', value: 'percent', class: "primary white--text", sortable: false}
+                ]
+            }
+            else if(data.periodo == 'MM/YYYY') {
+                 data.consumos.forEach(element => {
+                    this.chartdata.datasets[0].data.push({
+                        x: element.mes,
+                        y: element.litros
+                    })
+
+                    this.consumeData.push({
+                        "mes": element.mes,
+                        "litros": `${Number(element.litros).toLocaleString('pt-BR')} L`,
+                        "percent": `${Number(this.percentCalculate(data.total, element.litros)).toLocaleString('pt-BR')}%`
+                    }) 
+                })
+
+                this.headers = [
+                    {text: 'Mês', align: 'left', value:'mes', class: "primary white--text" },
+                    {text: 'Litros (L)', align:'left', value: 'litros', class: "primary white--text", sortable: false}, 
+                    {text: 'Porcentagem (%)', align: 'left', value: 'percent', class: "primary white--text", sortable: false}
+                ]
+            }
+            else if(data.periodo == "HH:mm") {
                 data.consumos.forEach(element => {
                     this.chartdata.datasets[0].data.push({
                         x: element.hora,
                         y: element.litros
+                    })
+
+                    this.consumeData.push({
+                        "horario": element.hora,
+                        "litros": `${Number(element.litros).toLocaleString('pt-BR')} L`,
+                        "percent": `${Number(this.percentCalculate(data.total, element.litros)).toLocaleString('pt-BR')}%`
                     }) 
                 })
+
+                this.headers = [
+                    {text: 'Horário', align: 'left', value:'horario', class: "primary white--text" },
+                    {text: 'Litros (L)', align:'left', value: 'litros', class: "primary white--text", sortable: false}, 
+                    {text: 'Porcentagem (%)', align: 'left', value: 'percent', class: "primary white--text", sortable: false}
+                ]
             }
             else {
                 data.consumos.forEach(element => {
                     this.chartdata.datasets[0].data.push({
                         x: element.data,
                         y: element.litros
+                    })
+                    
+                    this.consumeData.push({
+                        "data": element.data,
+                        "litros": `${Number(element.litros).toLocaleString('pt-BR')} L`,
+                        "percent": `${Number(this.percentCalculate(data.total, element.litros)).toLocaleString('pt-BR')}%`
                     }) 
                 })
+
+                 this.headers = [
+                    {text: 'Data', align: 'left', value:'data', class: "primary white--text" },
+                    {text: 'Litros (L)', align:'left', value: 'litros', class: "primary white--text", sortable: false}, 
+                    {text: 'Porcentagem (%)', align: 'left', value: 'percent', class: "primary white--text", sortable: false}
+                ]
             }
                      
             this.totalConsume = Number(data.total).toLocaleString('pt-BR')

@@ -413,7 +413,7 @@ class ConsumoController {
   async sectorDatesAndConsumeAllTime(id) {
     try {
       const datesAndConsume = await Database
-        .raw(`SELECT TO_CHAR(data,'YYYY') AS data, sum(litros) as litros
+        .raw(`SELECT TO_CHAR(data,'YYYY') AS ano, sum(litros) as litros
           FROM consumos
           WHERE setor_id = ${id}
           GROUP BY TO_CHAR(data,'YYYY')`)
@@ -481,16 +481,27 @@ class ConsumoController {
   }
 
   async sectorDatesAndConsumePerPeriod(id, parameters, groupBy) {
+    let label = ''
+    
+    if(groupBy == 'YYYY')
+      label = 'ano'
+    else if(groupBy == 'MM/YYYY')  
+      label = 'mes' 
+    else if(groupBy == 'DD/MM/YYYY')  
+      label = 'data'   
+    else
+      label = 'hora'
+       
     try {
       const datesAndConsume = await Database
-        .raw(`SELECT TO_CHAR(data, '${groupBy}') AS data, sum(litros) as litros
+        .raw(`SELECT TO_CHAR(data, '${groupBy}') AS ${label}, sum(litros) as litros
           FROM consumos 
           WHERE setor_id  = ${id} AND data::date BETWEEN '${parameters.initialDate}' AND '${parameters.endDate}'
           GROUP BY TO_CHAR(data, '${groupBy}')`)
       
           if(groupBy == 'fmHH24'){
            datesAndConsume.rows.forEach(el => {
-              el.data = `${el.data}:00`
+              el.hora = `${el.hora}:00`
             })
           }
           
@@ -540,7 +551,7 @@ class ConsumoController {
   async sectorDatesAndConsumePerYear(id, parameters) {
     try {
       const datesAndConsume = await Database
-        .raw(`SELECT TO_CHAR(data ,'MM/YYYY') AS data, sum(litros) as litros
+        .raw(`SELECT TO_CHAR(data ,'MM/YYYY') AS mes, sum(litros) as litros
           FROM consumos
           WHERE setor_id  = ${id} AND EXTRACT(year FROM data) = '${parameters.year}'
           GROUP BY TO_CHAR(data ,'MM/YYYY')`)
