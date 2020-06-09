@@ -215,6 +215,7 @@
                     item-key="id"
                     :hide-default-footer="true"
                     class="elevation-2"
+                    disable-pagination
                     /> 
                 </v-col>    
             </v-row>    

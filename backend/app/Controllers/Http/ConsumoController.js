@@ -440,7 +440,7 @@ class ConsumoController {
     else if(month != month2)  
       groupBy = 'MM/YYYY'
     else if(day == day2)
-      groupBy = 'fmHH24'
+      groupBy = 'HH24'
     else 
       groupBy = 'DD/MM/YYYY'
 
@@ -455,7 +455,7 @@ class ConsumoController {
       const total = await this.sectorTotalConsumePerPeriod(setor.id, parameters)
       const datesAndConsume = await this.sectorDatesAndConsumePerPeriod(setor.id, parameters, groupBy)
 
-      if(groupBy == 'fmHH24'){
+      if(groupBy == 'HH24'){
         groupBy = 'HH:mm'
        }
 
@@ -499,7 +499,7 @@ class ConsumoController {
           WHERE setor_id  = ${id} AND data::date BETWEEN '${parameters.initialDate}' AND '${parameters.endDate}'
           GROUP BY TO_CHAR(data, '${groupBy}')`)
       
-          if(groupBy == 'fmHH24'){
+          if(groupBy == 'HH24'){
            datesAndConsume.rows.forEach(el => {
               el.hora = `${el.hora}:00`
             })
@@ -652,10 +652,10 @@ class ConsumoController {
   async sectorHoursAndConsumePerDay(id, parameters) {
     try{
       const hoursAndConsume = await Database
-        .raw(`SELECT TO_CHAR(data , 'fmHH24') AS hora, sum(litros) as litros
+        .raw(`SELECT TO_CHAR(data , 'HH24') AS hora, sum(litros) as litros
         FROM consumos
         WHERE setor_id = ${id} AND data::DATE = '${parameters.date}'
-        GROUP BY TO_CHAR(data , 'fmHH24')`)
+        GROUP BY TO_CHAR(data , 'HH24')`)
 
         hoursAndConsume.rows.forEach(el => {
           el.hora = `${el.hora}:00`

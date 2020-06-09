@@ -217,6 +217,8 @@
                     locale="pt-BR"  
                     :hide-default-footer="true"
                     class="elevation-2"
+                    disable-pagination
+                    disable-initial-sort
                     /> 
                 </v-col>    
             </v-row>    
@@ -498,7 +500,7 @@ export default {
                 })
 
                 this.headers = [
-                    {text: 'Ano', align: 'left', value:'ano', class: "primary white--text" },
+                    {text: 'Ano', align: 'left', value:'ano', class: "primary white--text"},
                     {text: 'Litros (L)', align:'left', value: 'litros', class: "primary white--text", sortable: false}, 
                     {text: 'Porcentagem (%)', align: 'left', value: 'percent', class: "primary white--text", sortable: false}
                 ]
@@ -538,7 +540,7 @@ export default {
                 })
 
                 this.headers = [
-                    {text: 'Horário', align: 'left', value:'horario', class: "primary white--text" },
+                    {text: 'Horário', align: 'left', value:'horario', class: "primary white--text"},
                     {text: 'Litros (L)', align:'left', value: 'litros', class: "primary white--text", sortable: false}, 
                     {text: 'Porcentagem (%)', align: 'left', value: 'percent', class: "primary white--text", sortable: false}
                 ]
@@ -558,7 +560,7 @@ export default {
                 })
 
                  this.headers = [
-                    {text: 'Data', align: 'left', value:'data', class: "primary white--text" },
+                    {text: 'Data', align: 'left', value:'data', class: "primary white--text"},
                     {text: 'Litros (L)', align:'left', value: 'litros', class: "primary white--text", sortable: false}, 
                     {text: 'Porcentagem (%)', align: 'left', value: 'percent', class: "primary white--text", sortable: false}
                 ]
