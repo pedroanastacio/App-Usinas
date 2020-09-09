@@ -1,5 +1,6 @@
-import axios from "axios";
-import { getToken } from "./AuthStorage";
+import axios from "axios"; 
+import { getToken, removeToken } from "./AuthStorage";
+import router from '../router';
 
 const api = axios.create({
   baseURL: "http://127.0.0.1:3333"
@@ -16,5 +17,14 @@ api.interceptors.request.use(async config => {
   }*/
   return config;
 });
+
+api.interceptors.response.use(response => {
+  return response
+}, error => {
+  if (error.response.data.error.name == 'ExpiredJwtToken'){
+    removeToken();
+    router.push('/login');
+  }
+})
 
 export default api;

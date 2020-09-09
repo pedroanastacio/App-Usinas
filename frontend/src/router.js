@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import Router from 'vue-router'
+import Router from 'vue-router' 
 import { isAuthenticated } from './services/AuthStorage'
 
 Vue.use(Router)

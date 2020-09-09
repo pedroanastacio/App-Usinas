@@ -455,9 +455,8 @@ class ConsumoController {
       const total = await this.sectorTotalConsumePerPeriod(setor.id, parameters)
       const datesAndConsume = await this.sectorDatesAndConsumePerPeriod(setor.id, parameters, groupBy)
 
-      if(groupBy == 'HH24'){
+      if(groupBy == 'HH24')
         groupBy = 'HH:mm'
-       }
 
       return response.status(200).json({ total: total, periodo: groupBy, consumos: datesAndConsume.rows })
     }
@@ -551,10 +550,10 @@ class ConsumoController {
   async sectorDatesAndConsumePerYear(id, parameters) {
     try {
       const datesAndConsume = await Database
-        .raw(`SELECT TO_CHAR(data ,'MM/YYYY') AS mes, sum(litros) as litros
+        .raw(`SELECT TO_CHAR(data, 'MM/YYYY') AS mes, sum(litros) as litros
           FROM consumos
-          WHERE setor_id  = ${id} AND EXTRACT(year FROM data) = '${parameters.year}'
-          GROUP BY TO_CHAR(data ,'MM/YYYY')`)
+          WHERE setor_id = ${id} AND EXTRACT(year FROM data) = '${parameters.year}'
+          GROUP BY TO_CHAR(data, 'MM/YYYY')`)
         
       return Promise.resolve(datesAndConsume)  
     }
@@ -602,10 +601,10 @@ class ConsumoController {
   async sectorDatesAndConsumePerMonth(id, parameters) {
     try{
       const datesAndConsume = await Database
-        .raw(`SELECT TO_CHAR(data ,'DD/MM/YYYY') AS data, sum(litros) as litros
+        .raw(`SELECT TO_CHAR(data, 'DD/MM/YYYY') AS data, sum(litros) as litros
         FROM consumos
         WHERE setor_id = ${id} AND EXTRACT(year FROM data) = '${parameters.year}' AND EXTRACT(month FROM data) = '${parameters.month}'
-        GROUP BY TO_CHAR(data ,'DD/MM/YYYY')`)
+        GROUP BY TO_CHAR(data, 'DD/MM/YYYY')`)
 
       return Promise.resolve(datesAndConsume)  
     }

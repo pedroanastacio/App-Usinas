@@ -1,5 +1,7 @@
 'use strict'
 
+const User = use('App/Models/User')
+
 class AuthController {
    
     async authenticate({ request, response, auth }){
@@ -13,6 +15,10 @@ class AuthController {
             Object.assign(user, token)
             
             return user
+
+            /*const user = await User.find(1)
+
+            console.log(user)*/
 
         }catch(err){
             if(err.code == 'E_MISSING_DATABASE_ROW')

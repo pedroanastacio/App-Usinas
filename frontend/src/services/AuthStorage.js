@@ -10,7 +10,7 @@ export const getUser = () => localStorage.getItem(USER_DATA)
 
 //login
 export const setToken = (user) => {
-  localStorage.setItem(USER_DATA, JSON.stringify(user))
+  localStorage.setItem(USER_DATA, JSON.stringify(user)) 
 };
 
 

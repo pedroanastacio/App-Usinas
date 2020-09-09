@@ -168,6 +168,7 @@ export default {
                 this.error = false
            }
            catch(err){
+                //console.log(err.response.data.error.name)
                 this.isLoading = false
                 this.message = err.response.data.message
                 this.error = true

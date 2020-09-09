@@ -576,52 +576,52 @@ export default {
         
             if(this.period == 'sempre') {
                 this.options.scales.xAxes[0].time.unit = 'year'
-                this.options.scales.xAxes[0].time.unitStepSize = 1,
+                this.options.scales.xAxes[0].time.unitStepSize = 1
                 this.options.scales.xAxes[0].time.displayFormats.year = dateFormat
                 this.chartdata.labels = ['2020', `${new Date().toISOString().substr(0, 4)}`]
             }
             else if(this.period == 'intervalo') {
                 if(dateFormat == 'YYYY') {
                     this.options.scales.xAxes[0].time.unit = 'year'
-                    this.options.scales.xAxes[0].time.unitStepSize = 1,
+                    this.options.scales.xAxes[0].time.unitStepSize = 1
                     this.options.scales.xAxes[0].time.displayFormats.year = dateFormat
                     this.chartdata.labels = [`${this.getYear(this.dateVal)}`, `${this.getYear(this.dateVal2)}`]
                 }
                 else if(dateFormat == 'MM/YYYY') {
                     this.options.scales.xAxes[0].time.unit = 'month'
-                    this.options.scales.xAxes[0].time.unitStepSize = 1,
+                    this.options.scales.xAxes[0].time.unitStepSize = 1
                     this.options.scales.xAxes[0].time.displayFormats.month = dateFormat
                     this.chartdata.labels = [`${this.getMonth(this.dateVal)}/${this.getYear(this.dateVal)}`, `${this.getMonth(this.dateVal2)}/${this.getYear(this.dateVal2)}`]
                 }
                 else if(dateFormat == 'DD/MM/YYYY') {
                     this.options.scales.xAxes[0].time.unit = 'day'
-                    this.options.scales.xAxes[0].time.unitStepSize = 2,
+                    this.options.scales.xAxes[0].time.unitStepSize = 2
                     this.options.scales.xAxes[0].time.displayFormats.day = dateFormat
                     this.chartdata.labels = [this.formatDate(this.dateVal), this.formatDate(this.dateVal2)]
                 }
                 else {
                     this.options.scales.xAxes[0].time.unit = 'hour'
-                    this.options.scales.xAxes[0].time.unitStepSize = 2,
+                    this.options.scales.xAxes[0].time.unitStepSize = 2
                     this.options.scales.xAxes[0].time.displayFormats.hour = dateFormat
                     this.chartdata.labels = ['00:00', '23:00']
                 }
             }
             else if(this.period == 'ano') {
                 this.options.scales.xAxes[0].time.unit = 'month'
-                this.options.scales.xAxes[0].time.unitStepSize = 1,
+                this.options.scales.xAxes[0].time.unitStepSize = 1
                 this.options.scales.xAxes[0].time.displayFormats.month = dateFormat
                 this.chartdata.labels = [`01/${this.dateVal}`, `12/${this.dateVal}`]
             }
             else if (this.period == 'mes') {
                 this.options.scales.xAxes[0].time.unit = 'day'
-                this.options.scales.xAxes[0].time.unitStepSize = 4,
+                this.options.scales.xAxes[0].time.unitStepSize = 4
                 this.options.scales.xAxes[0].time.displayFormats.day = dateFormat
                 const numDays = this.getDaysOfMonth(this.dateVal)
                 this.chartdata.labels = [`01/${this.getMonth(this.dateVal)}/${this.getYear(this.dateVal)}`, `${numDays}/${this.getMonth(this.dateVal)}/${this.getYear(this.dateVal)}`]
             }
             else if(this.period == 'dia') {
                 this.options.scales.xAxes[0].time.unit = 'hour'
-                this.options.scales.xAxes[0].time.unitStepSize = 2,
+                this.options.scales.xAxes[0].time.unitStepSize = 2
                 this.options.scales.xAxes[0].time.displayFormats.hour = dateFormat
                 this.chartdata.labels = ['00:00', '23:00']
             }
