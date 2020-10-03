@@ -64,7 +64,7 @@
                             </v-layout>                       
                         </template>
 
-                        <template  v-slot:item.id="{ item }" >
+                        <template v-slot:item.id="{ item }" >
                             <v-layout justify-end>
                             <v-icon class="mr-0" color="grey darken-4" v-model="item.id" medium>
                                 mdi-playlist-edit

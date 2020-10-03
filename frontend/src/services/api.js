@@ -1,5 +1,5 @@
 import axios from "axios"; 
-import { getToken, removeToken } from "./AuthStorage";
+import { getToken, removeToken  } from "./AuthStorage";
 import router from '../router';
 
 const api = axios.create({
@@ -7,9 +7,10 @@ const api = axios.create({
 });
 
 api.interceptors.request.use(async config => {
-  const user = getToken();
-  if (user) {
-    const token = JSON.parse(user).token
+  const userToken = getToken();
+   
+  if (userToken) {
+    const token = userToken
     config.headers.Authorization = `Bearer ${token}`;
   }
   /*else{
@@ -21,10 +22,19 @@ api.interceptors.request.use(async config => {
 api.interceptors.response.use(response => {
   return response
 }, error => {
-  if (error.response.data.error.name == 'ExpiredJwtToken'){
-    removeToken();
-    router.push('/login');
+  
+  const hasDataError = Object.prototype.hasOwnProperty.call(error.response.data, "error")
+ 
+  if(hasDataError){
+    if (error.response.data.error.name == 'ExpiredJwtToken'){
+      removeToken();
+      router.push('/login');
+    }
   }
+  
+  return Promise.reject(error) 
+
+  
 })
 
 export default api;

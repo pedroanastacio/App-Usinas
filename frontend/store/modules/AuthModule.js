@@ -1,7 +1,21 @@
 import AuthService from "../../src/services/Auth"
-import { setToken, removeToken, getUser } from '../../src/services/AuthStorage'
+import jwtDecode from 'jwt-decode'
+import { setToken, removeToken, getToken } from '../../src/services/AuthStorage'
 
-const user = JSON.parse(getUser())
+let user = null
+const token = getToken()
+
+if(token != null) {
+    const decoded = jwtDecode(token)
+
+    user = {
+        "nome": decoded.data.nome,
+        "sobrenome": decoded.data.sobrenome,
+        "isAdmin": decoded.data.isAdmin,
+        "isSupplier": decoded.data.isSupplier,
+        "isActive": decoded.data.isActive
+    }
+}
 
 const initialState = user
   ? { user }
@@ -21,13 +35,13 @@ export const auth = {
                     "sobrenome": response.data.sobrenome,
                     "isAdmin": response.data.isAdmin,
                     "isSupplier": response.data.isSupplier,
-                    "isActive": response.data.isActive,
-                    "type": response.data.type,
+                    "isActive": response.data.isActive
+                    /*"type": response.data.type,
                     "token": response.data.token,
-                    "refreshToken": response.data.refreshToken
+                    "refreshToken": response.data.refreshToken*/
                 }
 
-                setToken(user)
+                setToken(response.data.token)
                 commit('loginSuccess', user)
                 return Promise.resolve()
 

@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router' 
 import { isAuthenticated } from './services/AuthStorage'
+import store from '../store/index'
 
 Vue.use(Router)
 
@@ -38,6 +39,7 @@ const router = new Router({
             component: () => import('./views/Users.vue'),
             meta: {
                 title: "Usuários",
+                isAdmin: true
             }
         },
         {
@@ -46,6 +48,7 @@ const router = new Router({
             component: () => import('./views/Import.vue'),
             meta: {
                 title: "Importar dados",
+                isSupplier: true
             }
         },
         {
@@ -54,6 +57,7 @@ const router = new Router({
             component: () => import('./views/NewUser.vue'),
             meta: {
                 title: "Novo Usuário",
+                isAdmin: true
             }
         },
         {
@@ -62,6 +66,7 @@ const router = new Router({
             component: () => import('./views/EditUser.vue'),
             meta: {
                 title: "Editar usuário",
+                isAdmin: true
             }
         },
         {
@@ -70,6 +75,7 @@ const router = new Router({
             component: () => import('./views/Setores.vue'),
             meta: {
                 title: "Setores",
+                isAdmin: true
             }
         },{
             path: "/setor",
@@ -77,6 +83,7 @@ const router = new Router({
             component: () => import('./views/NovoSetor.vue'),
             meta: {
                 title: "Novo setor",
+                isAdmin: true
             }
         },
         {
@@ -85,6 +92,7 @@ const router = new Router({
             component: () => import('./views/EditSetor.vue'),
             meta: {
                 title: "Editar setor",
+                isAdmin: true
             }
         },
         {
@@ -122,6 +130,26 @@ router.beforeEach((to, from, next) => {
 
     if(to.name == 'Login' && isAuthenticated()) next({ name: 'Home' })
     next()
+
+    if(to.matched.some(record => record.meta.isSupplier)) { 
+        if(store.state.auth.user != null){
+            if(store.state.auth.user.isSupplier)
+                next()
+            else
+                next({ name: 'Home' })
+        }
+    }
+
+    if(to.matched.some(record => record.meta.isAdmin)) { 
+        if(store.state.auth.user != null){
+            if(store.state.auth.user.isAdmin)
+                next()
+            else
+                next({ name: 'Home' })
+        }
+    }
+
+
   })
 
 export default router  

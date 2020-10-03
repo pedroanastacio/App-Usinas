@@ -17,7 +17,7 @@
 const Route = use('Route') 
 
 Route.post('/authenticate', 'AuthController.authenticate').middleware(["isActive"]).validator('AuthValidator')
-Route.get('/getUserId', 'AuthController.getUserId')
+Route.get('/getUserId', 'AuthController.getUserId').middleware(["auth", "isAuthAndActive"])
 
 Route.post('/users', 'UserController.store')
     .middleware(["auth", "isAuthAndActive","isAdmin"]).validator('StoreUser')
@@ -28,7 +28,7 @@ Route.get('/users/:id', 'UserController.show').middleware(["auth", "isAuthAndAct
 
 Route.post('/setores', 'SetorController.store').middleware(["auth", "isAuthAndActive","isAdmin"]).validator('StoreSetor')
 Route.get('/setores', 'SetorController.index').middleware(["auth", "isAuthAndActive","isAdmin"])
-Route.get('/listSetores', 'SetorController.list').middleware(["auth", "isAuthAndActive","isAdmin"])
+Route.get('/listSetores', 'SetorController.list').middleware(["auth", "isAuthAndActive"])
 Route.get('/setores/search', 'SetorController.search').middleware(["auth", "isAuthAndActive","isAdmin"])
 Route.get('/setores/searchSetores', 'SetorController.searchSetores').middleware(["auth", "isAuthAndActive","isAdmin"])
 Route.put('/setores/:id', 'SetorController.update').middleware(["auth", "isAuthAndActive","isAdmin"])

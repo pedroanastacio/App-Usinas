@@ -1,20 +1,18 @@
 //export const TOKEN_KEY = "@appUsinas-Token"
-export const USER_DATA = "@appUsinas-User"
+export const TOKEN_KEY = "@appUsinas-Token"
 
-export const isAuthenticated = () => localStorage.getItem(USER_DATA) !== null
+export const isAuthenticated = () => localStorage.getItem(TOKEN_KEY) !== null
 
-export const getToken = () => localStorage.getItem(USER_DATA)
-
-export const getUser = () => localStorage.getItem(USER_DATA)
+export const getToken = () => localStorage.getItem(TOKEN_KEY)
 
 
 //login
-export const setToken = (user) => {
-  localStorage.setItem(USER_DATA, JSON.stringify(user)) 
+export const setToken = (token) => {
+  localStorage.setItem(TOKEN_KEY, token) 
 };
 
 
 //logout
 export const removeToken = () => {
-  localStorage.removeItem(USER_DATA)
+  localStorage.removeItem(TOKEN_KEY)
 };

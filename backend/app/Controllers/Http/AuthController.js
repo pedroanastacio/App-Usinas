@@ -1,7 +1,5 @@
 'use strict'
 
-const User = use('App/Models/User')
-
 class AuthController {
    
     async authenticate({ request, response, auth }){
@@ -10,19 +8,19 @@ class AuthController {
         try{
             const user = response.user
             
-            const token = await auth.attempt(username, password)
+            const token = await auth.attempt(username, password, { nome: user.nome,
+                                                                  sobrenome: user.sobrenome, 
+                                                                  isAdmin: user.isAdmin,
+                                                                  isSupplier: user.isSupplier,
+                                                                  isActive: user.isActive })
             
             Object.assign(user, token)
             
-            return user
-
-            /*const user = await User.find(1)
-
-            console.log(user)*/
+            return user            
 
         }catch(err){
             if(err.code == 'E_MISSING_DATABASE_ROW')
-                return response.status(401).json({ message: 'Usuário não existe'})
+                return response.status(401).json({ message: 'Usuário não encontrado' })
             else if(err.code == 'E_PASSWORD_MISMATCH')
                 return response.status(401).json({ message: 'Senha incorreta'})
             else
@@ -37,7 +35,7 @@ class AuthController {
             return id
         }
         catch(err) {
-            response.status(401).json({ message: 'Você não está logado'})
+            response.status(401).json({ message: 'Você não está logado', name:'UserNotLoggedIn'})
         }
     }
 
