@@ -22,7 +22,6 @@ class ConsumoSchema extends Schema {
       .references('id')
       .inTable('users')
       .onUpdate('CASCADE')   
-      .notNullable()
       table.timestamps()
     })
   }

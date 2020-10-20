@@ -20,7 +20,7 @@ Route.post('/authenticate', 'AuthController.authenticate').middleware(["isActive
 Route.get('/getUserId', 'AuthController.getUserId').middleware(["auth", "isAuthAndActive"])
 
 Route.post('/users', 'UserController.store')
-    .middleware(["auth", "isAuthAndActive","isAdmin"]).validator('StoreUser')
+    //.middleware(["auth", "isAuthAndActive","isAdmin"]).validator('StoreUser')
 Route.get('/users', 'UserController.index').middleware(["auth", "isAuthAndActive","isAdmin"])
 Route.get('/users/search', 'UserController.search').middleware(["auth", "isAuthAndActive","isAdmin"])
 Route.put('/users/:id', 'UserController.update').middleware(["auth", "isAuthAndActive","isAdmin"])
@@ -35,6 +35,7 @@ Route.put('/setores/:id', 'SetorController.update').middleware(["auth", "isAuthA
 Route.get('/setores/:id', 'SetorController.show').middleware(["auth", "isAuthAndActive","isAdmin"])
 Route.get('/setores/getName/:slug', 'SetorController.getSectorName').middleware(["auth", "isAuthAndActive","isAdmin"])
 
+Route.post('/consumo/arduino', 'ConsumoController.arduinoStore')
 Route.post('/consumo', 'ConsumoController.store').middleware(["auth", "isAuthAndActive", "isSupplier"])
 Route.get('/consumo', 'ConsumoController.index').middleware(["auth", "isAuthAndActive"])
 

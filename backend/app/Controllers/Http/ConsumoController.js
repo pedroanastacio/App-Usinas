@@ -65,7 +65,7 @@ class ConsumoController {
     })
   
     if (!uploadedFile.moved()) {
-      return response.status(500).json({ message: 'Importação falhou', data: err})
+      return response.status(500).json({ message: 'Importação falhou', error: err})
     }
 
     const jsonArray = await csvtojson().fromFile('tmp/' + dir + fileName);
@@ -95,10 +95,18 @@ class ConsumoController {
     }
     catch(err){
       if(err.constraint == 'consumos_setor_id_foreign')
-        return response.status(500).json({ message: 'Não foi possível importar arquivo. Conteúdo inválido', data: err})
+        return response.status(500).json({ message: 'Não foi possível importar arquivo. Conteúdo inválido', error: err})
       
-      return response.status(500).json({ message: 'Importação falhou', data: err})
+      return response.status(500).json({ message: 'Importação falhou', error: err})
     }
+  }
+
+  async arduinoStore ({request, response }) {
+    const data = request.only(['setor_id', 'data', 'litros'])
+
+    const consumo = await Consumo.create(data)
+
+    return consumo
   }
 
   /**
@@ -156,7 +164,7 @@ class ConsumoController {
       return response.status(200).json({ total: total, consumos: consume.rows })
     }
     catch(err) {
-     return response.status(500).json({ data: err })
+     return response.status(500).json({ error: err })
     }
   }
 
@@ -200,7 +208,7 @@ class ConsumoController {
       return response.status(200).json({ total: total, consumos: consume.rows })  
     }
     catch(err) {
-      return response.status(500).json({ data: err })
+      return response.status(500).json({ error: err })
     }    
   }
 
@@ -249,7 +257,7 @@ class ConsumoController {
       return response.status(200).json({ total: total, consumos: consume.rows})  
     }
     catch(err) {
-      return response.status(500).json({ data: err })
+      return response.status(500).json({ error: err })
     }    
   }
 
@@ -295,7 +303,7 @@ class ConsumoController {
       return response.status(200).json({ total: total, consumos: consume.rows })
     }
     catch(err) {
-      return response.status(500).json({ data: err })
+      return response.status(500).json({ error: err })
     }
   }
 
@@ -342,7 +350,7 @@ class ConsumoController {
       return response.status(200).json({ total: total, consumos: consume.rows })  
     }
     catch(err) {
-      return response.status(500).json({ data: err })
+      return response.status(500).json({ error: err })
     }
   }
 
@@ -392,7 +400,7 @@ class ConsumoController {
       return response.status(200).json({ total: total, periodo: 'YYYY', consumos: datesAndConsume.rows })  
     }
     catch(err) {
-      return response.status(500).json({ data: err })
+      return response.status(500).json({ error: err })
     }
   }
 
@@ -421,7 +429,6 @@ class ConsumoController {
       return Promise.resolve(datesAndConsume)  
     }
     catch(err){
-      console.log(err)
       return Promise.reject(err)
     }   
   }
@@ -461,7 +468,7 @@ class ConsumoController {
       return response.status(200).json({ total: total, periodo: groupBy, consumos: datesAndConsume.rows })
     }
     catch(err) {
-      return response.status(500).json({ data: err })
+      return response.status(500).json({ error: err })
     }
   }
 
@@ -528,7 +535,7 @@ class ConsumoController {
       return response.status(200).json({ total: total, periodo: 'MM/YYYY', consumos: datesAndConsume.rows })
     }
     catch(err) {
-      return response.status(500).json({ data: err })
+      return response.status(500).json({ error: err })
     }
   }
 
@@ -630,7 +637,7 @@ class ConsumoController {
       return response.status(200).json({ total: total, periodo: 'HH:mm', consumos: hoursAndConsume.rows })
     }
     catch(err) {
-      return response.status(500).json({ data: err })
+      return response.status(500).json({ error: err })
     }
   }
 

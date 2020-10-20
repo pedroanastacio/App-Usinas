@@ -188,7 +188,7 @@
                 lg="4"    
                 xl="4"
                 >
-                    <v-card class="pb-4">
+                    <v-card class="pb-4" height="100%">
                         <v-card-text class="grey--text">
                             Consumo total
                         </v-card-text>
@@ -578,6 +578,6 @@ export default {
 
 .consumo_total {
     font-size: 1.6em;
-
+    height: 80%;
 }
 </style>

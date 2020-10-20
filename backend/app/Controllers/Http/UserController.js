@@ -17,7 +17,7 @@ class UserController {
             if(err.constraint == 'users_username_unique')
                 return response.status(409).json({ message: 'Usuário já existe' })
             else
-                return response.status(500).json({ message: 'Ocorreu um erro interno'})    
+                return response.status(500).json({ message: 'Ocorreu um erro interno', error: err})    
         }   
         
     }
@@ -57,7 +57,7 @@ class UserController {
             return response.status(200).json(users)
         }
         catch(err){
-            return response.status(500).json({ message: 'Ocorreu um erro interno' })
+            return response.status(500).json({ message: 'Ocorreu um erro interno', error: err })
         }    
     }
 
@@ -85,7 +85,7 @@ class UserController {
             return response.status(200).json(users)
         }
         catch(err){
-            return response.status(500).json({ message: 'Ocorreu um erro interno' })
+            return response.status(500).json({ message: 'Ocorreu um erro interno', error: err })
         }  
     }
 

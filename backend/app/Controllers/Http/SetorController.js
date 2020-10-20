@@ -43,7 +43,7 @@ class SetorController {
       return response.status(200).json(setores)
     }
     catch(err){
-      return response.status(500).json({ message: 'Ocorreu um erro interno' })
+      return response.status(500).json({ message: 'Ocorreu um erro interno', error: err })
     }    
   }
 
@@ -72,7 +72,7 @@ class SetorController {
           return response.status(200).json(setores)
       }
       catch(err){
-          return response.status(500).json({ message: 'Ocorreu um erro interno' })
+          return response.status(500).json({ message: 'Ocorreu um erro interno', error: err})
       }  
   }
 
@@ -90,7 +90,7 @@ async list ({ request, response }) {
     return response.status(200).json(setores)
   }
   catch(err){
-    return response.status(500).json({ message: 'Ocorreu um erro interno', description: err })
+    return response.status(500).json({ message: 'Ocorreu um erro interno', error: err })
   }    
 }
 
@@ -108,7 +108,7 @@ async list ({ request, response }) {
       return response.status(200).json(setores)
     }
     catch(err){
-        return response.status(500).json({ message: 'Ocorreu um erro interno' })
+        return response.status(500).json({ message: 'Ocorreu um erro interno', error: err })
     }  
   }
 
@@ -144,7 +144,7 @@ async list ({ request, response }) {
       if(err.constraint == 'setores_nome_unique')
         return response.status(409).json({ message: 'Setor já existe'})
       else
-        return response.status(500).json({ message: 'Ocorreu um erro interno' })  
+        return response.status(500).json({ message: 'Ocorreu um erro interno', error: err})  
     }
   }
 
