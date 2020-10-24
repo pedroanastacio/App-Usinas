@@ -194,7 +194,7 @@
                         </v-card-text>
                         <v-card-title class="cinzaEscuro--text layout justify-center consumo_total">
                             <v-icon large color="primary">mdi-water</v-icon>
-                            {{totalConsume}} L
+                            {{totalConsume}} m³
                         </v-card-title>                    
                     </v-card>    
                 </v-col>    
@@ -246,7 +246,18 @@
                         </v-row>
                     </v-alert> 
                 </v-col>    
-            </v-row>    
+            </v-row>  
+
+            <div class="my-3">  
+                <v-btn class="px-4" color="success" @click="newUser"> 
+                   <download-excel
+                    :data="this.consumeData">
+                    Exportar em XLS
+                    </download-excel>
+                </v-btn>
+            </div>     
+
+            
 
         </v-container>  
     </div>
@@ -261,12 +272,14 @@ import Consumo from '../services/Consumo'
 import chroma from 'chroma-js'
 
 
+
 export default {
     components:{
         DrawerToolbar,
         DoughnutChart,
         LoadingPage,
-        ErrorAlert
+        ErrorAlert,
+     
     },
 
     data: () => ({
@@ -303,7 +316,7 @@ export default {
         consumeData: [],
         headers: [
             {text: 'Setor', align: 'left', value:'setor', class: "primary white--text" },
-            {text: 'Litros (L)', align:'left', value: 'litros', class: "primary white--text", sortable: false}, 
+            {text: 'Volume (m³)', align:'left', value: 'volume', class: "primary white--text", sortable: false}, 
             {text: 'Porcentagem (%)', align: 'left', value: 'percent', class: "primary white--text", sortable: false}
         ]
     }),
@@ -452,11 +465,11 @@ export default {
                 else
                     this.chartdata.labels.push(element.setor)
                 
-                this.chartdata.datasets[0].data.push(element.litros)
+                this.chartdata.datasets[0].data.push(element.volume)
                 this.consumeData.push({
                     "setor": element.setor,
-                    "litros": `${Number(element.litros).toLocaleString('pt-BR')} L`,
-                    "percent": `${Number(this.percentCalculate(data.total, element.litros)).toLocaleString('pt-BR')}%`
+                    "volume": `${Number(element.volume).toLocaleString('pt-BR')}`,
+                    "percent": `${Number(this.percentCalculate(data.total, element.volume)).toLocaleString('pt-BR')}%`
                 })
             });
 

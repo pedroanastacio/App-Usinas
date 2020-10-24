@@ -191,13 +191,13 @@
                 lg="4"    
                 xl="4"
                 >
-                    <v-card class="pb-4">
+                    <v-card class="pb-4" height="100%">
                         <v-card-text class="grey--text">
                             Consumo total
                         </v-card-text>
                         <v-card-title class="cinzaEscuro--text layout justify-center consumo_total">
                             <v-icon large color="primary">mdi-water</v-icon>
-                            {{totalConsume}} L
+                            {{totalConsume}} m³
                         </v-card-title>                    
                     </v-card>    
                 </v-col>    
@@ -296,7 +296,7 @@ export default {
             },
             tooltips: {
                 callbacks: {
-                label: (item) => `${item.yLabel} L`,
+                label: (item) => `${item.yLabel} m³`,
                 },
             },
             legend: {
@@ -489,19 +489,19 @@ export default {
                  data.consumos.forEach(element => {
                     this.chartdata.datasets[0].data.push({
                         x: element.ano,
-                        y: element.litros
+                        y: element.volume
                     })
 
                     this.consumeData.push({
                         "ano": element.ano,
-                        "litros": `${Number(element.litros).toLocaleString('pt-BR')} L`,
-                        "percent": `${Number(this.percentCalculate(data.total, element.litros)).toLocaleString('pt-BR')}%`
+                        "volume": `${Number(element.volume).toLocaleString('pt-BR')}`,
+                        "percent": `${Number(this.percentCalculate(data.total, element.volume)).toLocaleString('pt-BR')}%`
                     }) 
                 })
 
                 this.headers = [
                     {text: 'Ano', align: 'left', value:'ano', class: "primary white--text"},
-                    {text: 'Litros (L)', align:'left', value: 'litros', class: "primary white--text", sortable: false}, 
+                    {text: 'Volume (m³)', align:'left', value: 'volume', class: "primary white--text", sortable: false}, 
                     {text: 'Porcentagem (%)', align: 'left', value: 'percent', class: "primary white--text", sortable: false}
                 ]
             }
@@ -509,19 +509,19 @@ export default {
                  data.consumos.forEach(element => {
                     this.chartdata.datasets[0].data.push({
                         x: element.mes,
-                        y: element.litros
+                        y: element.volume
                     })
 
                     this.consumeData.push({
                         "mes": element.mes,
-                        "litros": `${Number(element.litros).toLocaleString('pt-BR')} L`,
-                        "percent": `${Number(this.percentCalculate(data.total, element.litros)).toLocaleString('pt-BR')}%`
+                        "volume": `${Number(element.volume).toLocaleString('pt-BR')}`,
+                        "percent": `${Number(this.percentCalculate(data.total, element.volume)).toLocaleString('pt-BR')}%`
                     }) 
                 })
 
                 this.headers = [
                     {text: 'Mês', align: 'left', value:'mes', class: "primary white--text" },
-                    {text: 'Litros (L)', align:'left', value: 'litros', class: "primary white--text", sortable: false}, 
+                    {text: 'Volume (m³)', align:'left', value: 'volume', class: "primary white--text", sortable: false}, 
                     {text: 'Porcentagem (%)', align: 'left', value: 'percent', class: "primary white--text", sortable: false}
                 ]
             }
@@ -529,19 +529,19 @@ export default {
                 data.consumos.forEach(element => {
                     this.chartdata.datasets[0].data.push({
                         x: element.hora,
-                        y: element.litros
+                        y: element.volume
                     })
 
                     this.consumeData.push({
                         "horario": element.hora,
-                        "litros": `${Number(element.litros).toLocaleString('pt-BR')} L`,
-                        "percent": `${Number(this.percentCalculate(data.total, element.litros)).toLocaleString('pt-BR')}%`
+                        "volume": `${Number(element.volume).toLocaleString('pt-BR')}`,
+                        "percent": `${Number(this.percentCalculate(data.total, element.volume)).toLocaleString('pt-BR')}%`
                     }) 
                 })
 
                 this.headers = [
                     {text: 'Horário', align: 'left', value:'horario', class: "primary white--text"},
-                    {text: 'Litros (L)', align:'left', value: 'litros', class: "primary white--text", sortable: false}, 
+                    {text: 'Volume (m³)', align:'left', value: 'volume', class: "primary white--text", sortable: false}, 
                     {text: 'Porcentagem (%)', align: 'left', value: 'percent', class: "primary white--text", sortable: false}
                 ]
             }
@@ -549,19 +549,19 @@ export default {
                 data.consumos.forEach(element => {
                     this.chartdata.datasets[0].data.push({
                         x: element.data,
-                        y: element.litros
+                        y: element.volume
                     })
                     
                     this.consumeData.push({
                         "data": element.data,
-                        "litros": `${Number(element.litros).toLocaleString('pt-BR')} L`,
-                        "percent": `${Number(this.percentCalculate(data.total, element.litros)).toLocaleString('pt-BR')}%`
+                        "volume": `${Number(element.volume).toLocaleString('pt-BR')}`,
+                        "percent": `${Number(this.percentCalculate(data.total, element.volume)).toLocaleString('pt-BR')}%`
                     }) 
                 })
 
                  this.headers = [
                     {text: 'Data', align: 'left', value:'data', class: "primary white--text"},
-                    {text: 'Litros (L)', align:'left', value: 'litros', class: "primary white--text", sortable: false}, 
+                    {text: 'Volume (m³)', align:'left', value: 'volume', class: "primary white--text", sortable: false}, 
                     {text: 'Porcentagem (%)', align: 'left', value: 'percent', class: "primary white--text", sortable: false}
                 ]
             }
@@ -745,6 +745,7 @@ export default {
 <style>
 .consumo_total {
     font-size: 1.6em;
+    height: 80%;
 }
 
 .bar_card{
