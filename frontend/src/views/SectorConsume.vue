@@ -45,7 +45,7 @@
                                 ></v-select>
                                
                                 <v-menu
-                                v-if="period == 'mes'"
+                                v-if="period == 'mês'"
                                 :close-on-content-click="true"
                                 :nudge-right="33"
                                 :nudge-top="30"
@@ -221,7 +221,23 @@
                     disable-initial-sort
                     /> 
                 </v-col>    
-            </v-row>    
+            </v-row>  
+
+            <v-row 
+            v-if="loaded&&!error&&!noDataForPeriod"
+            > 
+                <v-col>
+                    <v-btn class="px-4" color="success" @click="newUser"> 
+                        <download-excel
+                        :data="consumeData"
+                        :name="exportedFileName"
+                        :fields="exportedFileFields"
+                        >
+                        Exportar em XLS
+                        </download-excel>
+                    </v-btn>
+                </v-col>    
+            </v-row>  
 
             <v-row v-show="!loaded&&!error&&!noDataForPeriod">
                 <v-col>
@@ -307,12 +323,12 @@ export default {
         loaded: false,
         error: false,
         noDataForPeriod: false,
-        period: 'mes',
+        period: 'mês',
         periodOptions: [
             {text: 'Desde sempre', value: 'sempre'},
             {text: 'Intervalo', value: 'intervalo'},
             {text: 'Ano', value: 'ano'},
-            {text: 'Mês', value: 'mes'},
+            {text: 'Mês', value: 'mês'},
             {text: 'Dia', value: 'dia'},
         ],
         dateVal: new Date().toISOString().substr(0, 7),
@@ -323,7 +339,9 @@ export default {
         labelInput1: null,
         consumeData: [],
         sectorName: '',
-        headers: []
+        headers: [],
+        exportedFileName: '',
+        exportedFileFields: {}
     }),
 
      computed: {
@@ -353,25 +371,30 @@ export default {
 
     watch: {
         period(val) {
-            if(val == 'mes') {
+            if(val == 'mês') {
                 this.dateVal = new Date().toISOString().substr(0, 7)
+                this.setExportedFileName()
                 this.getMonthConsumeData()
             }
             else if(val == 'dia') {
                 this.dateVal = new Date().toISOString().substr(0, 10)
+                this.setExportedFileName()
                 this.getDayConsumeData()
             }
             else if(val == 'ano') {
                 this.dateVal = parseInt(new Date().toISOString().substr(0, 4))
+                this.setExportedFileName()
                 this.getYearConsumeData()
             } 
             else if(val == 'intervalo') {
                 this.dateVal = new Date().toISOString().substr(0, 10)
                 this.dateVal2 = new Date().toISOString().substr(0, 10)
+                this.setExportedFileName()
                 this.getIntervalConsumeData()
             } 
             else{
                 this.dateVal = 'Desde sempre'
+                this.setExportedFileName()
             }
         }
     },
@@ -387,6 +410,15 @@ export default {
             else
                 return
         },
+
+        setExportedFileName() {
+            if (this.period == 'sempre')
+                this.exportedFileName = `${this.sectorName} - ${this.dateVal}`
+            else if (this.period == 'intervalo')
+                this.exportedFileName = `${this.sectorName} - ${this.period} - ${this.dateVal} a ${this.dateVal2}`
+            else
+                this.exportedFileName = `${this.sectorName} - ${this.period} - ${this.dateVal}`
+        },
         
         formatDate(date) {
             if (!date) return null
@@ -395,7 +427,7 @@ export default {
                 const [year, month, day] = date.split('-')
                 return `${day}/${month}/${year}`
             }
-            else if(this.period == 'mes') {
+            else if(this.period == 'mês') {
                 const [year, month] = date.split('-')
                 return `${month}/${year}`
             }
@@ -442,11 +474,11 @@ export default {
             this.totalConsume = ''
             this.consumeData = []
         },
-
+        /*
         percentCalculate(total, sectorConsume) {
             return parseFloat((sectorConsume/total)*100).toFixed(2);
         },
-
+        */
         getParamsMonthConsume() {
             let params = {
                 slug: this.$route.params.slug,
@@ -495,14 +527,14 @@ export default {
                     this.consumeData.push({
                         "ano": element.ano,
                         "volume": `${Number(element.volume).toLocaleString('pt-BR')}`,
-                        "percent": `${Number(this.percentCalculate(data.total, element.volume)).toLocaleString('pt-BR')}%`
+                        //"percent": `${Number(this.percentCalculate(data.total, element.volume)).toLocaleString('pt-BR')}%`
                     }) 
                 })
 
                 this.headers = [
                     {text: 'Ano', align: 'left', value:'ano', class: "primary white--text"},
                     {text: 'Volume (m³)', align:'left', value: 'volume', class: "primary white--text", sortable: false}, 
-                    {text: 'Porcentagem (%)', align: 'left', value: 'percent', class: "primary white--text", sortable: false}
+                    //{text: 'Porcentagem (%)', align: 'left', value: 'percent', class: "primary white--text", sortable: false}
                 ]
             }
             else if(data.periodo == 'MM/YYYY') {
@@ -513,16 +545,16 @@ export default {
                     })
 
                     this.consumeData.push({
-                        "mes": element.mes,
+                        "mês": element.mes,
                         "volume": `${Number(element.volume).toLocaleString('pt-BR')}`,
-                        "percent": `${Number(this.percentCalculate(data.total, element.volume)).toLocaleString('pt-BR')}%`
+                        //"percent": `${Number(this.percentCalculate(data.total, element.volume)).toLocaleString('pt-BR')}%`
                     }) 
                 })
 
                 this.headers = [
-                    {text: 'Mês', align: 'left', value:'mes', class: "primary white--text" },
+                    {text: 'Mês', align: 'left', value:'mês', class: "primary white--text" },
                     {text: 'Volume (m³)', align:'left', value: 'volume', class: "primary white--text", sortable: false}, 
-                    {text: 'Porcentagem (%)', align: 'left', value: 'percent', class: "primary white--text", sortable: false}
+                    //{text: 'Porcentagem (%)', align: 'left', value: 'percent', class: "primary white--text", sortable: false}
                 ]
             }
             else if(data.periodo == "HH:mm") {
@@ -535,14 +567,14 @@ export default {
                     this.consumeData.push({
                         "horario": element.hora,
                         "volume": `${Number(element.volume).toLocaleString('pt-BR')}`,
-                        "percent": `${Number(this.percentCalculate(data.total, element.volume)).toLocaleString('pt-BR')}%`
+                        //"percent": `${Number(this.percentCalculate(data.total, element.volume)).toLocaleString('pt-BR')}%`
                     }) 
                 })
 
                 this.headers = [
                     {text: 'Horário', align: 'left', value:'horario', class: "primary white--text"},
                     {text: 'Volume (m³)', align:'left', value: 'volume', class: "primary white--text", sortable: false}, 
-                    {text: 'Porcentagem (%)', align: 'left', value: 'percent', class: "primary white--text", sortable: false}
+                    //{text: 'Porcentagem (%)', align: 'left', value: 'percent', class: "primary white--text", sortable: false}
                 ]
             }
             else {
@@ -555,14 +587,14 @@ export default {
                     this.consumeData.push({
                         "data": element.data,
                         "volume": `${Number(element.volume).toLocaleString('pt-BR')}`,
-                        "percent": `${Number(this.percentCalculate(data.total, element.volume)).toLocaleString('pt-BR')}%`
+                        //"percent": `${Number(this.percentCalculate(data.total, element.volume)).toLocaleString('pt-BR')}%`
                     }) 
                 })
 
                  this.headers = [
                     {text: 'Data', align: 'left', value:'data', class: "primary white--text"},
                     {text: 'Volume (m³)', align:'left', value: 'volume', class: "primary white--text", sortable: false}, 
-                    {text: 'Porcentagem (%)', align: 'left', value: 'percent', class: "primary white--text", sortable: false}
+                   // {text: 'Porcentagem (%)', align: 'left', value: 'percent', class: "primary white--text", sortable: false}
                 ]
             }
                      
@@ -612,7 +644,7 @@ export default {
                 this.options.scales.xAxes[0].time.displayFormats.month = dateFormat
                 this.chartdata.labels = [`01/${this.dateVal}`, `12/${this.dateVal}`]
             }
-            else if (this.period == 'mes') {
+            else if (this.period == 'mês') {
                 this.options.scales.xAxes[0].time.unit = 'day'
                 this.options.scales.xAxes[0].time.unitStepSize = 4
                 this.options.scales.xAxes[0].time.displayFormats.day = dateFormat
@@ -738,6 +770,7 @@ export default {
 
     mounted() {
         this.getMonthConsumeData()      
+        this.setExportedFileName()
     }
 }
 </script>

@@ -42,7 +42,7 @@
                                 ></v-select>
                                
                                 <v-menu
-                                v-if="period == 'mes'"
+                                v-if="period == 'mês'"
                                 :close-on-content-click="true"
                                 :nudge-right="33"
                                 :nudge-top="30"
@@ -218,7 +218,23 @@
                     disable-pagination
                     /> 
                 </v-col>    
-            </v-row>    
+            </v-row>   
+
+            <v-row 
+            v-if="loaded&&!error&&!noDataForPeriod"
+            > 
+                <v-col>
+                    <v-btn class="px-4" color="success" @click="newUser"> 
+                        <download-excel
+                        :data="consumeData"
+                        :name="exportedFileName"
+                        :fields="exportedFileFields"
+                        >
+                        Exportar em XLS
+                        </download-excel>
+                    </v-btn>
+                </v-col>    
+            </v-row>
 
             <v-row v-show="!loaded&&!error&&!noDataForPeriod">
                 <v-col>
@@ -245,20 +261,8 @@
                             <v-col class="grow">Nenhum registro encontrado correspondente a este período</v-col>
                         </v-row>
                     </v-alert> 
-                </v-col>    
+                </v-col>  
             </v-row>  
-
-            <div class="my-3">  
-                <v-btn class="px-4" color="success" @click="newUser"> 
-                   <download-excel
-                    :data="this.consumeData">
-                    Exportar em XLS
-                    </download-excel>
-                </v-btn>
-            </div>     
-
-            
-
         </v-container>  
     </div>
 </template>
@@ -272,14 +276,12 @@ import Consumo from '../services/Consumo'
 import chroma from 'chroma-js'
 
 
-
 export default {
     components:{
         DrawerToolbar,
         DoughnutChart,
         LoadingPage,
         ErrorAlert,
-     
     },
 
     data: () => ({
@@ -299,12 +301,12 @@ export default {
         loaded: false,
         error: false,
         noDataForPeriod: false,
-        period: 'mes',
+        period: 'mês',
         periodOptions: [
             {text: 'Desde sempre', value: 'sempre'},
             {text: 'Intervalo', value: 'intervalo'},
             {text: 'Ano', value: 'ano'},
-            {text: 'Mês', value: 'mes'},
+            {text: 'Mês', value: 'mês'},
             {text: 'Dia', value: 'dia'},
         ],
         dateVal: new Date().toISOString().substr(0, 7),
@@ -317,8 +319,13 @@ export default {
         headers: [
             {text: 'Setor', align: 'left', value:'setor', class: "primary white--text" },
             {text: 'Volume (m³)', align:'left', value: 'volume', class: "primary white--text", sortable: false}, 
-            {text: 'Porcentagem (%)', align: 'left', value: 'percent', class: "primary white--text", sortable: false}
-        ]
+            //{text: 'Porcentagem (%)', align: 'left', value: 'percent', class: "primary white--text", sortable: false}
+        ],
+        exportedFileName: '',
+        exportedFileFields: {
+            Setor: "setor",
+            "Volume (m³)" : "volume"
+        }
     }),
 
     computed: {
@@ -348,25 +355,30 @@ export default {
 
     watch: {
         period(val) {
-            if(val == 'mes') {
+            if(val == 'mês') {
                 this.dateVal = new Date().toISOString().substr(0, 7)
+                this.setExportedFileName()
                 this.getMonthConsumeData()
             }
             else if(val == 'dia') {
                 this.dateVal = new Date().toISOString().substr(0, 10)
+                this.setExportedFileName()
                 this.getDayConsumeData()
             }
             else if(val == 'ano') {
                 this.dateVal = parseInt(new Date().toISOString().substr(0, 4))
+                this.setExportedFileName()
                 this.getYearConsumeData()
             } 
             else if(val == 'intervalo') {
                 this.dateVal = new Date().toISOString().substr(0, 10)
                 this.dateVal2 = new Date().toISOString().substr(0, 10)
+                this.setExportedFileName()
                 this.getIntervalConsumeData()
             } 
             else{
                 this.dateVal = 'Desde sempre'
+                this.setExportedFileName()
             }
         }
     },
@@ -382,6 +394,15 @@ export default {
             else
                 return
         },
+
+        setExportedFileName() {
+            if (this.period == 'sempre')
+                this.exportedFileName = `${this.$route.meta.title} - ${this.dateVal}`
+            else if (this.period == 'intervalo')
+                this.exportedFileName = `${this.$route.meta.title} - ${this.period} - ${this.dateVal} a ${this.dateVal2}`
+            else
+                this.exportedFileName = `${this.$route.meta.title} - ${this.period} - ${this.dateVal}`
+        },
         
         formatDate(date) {
             if (!date) return null
@@ -390,7 +411,7 @@ export default {
                 const [year, month, day] = date.split('-')
                 return `${day}/${month}/${year}`
             }
-            else if(this.period == 'mes') {
+            else if(this.period == 'mês') {
                 const [year, month] = date.split('-')
                 return `${month}/${year}`
             }
@@ -448,9 +469,10 @@ export default {
             return params
         },
 
+        /*
         percentCalculate(total, sectorConsume) {
             return parseFloat((sectorConsume/total)*100).toFixed(2);
-        },
+        },*/
                 
         handleWithconsumeData(data) {
             if(data.consumos.length == 0){
@@ -469,7 +491,7 @@ export default {
                 this.consumeData.push({
                     "setor": element.setor,
                     "volume": `${Number(element.volume).toLocaleString('pt-BR')}`,
-                    "percent": `${Number(this.percentCalculate(data.total, element.volume)).toLocaleString('pt-BR')}%`
+                   // "percent": `${Number(this.percentCalculate(data.total, element.volume)).toLocaleString('pt-BR')}%`
                 })
             });
 
@@ -555,7 +577,6 @@ export default {
                 this.handleWithconsumeData(response.data)
             }
             catch (err) {
-                console.log(err)
                 this.handleWithError()
             }
         },
@@ -578,7 +599,8 @@ export default {
     },
 
     async mounted() {  
-       this.getMonthConsumeData()
+        this.getMonthConsumeData()
+        this.setExportedFileName()
     }
 }
 </script>
