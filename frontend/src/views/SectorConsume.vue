@@ -227,7 +227,7 @@
             v-if="loaded&&!error&&!noDataForPeriod"
             > 
                 <v-col>
-                    <v-btn class="px-4" color="success" @click="newUser"> 
+                    <v-btn class="px-4" color="success"> 
                         <download-excel
                         :data="consumeData"
                         :name="exportedFileName"
@@ -396,6 +396,14 @@ export default {
                 this.dateVal = 'Desde sempre'
                 this.setExportedFileName()
             }
+        },
+
+        dateVal() {
+            this.setExportedFileName()
+        },
+
+        dateVal2() {
+            this.setExportedFileName()
         }
     },
 
@@ -413,11 +421,17 @@ export default {
 
         setExportedFileName() {
             if (this.period == 'sempre')
-                this.exportedFileName = `${this.sectorName} - ${this.dateVal}`
+                this.exportedFileName = `${this.sectorName} - ${this.dateSelect}`
             else if (this.period == 'intervalo')
-                this.exportedFileName = `${this.sectorName} - ${this.period} - ${this.dateVal} a ${this.dateVal2}`
+                this.exportedFileName = `${this.sectorName} - ${this.period} - ${this.dateSelect} a ${this.dateSelect2}`
             else
-                this.exportedFileName = `${this.sectorName} - ${this.period} - ${this.dateVal}`
+                this.exportedFileName = `${this.sectorName} - ${this.period} - ${this.dateSelect}`
+        },
+
+        setExportedFileFields(period, periodValue) {
+           this.exportedFileFields = {} 
+           this.exportedFileFields[period] = periodValue
+           this.exportedFileFields["Volume (m³)"] = "volume"
         },
         
         formatDate(date) {
@@ -518,7 +532,9 @@ export default {
             this.chartdata.datasets[0].label = null
 
             if(data.periodo == 'YYYY') {
-                 data.consumos.forEach(element => {
+                this.setExportedFileFields("Ano", "ano")
+
+                data.consumos.forEach(element => {
                     this.chartdata.datasets[0].data.push({
                         x: element.ano,
                         y: element.volume
@@ -538,7 +554,9 @@ export default {
                 ]
             }
             else if(data.periodo == 'MM/YYYY') {
-                 data.consumos.forEach(element => {
+                this.setExportedFileFields("Mês", "mês")
+
+                data.consumos.forEach(element => {
                     this.chartdata.datasets[0].data.push({
                         x: element.mes,
                         y: element.volume
@@ -558,6 +576,8 @@ export default {
                 ]
             }
             else if(data.periodo == "HH:mm") {
+                this.setExportedFileFields("Horário", "horario")
+
                 data.consumos.forEach(element => {
                     this.chartdata.datasets[0].data.push({
                         x: element.hora,
@@ -578,6 +598,8 @@ export default {
                 ]
             }
             else {
+                this.setExportedFileFields("Dia", "dia")    
+
                 data.consumos.forEach(element => {
                     this.chartdata.datasets[0].data.push({
                         x: element.data,
@@ -585,14 +607,14 @@ export default {
                     })
                     
                     this.consumeData.push({
-                        "data": element.data,
+                        "dia": element.data,
                         "volume": `${Number(element.volume).toLocaleString('pt-BR')}`,
                         //"percent": `${Number(this.percentCalculate(data.total, element.volume)).toLocaleString('pt-BR')}%`
                     }) 
                 })
 
                  this.headers = [
-                    {text: 'Data', align: 'left', value:'data', class: "primary white--text"},
+                    {text: 'Dia', align: 'left', value:'dia', class: "primary white--text"},
                     {text: 'Volume (m³)', align:'left', value: 'volume', class: "primary white--text", sortable: false}, 
                    // {text: 'Porcentagem (%)', align: 'left', value: 'percent', class: "primary white--text", sortable: false}
                 ]

@@ -224,7 +224,7 @@
             v-if="loaded&&!error&&!noDataForPeriod"
             > 
                 <v-col>
-                    <v-btn class="px-4" color="success" @click="newUser"> 
+                    <v-btn class="px-4" color="success"> 
                         <download-excel
                         :data="consumeData"
                         :name="exportedFileName"
@@ -380,6 +380,14 @@ export default {
                 this.dateVal = 'Desde sempre'
                 this.setExportedFileName()
             }
+        },
+
+        dateVal() {
+            this.setExportedFileName()
+        },
+
+        dateVal2() {
+            this.setExportedFileName()
         }
     },
 
@@ -397,11 +405,11 @@ export default {
 
         setExportedFileName() {
             if (this.period == 'sempre')
-                this.exportedFileName = `${this.$route.meta.title} - ${this.dateVal}`
+                this.exportedFileName = `${this.$route.meta.title} - ${this.dateSelect}`
             else if (this.period == 'intervalo')
-                this.exportedFileName = `${this.$route.meta.title} - ${this.period} - ${this.dateVal} a ${this.dateVal2}`
+                this.exportedFileName = `${this.$route.meta.title} - ${this.period} - ${this.dateSelect} a ${this.dateSelect2}`
             else
-                this.exportedFileName = `${this.$route.meta.title} - ${this.period} - ${this.dateVal}`
+                this.exportedFileName = `${this.$route.meta.title} - ${this.period} - ${this.dateSelect}`
         },
         
         formatDate(date) {
