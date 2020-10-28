@@ -232,6 +232,7 @@
                         :data="consumeData"
                         :name="exportedFileName"
                         :fields="exportedFileFields"
+                        :header="exportedFileName"
                         >
                         Exportar em XLS
                         </download-excel>
@@ -404,6 +405,10 @@ export default {
 
         dateVal2() {
             this.setExportedFileName()
+        },
+
+        sectorName() {
+            this.setExportedFileName()
         }
     },
 
@@ -432,6 +437,14 @@ export default {
            this.exportedFileFields = {} 
            this.exportedFileFields[period] = periodValue
            this.exportedFileFields["Volume (m³)"] = "volume"
+           this.exportedFileFields["Total (m³)"] = "total"
+        },
+
+        setTableHeaders(columnName, value) {
+            this.headers = []
+            this.headers.push({text: columnName, align: 'left', value: value, class: "primary white--text"})
+            this.headers.push({text: 'Volume (m³)', align:'left', value: 'volume', class: "primary white--text", sortable: false})
+            this.headers.push({text: 'Total (m³)', align:'left', value: 'total', class: "primary white--text", sortable: false})
         },
         
         formatDate(date) {
@@ -543,15 +556,17 @@ export default {
                     this.consumeData.push({
                         "ano": element.ano,
                         "volume": `${Number(element.volume).toLocaleString('pt-BR')}`,
+                        "total": `${Number(element.cum_volume).toLocaleString('pt-BR')}`,
                         //"percent": `${Number(this.percentCalculate(data.total, element.volume)).toLocaleString('pt-BR')}%`
                     }) 
                 })
 
-                this.headers = [
+                this.setTableHeaders('Ano', 'ano')
+                /*this.headers = [
                     {text: 'Ano', align: 'left', value:'ano', class: "primary white--text"},
                     {text: 'Volume (m³)', align:'left', value: 'volume', class: "primary white--text", sortable: false}, 
                     //{text: 'Porcentagem (%)', align: 'left', value: 'percent', class: "primary white--text", sortable: false}
-                ]
+                ]*/
             }
             else if(data.periodo == 'MM/YYYY') {
                 this.setExportedFileFields("Mês", "mês")
@@ -565,18 +580,22 @@ export default {
                     this.consumeData.push({
                         "mês": element.mes,
                         "volume": `${Number(element.volume).toLocaleString('pt-BR')}`,
+                        "total": `${Number(element.cum_volume).toLocaleString('pt-BR')}`,
                         //"percent": `${Number(this.percentCalculate(data.total, element.volume)).toLocaleString('pt-BR')}%`
                     }) 
                 })
 
+                this.setTableHeaders('Mês', 'mês')
+                /*
                 this.headers = [
                     {text: 'Mês', align: 'left', value:'mês', class: "primary white--text" },
                     {text: 'Volume (m³)', align:'left', value: 'volume', class: "primary white--text", sortable: false}, 
                     //{text: 'Porcentagem (%)', align: 'left', value: 'percent', class: "primary white--text", sortable: false}
-                ]
+                ]*/
             }
             else if(data.periodo == "HH:mm") {
                 this.setExportedFileFields("Horário", "horario")
+                //console.log(data.consumos[data.consumos.length - 1].cum_volume)
 
                 data.consumos.forEach(element => {
                     this.chartdata.datasets[0].data.push({
@@ -587,15 +606,18 @@ export default {
                     this.consumeData.push({
                         "horario": element.hora,
                         "volume": `${Number(element.volume).toLocaleString('pt-BR')}`,
+                        "total": `${Number(element.cum_volume).toLocaleString('pt-BR')}`,
                         //"percent": `${Number(this.percentCalculate(data.total, element.volume)).toLocaleString('pt-BR')}%`
                     }) 
                 })
 
-                this.headers = [
+                this.setTableHeaders('Horário', 'horario')
+
+                /*this.headers = [
                     {text: 'Horário', align: 'left', value:'horario', class: "primary white--text"},
                     {text: 'Volume (m³)', align:'left', value: 'volume', class: "primary white--text", sortable: false}, 
                     //{text: 'Porcentagem (%)', align: 'left', value: 'percent', class: "primary white--text", sortable: false}
-                ]
+                ]*/
             }
             else {
                 this.setExportedFileFields("Dia", "dia")    
@@ -609,15 +631,18 @@ export default {
                     this.consumeData.push({
                         "dia": element.data,
                         "volume": `${Number(element.volume).toLocaleString('pt-BR')}`,
+                        "total": `${Number(element.cum_volume).toLocaleString('pt-BR')}`,
                         //"percent": `${Number(this.percentCalculate(data.total, element.volume)).toLocaleString('pt-BR')}%`
                     }) 
                 })
 
+                this.setTableHeaders('Dia', 'dia')
+                /*
                  this.headers = [
                     {text: 'Dia', align: 'left', value:'dia', class: "primary white--text"},
                     {text: 'Volume (m³)', align:'left', value: 'volume', class: "primary white--text", sortable: false}, 
                    // {text: 'Porcentagem (%)', align: 'left', value: 'percent', class: "primary white--text", sortable: false}
-                ]
+                ]*/
             }
                      
             this.totalConsume = Number(data.total).toLocaleString('pt-BR')
@@ -791,8 +816,7 @@ export default {
     },
 
     mounted() {
-        this.getMonthConsumeData()      
-        this.setExportedFileName()
+        this.getMonthConsumeData()    
     }
 }
 </script>

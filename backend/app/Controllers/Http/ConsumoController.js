@@ -421,10 +421,24 @@ class ConsumoController {
   async sectorDatesAndConsumeAllTime(id) {
     try {
       const datesAndConsume = await Database
-        .raw(`SELECT TO_CHAR(data,'YYYY') AS ano, sum(volume) as volume
+        /*.raw(`SELECT TO_CHAR(data,'YYYY') AS ano, sum(volume) as volume
           FROM consumos
           WHERE setor_id = ${id}
-          GROUP BY TO_CHAR(data,'YYYY')`)
+          GROUP BY TO_CHAR(data,'YYYY')
+          ORDER BY TO_CHAR(data,'YYYY')
+          `)*/
+        
+        .raw(`WITH cte AS (
+          SELECT TO_CHAR(data,'YYYY') AS ano,
+          SUM(volume) OVER (PARTITION BY TO_CHAR(data,'YYYY')) AS volume,
+          SUM(volume) OVER (ORDER BY TO_CHAR(data,'YYYY')) AS cum_volume,
+          ROW_NUMBER() OVER (PARTITION BY TO_CHAR(data,'YYYY')) AS row_num
+          FROM consumos
+          WHERE setor_id = ${id})
+          SELECT ano, volume, cum_volume
+          FROM cte
+          WHERE row_num = 1
+          `)    
             
       return Promise.resolve(datesAndConsume)  
     }
@@ -441,16 +455,24 @@ class ConsumoController {
     const [year2, month2, day2] = parameters.endDate.split('-')
 
     let groupBy = ''
-
-    if(year != year2)
+    let label = ''
+    
+    if(year != year2) {
       groupBy = 'YYYY'
-    else if(month != month2)  
+      label = 'ano'
+    }
+    else if(month != month2) {  
       groupBy = 'MM/YYYY'
-    else if(day == day2)
+      label = 'mes'
+    }  
+    else if(day == day2) {
       groupBy = 'HH24'
-    else 
+      label = 'hora'
+    }  
+    else {
       groupBy = 'DD/MM/YYYY'
-
+      label = 'data'
+    }  
     
     try{
       const setor = await Database
@@ -460,7 +482,7 @@ class ConsumoController {
         .first()
 
       const total = await this.sectorTotalConsumePerPeriod(setor.id, parameters)
-      const datesAndConsume = await this.sectorDatesAndConsumePerPeriod(setor.id, parameters, groupBy)
+      const datesAndConsume = await this.sectorDatesAndConsumePerPeriod(setor.id, parameters, groupBy, label)
 
       if(groupBy == 'HH24')
         groupBy = 'HH:mm'
@@ -486,24 +508,27 @@ class ConsumoController {
     }
   }
 
-  async sectorDatesAndConsumePerPeriod(id, parameters, groupBy) {
-    let label = ''
-    
-    if(groupBy == 'YYYY')
-      label = 'ano'
-    else if(groupBy == 'MM/YYYY')  
-      label = 'mes' 
-    else if(groupBy == 'DD/MM/YYYY')  
-      label = 'data'   
-    else
-      label = 'hora'
-       
+  async sectorDatesAndConsumePerPeriod(id, parameters, groupBy, label) {   
     try {
       const datesAndConsume = await Database
-        .raw(`SELECT TO_CHAR(data, '${groupBy}') AS ${label}, sum(volume) as volume
+       /* .raw(`SELECT TO_CHAR(data, '${groupBy}') AS ${label}, sum(volume) as volume
           FROM consumos 
           WHERE setor_id  = ${id} AND data::date BETWEEN '${parameters.initialDate}' AND '${parameters.endDate}'
-          GROUP BY TO_CHAR(data, '${groupBy}')`)
+          GROUP BY TO_CHAR(data, '${groupBy}')
+          ORDER BY TO_CHAR(data, '${groupBy}')
+          `)*/
+
+        .raw(`WITH cte AS (
+          SELECT TO_CHAR(data, '${groupBy}') AS ${label},
+          SUM(volume) OVER (PARTITION BY TO_CHAR(data, '${groupBy}')) AS volume,
+          SUM(volume) OVER (ORDER BY TO_CHAR(data, '${groupBy}')) AS cum_volume,
+          ROW_NUMBER() OVER (PARTITION BY TO_CHAR(data, '${groupBy}')) AS row_num
+          FROM consumos
+          WHERE setor_id  = ${id} AND data::date BETWEEN '${parameters.initialDate}' AND '${parameters.endDate}')
+          SELECT ${label}, volume, cum_volume
+          FROM cte
+          WHERE row_num = 1
+          `)    
       
           if(groupBy == 'HH24'){
            datesAndConsume.rows.forEach(el => {
@@ -557,10 +582,24 @@ class ConsumoController {
   async sectorDatesAndConsumePerYear(id, parameters) {
     try {
       const datesAndConsume = await Database
-        .raw(`SELECT TO_CHAR(data, 'MM/YYYY') AS mes, sum(volume) as volume
+        /*.raw(`SELECT TO_CHAR(data, 'MM/YYYY') AS mes, sum(volume) as volume
           FROM consumos
           WHERE setor_id = ${id} AND EXTRACT(year FROM data) = '${parameters.year}'
-          GROUP BY TO_CHAR(data, 'MM/YYYY')`)
+          GROUP BY TO_CHAR(data, 'MM/YYYY')
+          ORDER BY TO_CHAR(data, 'MM/YYYY')
+          `)*/
+
+        .raw(`WITH cte AS (
+          SELECT TO_CHAR(data, 'MM/YYYY') AS mes,
+          SUM(volume) OVER (PARTITION BY TO_CHAR(data, 'MM/YYYY')) AS volume,
+          SUM(volume) OVER (ORDER BY TO_CHAR(data, 'MM/YYYY')) AS cum_volume,
+          ROW_NUMBER() OVER (PARTITION BY TO_CHAR(data, 'MM/YYYY')) AS row_num
+          FROM consumos
+          WHERE setor_id = ${id} AND EXTRACT(year FROM data) = '${parameters.year}')
+          SELECT mes, volume, cum_volume
+          FROM cte
+          WHERE row_num = 1
+          `)  
         
       return Promise.resolve(datesAndConsume)  
     }
@@ -608,10 +647,24 @@ class ConsumoController {
   async sectorDatesAndConsumePerMonth(id, parameters) {
     try{
       const datesAndConsume = await Database
-        .raw(`SELECT TO_CHAR(data, 'DD/MM/YYYY') AS data, sum(volume) as volume
+        /*.raw(`SELECT TO_CHAR(data, 'DD/MM/YYYY') AS data, sum(volume) as volume
         FROM consumos
         WHERE setor_id = ${id} AND EXTRACT(year FROM data) = '${parameters.year}' AND EXTRACT(month FROM data) = '${parameters.month}'
-        GROUP BY TO_CHAR(data, 'DD/MM/YYYY')`)
+        GROUP BY TO_CHAR(data, 'DD/MM/YYYY')
+        ORDER BY TO_CHAR(data, 'DD/MM/YYYY')
+        `)*/
+
+        .raw(`WITH cte AS (
+        SELECT TO_CHAR(data, 'DD/MM/YYYY') AS data,
+        SUM(volume) OVER (PARTITION BY TO_CHAR(data, 'DD/MM/YYYY')) AS volume,
+        SUM(volume) OVER (ORDER BY TO_CHAR(data, 'DD/MM/YYYY')) AS cum_volume,
+        ROW_NUMBER() OVER (PARTITION BY TO_CHAR(data, 'DD/MM/YYYY')) AS row_num
+        FROM consumos
+        WHERE setor_id = ${id} AND EXTRACT(year FROM data) = '${parameters.year}' AND EXTRACT(month FROM data) = '${parameters.month}')
+        SELECT data, volume, cum_volume
+        FROM cte
+        WHERE row_num = 1
+        `)
 
       return Promise.resolve(datesAndConsume)  
     }
@@ -658,10 +711,24 @@ class ConsumoController {
   async sectorHoursAndConsumePerDay(id, parameters) {
     try{
       const hoursAndConsume = await Database
-        .raw(`SELECT TO_CHAR(data , 'HH24') AS hora, sum(volume) as volume
+        /*.raw(`SELECT TO_CHAR(data , 'HH24') AS hora, sum(volume) as volume
         FROM consumos
         WHERE setor_id = ${id} AND data::DATE = '${parameters.date}'
-        GROUP BY TO_CHAR(data , 'HH24')`)
+        GROUP BY TO_CHAR(data , 'HH24')
+        ORDER BY TO_CHAR(data , 'HH24')
+        `)*/
+
+        .raw(`WITH cte AS (
+        SELECT TO_CHAR(data , 'HH24') AS hora,
+        SUM(volume) OVER (PARTITION BY TO_CHAR(data , 'HH24')) AS volume,
+        SUM(volume) OVER (ORDER BY TO_CHAR(data , 'HH24')) AS cum_volume,
+        ROW_NUMBER() OVER (PARTITION BY TO_CHAR(data , 'HH24')) AS row_num
+        FROM consumos
+        WHERE setor_id = ${id} AND data::DATE = '${parameters.date}')
+        SELECT hora, volume, cum_volume
+        FROM cte
+        WHERE row_num = 1
+        `)
 
         hoursAndConsume.rows.forEach(el => {
           el.hora = `${el.hora}:00`

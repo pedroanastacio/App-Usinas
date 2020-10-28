@@ -229,6 +229,7 @@
                         :data="consumeData"
                         :name="exportedFileName"
                         :fields="exportedFileFields"
+                        :header="exportedFileName"
                         >
                         Exportar em XLS
                         </download-excel>
@@ -325,7 +326,7 @@ export default {
         exportedFileFields: {
             Setor: "setor",
             "Volume (m³)" : "volume"
-        }
+        },
     }),
 
     computed: {
@@ -388,7 +389,11 @@ export default {
 
         dateVal2() {
             this.setExportedFileName()
-        }
+        },
+        
+        sectorName() {
+            this.setExportedFileName()
+        },
     },
 
     methods: {
