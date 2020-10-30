@@ -224,16 +224,17 @@
             v-if="loaded&&!error&&!noDataForPeriod"
             > 
                 <v-col>
-                    <v-btn class="px-4" color="success"> 
-                        <download-excel
-                        :data="consumeData"
-                        :name="exportedFileName"
-                        :fields="exportedFileFields"
-                        :header="exportedFileName"
-                        >
-                        Exportar em XLS
-                        </download-excel>
-                    </v-btn>
+                    <download-excel
+                    :data="consumeData"
+                    :name="exportedFileName"
+                    :fields="exportedFileFields"
+                    :header="exportedFileName"
+                    :worksheet="exportedFileWorksheet"
+                    >
+                        <v-btn class="px-4" color="success"> 
+                            Exportar em XLS
+                        </v-btn>
+                    </download-excel>    
                 </v-col>    
             </v-row>
 
@@ -323,6 +324,7 @@ export default {
             //{text: 'Porcentagem (%)', align: 'left', value: 'percent', class: "primary white--text", sortable: false}
         ],
         exportedFileName: '',
+        exportedFileWorksheet: '',
         exportedFileFields: {
             Setor: "setor",
             "Volume (m³)" : "volume"
@@ -409,12 +411,22 @@ export default {
         },
 
         setExportedFileName() {
-            if (this.period == 'sempre')
+            if (this.period == 'sempre') {
                 this.exportedFileName = `${this.$route.meta.title} - ${this.dateSelect}`
-            else if (this.period == 'intervalo')
+                this.exportedFileWorksheet = this.dateSelect
+            }    
+            else if (this.period == 'intervalo') {
                 this.exportedFileName = `${this.$route.meta.title} - ${this.period} - ${this.dateSelect} a ${this.dateSelect2}`
-            else
+                this.exportedFileWorksheet = `${this.dateSelect.replace(/\//g, "-")} a ${this.dateSelect2.replace(/\//g, "-")}`
+            }  
+            else if (this.period == 'ano') {
                 this.exportedFileName = `${this.$route.meta.title} - ${this.period} - ${this.dateSelect}`
+                this.exportedFileWorksheet = this.dateSelect.toString().replace(/\//g, "-")
+            }  
+            else {
+                this.exportedFileName = `${this.$route.meta.title} - ${this.period} - ${this.dateSelect}`
+                this.exportedFileWorksheet = this.dateSelect.replace(/\//g, "-")
+            }    
         },
         
         formatDate(date) {
