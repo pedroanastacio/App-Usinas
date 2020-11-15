@@ -119,7 +119,7 @@ class ConsumoController {
    * @param {View} ctx.view
    */
   async show ({ params, request, response, view }) {
-  }
+ } 
 
   /**
    * Render a form to update an existing consumo.
@@ -528,7 +528,7 @@ class ConsumoController {
           SELECT ${label}, volume, cum_volume
           FROM cte
           WHERE row_num = 1
-          `)    
+          `)  
       
           if(groupBy == 'HH24'){
            datesAndConsume.rows.forEach(el => {

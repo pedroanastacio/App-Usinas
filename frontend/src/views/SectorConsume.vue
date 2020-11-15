@@ -432,7 +432,7 @@ export default {
                 this.exportedFileWorksheet = this.dateSelect
             }    
             else if (this.period == 'intervalo') {
-                this.exportedFileName = `${this.sectorName} - ${this.period} - ${this.dateSelect} a ${this.dateSelect2}`
+                this.exportedFileName = `${this.sectorName} - ${this.period} - ${this.dateSelect.replace(/\//g, "-")} a ${this.dateSelect2.replace(/\//g, "-")}`
                 this.exportedFileWorksheet = `${this.dateSelect.replace(/\//g, "-")} a ${this.dateSelect2.replace(/\//g, "-")}`
             }
             else if (this.period == 'ano') {
@@ -440,7 +440,7 @@ export default {
                 this.exportedFileWorksheet = this.dateSelect.toString().replace(/\//g, "-")
             }
             else {
-                this.exportedFileName = `${this.sectorName} - ${this.period} - ${this.dateSelect}`
+                this.exportedFileName = `${this.sectorName} - ${this.period} - ${this.dateSelect.replace(/\//g, "-")}`
                 this.exportedFileWorksheet = this.dateSelect.replace(/\//g, "-")
             }    
         },

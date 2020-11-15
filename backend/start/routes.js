@@ -1,5 +1,7 @@
 'use strict'
 
+const { route } = require('@adonisjs/framework/src/Route/Manager')
+
 /*
 |--------------------------------------------------------------------------
 | Routes
@@ -20,7 +22,7 @@ Route.post('/authenticate', 'AuthController.authenticate').middleware(["isActive
 Route.get('/getUserId', 'AuthController.getUserId').middleware(["auth", "isAuthAndActive"])
 
 Route.post('/users', 'UserController.store')
-    //.middleware(["auth", "isAuthAndActive","isAdmin"]).validator('StoreUser')
+    .middleware(["auth", "isAuthAndActive","isAdmin"]).validator('StoreUser')
 Route.get('/users', 'UserController.index').middleware(["auth", "isAuthAndActive","isAdmin"])
 Route.get('/users/search', 'UserController.search').middleware(["auth", "isAuthAndActive","isAdmin"])
 Route.put('/users/:id', 'UserController.update').middleware(["auth", "isAuthAndActive","isAdmin"])
@@ -50,3 +52,5 @@ Route.get('/consumo/sectorPerPeriod/:slug', 'ConsumoController.sectorConsumePerP
 Route.get('/consumo/sectorPerYear/:slug', 'ConsumoController.sectorConsumePerYear').middleware(["auth", "isAuthAndActive"])
 Route.get('/consumo/sectorPerMonth/:slug', 'ConsumoController.sectorConsumePerMonth').middleware(["auth", "isAuthAndActive"])
 Route.get('/consumo/sectorPerDay/:slug', 'ConsumoController.sectorConsumePerDay').middleware(["auth", "isAuthAndActive"])
+
+Route.get('/consumo/dateRange', 'ConsumoController.show')
