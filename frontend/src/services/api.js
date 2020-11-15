@@ -3,7 +3,8 @@ import { getToken, removeToken  } from "./AuthStorage";
 import router from '../router';
 
 const api = axios.create({
-  baseURL: "http://127.0.0.1:3333"
+  baseURL: "https://watermeter-unipam.herokuapp.com/"
+  //baseURL: "http://127.0.0.1:3333"
 });
 
 api.interceptors.request.use(async config => {
