@@ -5,7 +5,8 @@
   "description": "Adonisjs boilerplate for API server with pre-configured JWT",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon server.js",
+    "start:dev": "nodemon server.js",
+    "start": "ENV_SILENT=true node server.js",
     "test": "node ace test"
   },
   "keywords": [
@@ -27,7 +28,7 @@
     "@adonisjs/lucid-slugify": "^1.0.3",
     "@adonisjs/validator": "^5.0.6",
     "csvtojson": "^2.0.10",
-    "pg": "^8.0.3"
+    "pg": "^8.5.1"
   },
   "devDependencies": {},
   "autoload": {
