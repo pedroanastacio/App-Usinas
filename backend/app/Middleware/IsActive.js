@@ -27,7 +27,7 @@ class IsActive {
       if(err.code == 'E_MISSING_DATABASE_ROW')
         return response.status(404).json({ message: 'Usuário não encontrado'})
       else{
-        return response.status(500).json({ message: 'Ocorreu um erro interno'})
+        return response.status(500).json({ message: 'Ocorreu um erro interno', error: err})
       }
        
     }
