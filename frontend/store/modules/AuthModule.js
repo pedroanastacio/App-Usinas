@@ -1,4 +1,4 @@
-import AuthService from "../../src/services/Auth"
+import authService from "../../src/services/Auth"
 import jwtDecode from 'jwt-decode'
 import { setToken, removeToken, getToken } from '../../src/services/AuthStorage'
 
@@ -29,7 +29,7 @@ export const auth = {
     actions: {
         async login({ commit }, userData) {
             try{
-                const response = await AuthService.authenticate(userData)
+                const response = await authService.authenticate(userData)
                 const user = {
                     "nome": response.data.nome,
                     "sobrenome": response.data.sobrenome,
