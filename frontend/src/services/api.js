@@ -22,20 +22,18 @@ api.interceptors.request.use(async config => {
 
 api.interceptors.response.use(response => {
   return response
-}, error => {
-  
-  const hasDataError = Object.prototype.hasOwnProperty.call(error.response.data, "error")
- 
+}, async error => {
+  const hasDataError = await Object.prototype.hasOwnProperty.call(error.response.data, "error")
+  console.log(error.response.data)
   if(hasDataError){
+    console.log(error.response.data)
     if (error.response.data.error.name == 'ExpiredJwtToken'){
       removeToken();
       router.push('/login');
     }
   }
   
-  return Promise.reject(error) 
-
-  
-})
+  return Promise.reject(error)  
+  })
 
 export default api;

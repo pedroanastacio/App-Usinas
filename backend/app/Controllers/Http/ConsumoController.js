@@ -95,7 +95,7 @@ class ConsumoController {
     }
     catch(err){
       if(err.constraint == 'consumos_setor_id_foreign')
-        return response.status(500).json({ message: 'Não foi possível importar arquivo. Conteúdo inválido', error: err})
+        return response.status(500).json({ message: 'Não foi possível importar arquivo. Conteúdo inválido', error: err, description: 'invalid id'})
       
       return response.status(500).json({ message: 'Importação falhou', error: err})
     }
