@@ -19,7 +19,7 @@ module.exports = {
   |
   */
   origin: function (currentOrigin) {
-    return currentOrigin === 'http://localhost:8080'
+    return currentOrigin === 'http://localhost:8080' || currentOrigin === 'https://watermeter-unipam-frontend.herokuapp.com'
   },
 
 
