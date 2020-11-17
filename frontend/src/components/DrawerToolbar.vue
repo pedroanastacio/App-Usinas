@@ -226,11 +226,11 @@ export default {
 }
 
 .routeTitle{
-    font-size: 1.1em;
+    font-size: 19px;
 }
 
 .username{
-    font-size: 0.85em;
+    font-size: 12px;
     text-align: end;
 }
 
