@@ -61,7 +61,7 @@
 import { required, minLength, maxLength } from 'vuelidate/lib/validators'
 import DrawerToolbar from '../components/DrawerToolbar'
 
-import Auth from '../services/Auth'
+import Auth from '../services/authentication'
 import Users from '../services/Users'
 
 export default {
