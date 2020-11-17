@@ -1,4 +1,4 @@
-import AuthService from "../../src/services/Auth"
+import AuthService from "../../src/services/authentication"
 import jwtDecode from 'jwt-decode'
 import { setToken, removeToken, getToken } from '../../src/services/AuthStorage'
 
