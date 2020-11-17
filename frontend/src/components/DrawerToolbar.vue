@@ -2,7 +2,7 @@
     <div>
         <v-app-bar app class="elevation-0 primary white--text">
             <v-app-bar-nav-icon dark class="hidden-md-and-up" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-            <v-list-item-title class="routeTitle">{{routeName}}</v-list-item-title>
+            <v-list-item-title class="routeName">{{routeName}}</v-list-item-title>
             <v-list-item-title class="username hidden-xs-only">{{ currentUser }}</v-list-item-title>
             <v-menu
             transition="slide-y-transition"
@@ -225,7 +225,7 @@ export default {
     width: 100%;
 }
 
-.routeTitle{
+.routeName{
     font-size: 19px;
 }
 

@@ -152,7 +152,7 @@
                             color="light-blue lighten-4"
                             >
                                 <v-btn
-                                class="ma-2 mr-4"
+                                class="btnSelectSector"
                                 tile
                                 large
                                 color="primary"
@@ -388,6 +388,10 @@ export default {
 .sectorCard{
     display: flex;
     padding-right: 10px;
+}
+
+.btnSelectSector{
+    margin: 8px 8px 8px 8px;
 }
 
 
