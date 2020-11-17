@@ -391,7 +391,7 @@ export default {
 }
 
 .btnSelectSector{
-    margin: 8px 8px 8px 8px;
+    margin: 8px 12px 8px 8px;
 }
 
 
