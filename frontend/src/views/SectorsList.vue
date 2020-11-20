@@ -152,7 +152,7 @@
                             color="light-blue lighten-4"
                             >
                                 <v-btn
-                                class="ma-2 mr-4"
+                                class="ma-2"
                                 tile
                                 large
                                 color="primary"
