@@ -5,7 +5,7 @@
     <v-container fluid>
         
        
-        <v-row v-show="!gettingSetor">
+        <v-row v-show="!gettingSetor && !error">
              <v-col
             cols="12"
             sm="12"
@@ -30,7 +30,7 @@
                 />
 
                 <v-switch 
-                class="botton mt-2 py-0" 
+                class="botton mt-0 py-0" 
                 v-model="setoresAtivos"
                 color="success"
                 v-if="setoresAtivos === true"        
@@ -292,6 +292,7 @@ export default {
             }
             catch(err){
                 this.isLoading = false
+                this.gettingSetor = false
                 this.message = err.response.data.message
                 this.error = true
            }            

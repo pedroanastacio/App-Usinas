@@ -144,9 +144,9 @@ export default {
                     this.alertData.show = true
                 }
                 catch(err) {
-                    console.log(err.response.data)
+                    //console.log(err.response.data)
                     this.isLoading = false
-                    this.alertData.message = 'Ocorreu um erro interno'
+                    this.alertData.message = 'Não foi possível alterar a senha'
                     this.alertData.type = 'error'
                     this.alertData.show = true
                 }
