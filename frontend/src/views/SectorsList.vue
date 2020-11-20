@@ -30,7 +30,7 @@
                 />
 
                 <v-switch 
-                class="botton mt-0 py-0" 
+                class="switchBtn mt-0 py-0" 
                 v-model="setoresAtivos"
                 color="success"
                 v-if="setoresAtivos === true"        
@@ -381,7 +381,7 @@ export default {
     
 }
 
-.botton{
+.switchBtn{
     float: right;
     position: relative;
 }
