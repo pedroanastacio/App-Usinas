@@ -10,6 +10,7 @@ Vue.config.productionTip = false
 Vue.use(Vuelidate)
 Vue.component('downloadExcel', JsonExcel)
 
+
 new Vue({
   router,
   vuetify,

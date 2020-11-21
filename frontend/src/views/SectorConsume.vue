@@ -228,16 +228,28 @@
             > 
                 <v-col>
                     <download-excel
+                    class="px-4 mr-3 mb-3 v-btn v-btn--contained theme--light v-size--default success"
                     :data="consumeData"
                     :name="exportedFileName"
                     :fields="exportedFileFields"
                     :header="exportedFileName"
                     :worksheet="exportedFileWorksheet"
                     >
-                        <v-btn class="px-4" color="success"> 
-                            Exportar em XLS
-                        </v-btn>
-                    </download-excel>
+                        Exportar em XLS
+                    </download-excel>    
+                              
+                    <download-excel
+                    class="px-4 mb-3 v-btn v-btn--contained theme--light v-size--default blue darken-4 white--text"
+                    :meta="json_meta"
+                    :data="consumeData"
+                    type="csv"
+                    :name="exportedFileName"
+                    :fields="exportedFileFields"
+                    :header="exportedFileName"
+                    :worksheet="exportedFileWorksheet"
+                    >
+                        Exportar em CSV
+                    </download-excel>   
                 </v-col>    
             </v-row>  
 
@@ -344,7 +356,13 @@ export default {
         headers: [],
         exportedFileName: '',
         exportedFileWorksheet: '',
-        exportedFileFields: {}
+        exportedFileFields: {},
+        json_meta: [
+            [{
+                "key": "charset",
+                "value": "utf-8"
+            }]
+        ]
     }),
 
      computed: {

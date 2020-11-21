@@ -223,9 +223,7 @@
             <v-row 
             v-if="loaded&&!error&&!noDataForPeriod"
             > 
-                <v-col
-                
-                >
+                <v-col>
                     <download-excel
                     class="px-4 mr-3 mb-3 v-btn v-btn--contained theme--light v-size--default success"
                     :data="consumeData"
@@ -239,6 +237,7 @@
                               
                     <download-excel
                     class="px-4 mb-3 v-btn v-btn--contained theme--light v-size--default blue darken-4 white--text"
+                    :meta="json_meta"
                     :data="consumeData"
                     type="csv"
                     :name="exportedFileName"
@@ -343,6 +342,12 @@ export default {
             Setor: "setor",
             "Volume (m³)" : "volume"
         },
+         json_meta: [
+            [{
+                "key": "charset",
+                "value": "utf-8"
+            }]
+        ]
     }),
 
     computed: {
